@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ Arch Academy</title>
+<style>
+/* ── Themes ─────────────────────────────────────────────────────────────────── */
+:root,[data-theme="dark"] {
+  --bg:#0d1117; --bg-dark:#010409; --panel:#161b22; --border:#21262d;
+  --fg:#e6edf3; --dim:#8b949e; --dimmer:#484f58;
+  --blue:#58a6ff; --blue2:#388bfd; --cyan:#79c0ff; --green:#3fb950;
+  --yellow:#e3b341; --orange:#ffa657; --red:#ff7b72; --sel:#1f3a6e;
+  --code-bg:#161b22; --code-fg:#c9d1d9;
+  --sh-kw:#79c0ff; --sh-bi:#56d364; --sh-str:#a5d6ff; --sh-var:#ffa657;
+  --sh-cm:#8b949e; --sh-flag:#e3b341; --sh-op:#6e7681; --sh-num:#e3b341;
+}
+[data-theme="light"] {
+  --bg:#ffffff; --bg-dark:#f6f8fa; --panel:#f0f3f6; --border:#d0d7de;
+  --fg:#24292f; --dim:#57606a; --dimmer:#8c959f;
+  --blue:#0969da; --blue2:#0550ae; --cyan:#0550ae; --green:#1a7f37;
+  --yellow:#9a6700; --orange:#bc4c00; --red:#cf222e; --sel:#dbeafe;
+  --code-bg:#f0f3f6; --code-fg:#24292f;
+  --sh-kw:#0550ae; --sh-bi:#1a7f37; --sh-str:#0a3069; --sh-var:#bc4c00;
+  --sh-cm:#57606a; --sh-flag:#9a6700; --sh-op:#57606a; --sh-num:#9a6700;
+}
+[data-theme="nord"] {
+  --bg:#2e3440; --bg-dark:#242933; --panel:#3b4252; --border:#434c5e;
+  --fg:#eceff4; --dim:#d8dee9; --dimmer:#9aa3b2;
+  --blue:#81a1c1; --blue2:#5e81ac; --cyan:#88c0d0; --green:#a3be8c;
+  --yellow:#ebcb8b; --orange:#d08770; --red:#bf616a; --sel:#434c5e;
+  --code-bg:#3b4252; --code-fg:#d8dee9;
+  --sh-kw:#81a1c1; --sh-bi:#88c0d0; --sh-str:#a3be8c; --sh-var:#d08770;
+  --sh-cm:#9aa3b2; --sh-flag:#ebcb8b; --sh-op:#9aa3b2; --sh-num:#ebcb8b;
+}
+[data-theme="gruvbox"] {
+  --bg:#282828; --bg-dark:#1d2021; --panel:#3c3836; --border:#504945;
+  --fg:#ebdbb2; --dim:#bdae93; --dimmer:#928374;
+  --blue:#83a598; --blue2:#458588; --cyan:#8ec07c; --green:#b8bb26;
+  --yellow:#fabd2f; --orange:#fe8019; --red:#fb4934; --sel:#504945;
+  --code-bg:#3c3836; --code-fg:#d5c4a1;
+  --sh-kw:#83a598; --sh-bi:#8ec07c; --sh-str:#b8bb26; --sh-var:#fe8019;
+  --sh-cm:#928374; --sh-flag:#fabd2f; --sh-op:#928374; --sh-num:#fabd2f;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:'Inter',system-ui,'Segoe UI',sans-serif;
+  height:100vh;overflow:hidden;display:flex;flex-direction:column;
+  transition:background .2s,color .2s;
+}
+::selection{background:var(--sel);}
+
+/* ── Topbar ────────────────────────────────────────────────────────────────── */
+.topbar{
+  display:flex;align-items:center;gap:14px;
+  background:var(--bg-dark);border-bottom:1px solid var(--border);
+  padding:0 18px;height:52px;flex-shrink:0;
+}
+.logo{font-size:17px;font-weight:800;color:var(--blue);letter-spacing:.4px;white-space:nowrap;}
+.logo .tag{color:var(--dimmer);font-weight:400;font-size:12px;margin-left:10px;}
+.kbd{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dimmer);
+  background:var(--border);padding:1px 5px;border-radius:3px;}
+.spacer{flex:1;}
+.ring-wrap{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ring-wrap .pct{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--blue);white-space:nowrap;}
+.ring{transform:rotate(-90deg);}
+.ring circle{fill:none;stroke-width:5;}
+.ring .bg{stroke:var(--border);}
+.ring .fg{stroke:var(--blue2);stroke-linecap:round;transition:stroke-dashoffset .4s ease;}
+.theme-select{
+  background:var(--panel);color:var(--fg);border:1px solid var(--border);
+  border-radius:6px;padding:5px 10px;font-size:13px;cursor:pointer;
+  outline:none;transition:border-color .15s;
+}
+.theme-select:hover,.theme-select:focus{border-color:var(--blue2);}
+
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+.body{display:flex;flex:1;min-height:0;}
+.sidebar{
+  width:320px;background:var(--bg);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;
+}
+.search-wrap{padding:12px 12px 0;}
+.search{
+  width:100%;padding:8px 12px;background:var(--panel);
+  border:1px solid var(--border);border-radius:8px;color:var(--fg);
+  font-size:13.5px;outline:none;transition:border-color .15s;
+}
+.search:focus{border-color:var(--blue2);}
+
+/* Difficulty filter pills */
+.diff-filter{display:flex;gap:6px;padding:10px 12px 8px;}
+.df{
+  padding:4px 10px;border:1px solid var(--border);border-radius:20px;
+  font-size:12px;cursor:pointer;background:transparent;color:var(--dim);
+  transition:all .15s;white-space:nowrap;
+}
+.df:hover{background:var(--panel);color:var(--fg);}
+.df.active{background:var(--blue2);border-color:var(--blue2);color:#fff;}
+.df.d1.active{background:var(--green);border-color:var(--green);}
+.df.d2.active{background:var(--yellow);border-color:var(--yellow);color:#000;}
+.df.d3.active{background:var(--red);border-color:var(--red);}
+
+/* ── Tree ───────────────────────────────────────────────────────────────────── */
+.tree{flex:1;overflow-y:auto;padding:0 6px 12px;}
+.cat{
+  display:flex;align-items:center;gap:6px;padding:7px 10px;cursor:pointer;
+  color:var(--dim);font-weight:700;font-size:13.5px;border-radius:6px;
+  user-select:none;
+}
+.cat:hover{background:var(--panel);}
+.cat .chev{font-size:10px;transition:transform .15s;color:var(--dimmer);flex-shrink:0;}
+.cat.collapsed .chev{transform:rotate(-90deg);}
+.cat .count{margin-left:auto;font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:400;color:var(--dimmer);}
+.cat.done .count{color:var(--green);}
+.lessons{overflow:hidden;}
+.cat.collapsed+.lessons{display:none;}
+.lesson{
+  display:flex;align-items:center;gap:6px;padding:6px 10px 6px 26px;
+  cursor:pointer;color:var(--fg);font-size:13px;border-radius:6px;
+  user-select:none;border-left:2px solid transparent;
+}
+.lesson:hover{background:var(--panel);}
+.lesson.active{background:var(--sel);color:var(--cyan);border-left-color:var(--blue);}
+.lesson .check{width:14px;color:var(--green);font-weight:700;flex-shrink:0;font-size:11px;}
+.lesson .ltitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lesson .diff-dot{flex-shrink:0;font-size:10px;line-height:1;}
+.lesson .star{flex-shrink:0;color:var(--yellow);font-size:11px;}
+.lesson .note-dot{flex-shrink:0;color:var(--dim);font-size:10px;}
+
+/* Progress footer */
+.pfoot{background:var(--bg-dark);border-top:1px solid var(--border);padding:12px 16px;}
+.pfoot .label{font-size:10px;font-weight:700;color:var(--dimmer);letter-spacing:1px;}
+.pbar{height:7px;background:var(--border);border-radius:4px;margin:8px 0 6px;overflow:hidden;}
+.pbar .fill{height:100%;background:var(--blue2);border-radius:4px;transition:width .4s ease;}
+.pfoot .ct{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--blue);}
+
+/* ── Content ────────────────────────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;}
+.crumb{
+  background:var(--bg-dark);border-bottom:1px solid var(--border);
+  padding:8px 22px;color:var(--dim);font-size:13px;flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+  white-space:nowrap;overflow:hidden;
+}
+.crumb .diff-badge{font-size:12px;padding:1px 7px;border-radius:10px;
+  background:var(--panel);font-weight:600;color:var(--fg);flex-shrink:0;}
+.crumb .trail{overflow:hidden;text-overflow:ellipsis;flex:1;}
+.crumb .mark{color:var(--dimmer);}
+.crumb .mark.learned{color:var(--green);}
+.crumb .fav{color:var(--yellow);}
+.content{flex:1;overflow-y:auto;padding:24px 40px 32px;max-width:940px;}
+.content h1{color:var(--cyan);font-size:25px;margin:4px 0 16px;}
+.content h2{color:var(--blue);font-size:18px;margin:24px 0 10px;
+  padding-bottom:5px;border-bottom:1px solid var(--border);}
+.content h3{color:var(--blue2);font-size:14.5px;margin:18px 0 8px;}
+.content p{margin:8px 0;line-height:1.7;color:var(--code-fg);}
+.content ul{margin:8px 0 8px 8px;}
+.content li{margin:5px 0 5px 20px;line-height:1.6;color:var(--code-fg);}
+.content hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
+.content code.inline{
+  background:var(--panel);color:var(--orange);
+  font-family:'JetBrains Mono',monospace;font-size:13px;
+  padding:2px 6px;border-radius:5px;
+}
+.content strong{color:var(--fg);font-weight:700;}
+
+/* ── Code blocks ─────────────────────────────────────────────────────────────── */
+.codeblock{position:relative;margin:14px 0;border-radius:8px;overflow:hidden;
+  border:1px solid var(--border);}
+.codeblock .lang-tag{
+  position:absolute;top:0;left:0;
+  background:var(--border);color:var(--dimmer);
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  padding:3px 8px;border-bottom-right-radius:6px;
+  letter-spacing:.5px;
+}
+.codeblock pre{
+  background:var(--code-bg);padding:14px 16px 14px;overflow-x:auto;
+  font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;
+  color:var(--code-fg);
+}
+.codeblock .copy{
+  position:absolute;top:8px;right:8px;background:var(--border);color:var(--dim);
+  border:none;border-radius:5px;padding:4px 9px;font-size:11px;cursor:pointer;
+  opacity:0;transition:opacity .15s,background .15s;
+}
+.codeblock:hover .copy{opacity:1;}
+.codeblock .copy:hover{background:var(--blue2);color:#fff;}
+
+/* Syntax highlighting */
+.sh-kw  {color:var(--sh-kw);font-weight:600;}
+.sh-bi  {color:var(--sh-bi);}
+.sh-str {color:var(--sh-str);}
+.sh-var {color:var(--sh-var);}
+.sh-cm  {color:var(--sh-cm);font-style:italic;}
+.sh-flag{color:var(--sh-flag);}
+.sh-op  {color:var(--sh-op);}
+.sh-num {color:var(--sh-num);}
+
+/* ── Tables ─────────────────────────────────────────────────────────────────── */
+table{border-collapse:collapse;margin:14px 0;width:auto;font-size:13.5px;}
+th,td{border:1px solid var(--border);padding:7px 14px;text-align:left;}
+th{background:var(--panel);color:var(--cyan);font-weight:700;}
+td{color:var(--code-fg);}
+td code,th code{background:var(--bg-dark);color:var(--orange);
+  font-family:'JetBrains Mono',monospace;padding:1px 5px;border-radius:4px;}
+
+/* ── Notes ──────────────────────────────────────────────────────────────────── */
+.notes-wrap{
+  border-top:1px solid var(--border);background:var(--bg-dark);
+  padding:10px 22px;flex-shrink:0;
+}
+.notes-header{
+  font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.5px;
+  margin-bottom:7px;display:flex;align-items:center;gap:8px;
+}
+.notes-header .hint{color:var(--dimmer);font-weight:400;}
+#notesArea{
+  width:100%;height:68px;background:var(--panel);color:var(--fg);
+  border:1px solid var(--border);border-radius:6px;padding:8px 12px;
+  font-family:inherit;font-size:13px;resize:vertical;outline:none;
+  transition:border-color .15s;line-height:1.5;
+}
+#notesArea:focus{border-color:var(--blue2);}
+
+/* ── Actions ────────────────────────────────────────────────────────────────── */
+.actions{
+  display:flex;gap:7px;justify-content:center;flex-wrap:wrap;
+  background:var(--bg-dark);border-top:1px solid var(--border);
+  padding:9px;flex-shrink:0;
+}
+.btn{
+  background:var(--border);color:var(--fg);border:none;border-radius:7px;
+  padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.btn:hover{background:var(--blue2);color:#fff;}
+.btn.on{background:var(--green);color:#fff;}
+.btn.fav.on{background:var(--yellow);color:#000;}
+
+/* ── Modal ──────────────────────────────────────────────────────────────────── */
+.overlay{
+  position:fixed;inset:0;background:rgba(1,4,9,.8);display:flex;
+  align-items:center;justify-content:center;z-index:100;
+}
+.overlay.hidden{display:none;}
+.modal{
+  background:var(--bg);border:2px solid var(--blue);border-radius:14px;
+  padding:30px 34px;max-width:560px;width:90%;text-align:center;
+  box-shadow:0 16px 48px rgba(0,0,0,.6);
+}
+.modal .ml{font-size:22px;font-weight:800;color:var(--blue);}
+.modal .tl{color:var(--green);font-weight:700;font-size:13px;margin:16px 0 8px;letter-spacing:1px;}
+.modal .tt{font-size:16px;font-weight:700;margin-bottom:14px;}
+.modal .tip-code{
+  background:var(--panel);color:var(--orange);font-family:'JetBrains Mono',monospace;
+  font-size:13px;padding:14px;border-radius:8px;text-align:left;line-height:1.5;
+}
+.modal .start{margin-top:18px;}
+
+/* ── Toast ──────────────────────────────────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:var(--panel);color:var(--fg);border:1px solid var(--blue2);
+  padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;
+  transition:opacity .25s;pointer-events:none;z-index:200;white-space:nowrap;
+}
+.toast.show{opacity:1;}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────────── */
+.tree::-webkit-scrollbar,.content::-webkit-scrollbar{width:8px;}
+.tree::-webkit-scrollbar-thumb,.content::-webkit-scrollbar-thumb{
+  background:var(--border);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="logo">⚡ ARCH ACADEMY
+    <span class="tag">
+      <span class="kbd">n/p</span> nav ·
+      <span class="kbd">l</span> learn ·
+      <span class="kbd">f</span> fav ·
+      <span class="kbd">r</span> random ·
+      <span class="kbd">u</span> next new ·
+      <span class="kbd">e</span> notes ·
+      <span class="kbd">/</span> search ·
+      <span class="kbd">1/2/3</span> difficulty
+    </span>
+  </div>
+  <div class="spacer"></div>
+  <div class="ring-wrap">
+    <span class="pct" id="pct">0%</span>
+    <svg class="ring" width="34" height="34" viewBox="0 0 34 34">
+      <circle class="bg" cx="17" cy="17" r="14"></circle>
+      <circle class="fg" id="ring" cx="17" cy="17" r="14"
+              stroke-dasharray="87.96" stroke-dashoffset="87.96"></circle>
+    </svg>
+  </div>
+  <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
+    <option value="dark">🌑 Dark</option>
+    <option value="light">☀️ Light</option>
+    <option value="nord">🌊 Nord</option>
+    <option value="gruvbox">🌿 Gruvbox</option>
+  </select>
+</div>
+
+<!-- Body -->
+<div class="body">
+  <aside class="sidebar">
+    <div class="search-wrap">
+      <input class="search" id="search" placeholder="🔍  Search lessons...">
+    </div>
+    <!-- Difficulty filter -->
+    <div class="diff-filter">
+      <button class="df active"    onclick="filterDiff(0)">All</button>
+      <button class="df d1"        onclick="filterDiff(1)">🟢 Beginner</button>
+      <button class="df d2"        onclick="filterDiff(2)">🟡 Inter.</button>
+      <button class="df d3"        onclick="filterDiff(3)">🔴 Advanced</button>
+    </div>
+    <div class="tree" id="tree"></div>
+    <div class="pfoot">
+      <div class="label">PROGRESS</div>
+      <div class="pbar"><div class="fill" id="pfill"></div></div>
+      <div class="ct" id="pct2">0/0 (0%)</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="crumb" id="crumb"></div>
+    <div class="content" id="content"></div>
+    <div class="notes-wrap">
+      <div class="notes-header">📝 MY NOTES <span class="hint">auto-saved to browser</span></div>
+      <textarea id="notesArea" placeholder="Take notes on this lesson... (saved locally in your browser)"></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="nav(-1)">◀ Prev</button>
+      <button class="btn" id="learnBtn" onclick="toggleLearned()">✓ Mark Learned</button>
+      <button class="btn fav" id="favBtn" onclick="toggleFav()">★ Favorite</button>
+      <button class="btn" onclick="copyLesson()">📋 Copy</button>
+      <button class="btn" onclick="randomLesson()">🎲 Random</button>
+      <button class="btn" onclick="nextUnlearned()">⏭ Next New</button>
+      <button class="btn" onclick="exportMd()">📤 Export</button>
+      <button class="btn" onclick="nav(1)">Next ▶</button>
+    </div>
+  </main>
+</div>
+
+<!-- Tip modal -->
+<div class="overlay" id="tipOverlay">
+  <div class="modal">
+    <div class="ml">⚡ ARCH ACADEMY</div>
+    <div class="tl">✨ TIP OF THE DAY</div>
+    <div class="tt" id="tipTitle"></div>
+    <div class="tip-code" id="tipCode"></div>
+    <button class="btn start" onclick="closeTip()">Start learning →</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LESSONS = {"🐧 Linux Basics": [{"title": "Navigating the Filesystem", "body": "# 🗺️ Navigating the Filesystem\n\nThe three commands you'll live in. Learn them cold.\n\n```bash\npwd              # Print Working Directory — where am I?\nls               # list files\nls -la           # ALL files, long format (perms, size, date)\nls -lh           # same but human-readable sizes\nls -lt           # sorted by modification time\ncd /etc          # jump to absolute path\ncd ..            # up one directory\ncd ~             # go home ($HOME)\ncd -             # ← toggle between last two directories (magic!)\n```\n\n## Tab Completion\n\nPress `Tab` to complete filenames. Press `Tab` twice to see options.\n\n```bash\ncd /et<Tab>      # completes to /etc/\nls /usr/sh<Tab>  # shows share/ and sbin/\n```\n\n## Tips\n\n- `cd -` is like a browser back button — incredibly useful\n- `ls -la` reveals dotfiles (hidden files starting with `.`)\n- `ls -la /path` lists without having to `cd` there first\n- `eza --tree` is a beautiful modern replacement (pacman -S eza)\n", "difficulty": 1, "tags": ["linux", "shell", "cli"]}, {"title": "File Operations", "body": "# 📋 File Operations\n\n```bash\ncp file.txt copy.txt           # copy a file\ncp -r src/ dest/               # copy directory recursively\ncp -p file.txt backup.txt      # preserve timestamps & permissions\nmv old.txt new.txt             # rename or move\nmv file.txt /tmp/              # move to directory\nrm file.txt                    # delete (NO UNDO!)\nrm -rf dir/                    # delete directory recursively (DANGEROUS)\nmkdir mydir                    # create directory\nmkdir -p deep/nested/path      # create all parent dirs too\ntouch file.txt                 # create empty file / update timestamp\n```\n\n## Protect Yourself from `rm`\n\n```bash\n# Add to ~/.bashrc or ~/.zshrc:\nalias rm='rm -i'               # ask before every delete\n\n# Or use trash-cli:\nsudo pacman -S trash-cli\ntrash file.txt                 # moves to ~/.local/share/Trash/\ntrash-list                     # see what's in trash\nrestore-trash                  # restore latest trashed file\n```\n\n## Rename Multiple Files at Once\n\n```bash\n# Rename all .txt → .md\nfor f in *.txt; do mv \"$f\" \"${f%.txt}.md\"; done\n\n# Using rename (perl-rename on Arch):\nrename 's/.txt$/.md/' *.txt\n```\n", "difficulty": 1, "tags": ["linux", "shell", "cli"]}, {"title": "Viewing File Contents", "body": "# 👁️ Viewing File Contents\n\n```bash\ncat file.txt              # print whole file to stdout\nless file.txt             # page through (q to quit, / to search)\nhead -n 20 file.txt       # first 20 lines\ntail -n 20 file.txt       # last 20 lines\ntail -f /var/log/syslog   # FOLLOW a log file live  ← killer feature\ntail -F /var/log/app.log  # follow + retry if file rotates\n```\n\n## Inside `less`\n\n| Key | Action |\n|-----|--------|\n| `j` / `k` | Down / Up |\n| `d` / `u` | Half-page down / up |\n| `g` / `G` | Top / Bottom |\n| `/pattern` | Search forward |\n| `?pattern` | Search backward |\n| `n` / `N` | Next / previous match |\n| `q` | Quit |\n\n## Better Alternatives\n\n```bash\nbat file.txt              # cat with syntax highlighting + line numbers\nbat --paging=never file   # no paging, just colorized output\n\nsudo pacman -S bat\n```\n\n## Combine with Pipes\n\n```bash\ntail -f app.log | grep --line-buffered \"ERROR\"  # watch for errors live\ncat file.txt | head -n 5 | tee preview.txt       # first 5 lines, also save\n```\n", "difficulty": 1, "tags": ["linux", "shell", "cli"]}, {"title": "Searching: find & grep", "body": "# 🔍 find & grep\n\n## find — locate files\n\n```bash\nfind . -name \"*.log\"                  # by filename in current dir\nfind /etc -name \"*.conf\" -type f      # only files, not dirs\nfind . -type d -name \"node_modules\"   # only directories\nfind . -size +100M                    # bigger than 100MB\nfind . -mtime -7                      # modified in last 7 days\nfind . -newer reference.txt           # newer than a file\nfind . -empty                         # empty files/directories\nfind . -name \"*.py\" -exec wc -l {} +  # run command on all results\nfind . -name \"*.log\" -delete          # find and delete\n```\n\n## grep — search inside files\n\n```bash\ngrep \"error\" app.log                  # lines containing \"error\"\ngrep -i \"error\" app.log               # case-insensitive\ngrep -r \"TODO\" ./src                  # recursive through directory\ngrep -n \"pattern\" file.txt            # show line numbers\ngrep -v \"DEBUG\" app.log               # lines NOT matching\ngrep -c \"error\" app.log               # count matching lines\ngrep -l \"error\" *.log                 # just filenames that match\ngrep -E \"error|warning|fatal\" app.log # regex: OR\ngrep -A 3 -B 3 \"error\" app.log        # 3 lines of context around match\n```\n\n## ripgrep — grep on steroids\n\n```bash\nrg \"TODO\" ./src                       # faster, respects .gitignore\nrg -t py \"import os\"                  # only .py files\nrg -i \"error\" --no-heading            # no headers, good for piping\nsudo pacman -S ripgrep\n```\n", "difficulty": 1, "tags": ["linux", "shell", "cli"]}, {"title": "Pipes & Redirection", "body": "# 🔗 Pipes & Redirection\n\nThe Unix philosophy: small tools, combined with pipes.\n\n```bash\ncommand > file.txt          # redirect stdout to file (overwrites)\ncommand >> file.txt         # append stdout to file\ncommand 2> errors.txt       # redirect stderr only\ncommand > out.txt 2>&1      # stdout + stderr to same file\ncommand &> all.txt          # shorthand for above (bash/zsh)\ncommand < input.txt         # read stdin from file\ncommand1 | command2         # pipe: output of 1 → input of 2\n```\n\n## The Art of Pipelines\n\n```bash\nls -la | grep \".conf\"\ncat /etc/passwd | cut -d: -f1 | sort\nps aux | grep nginx | grep -v grep\nhistory | awk '{print $2}' | sort | uniq -c | sort -rn | head -20\n```\n\n## tee — split output\n\n```bash\ncommand | tee output.txt        # display AND save to file\ncommand | tee -a output.txt     # display AND append to file\nmake 2>&1 | tee build.log       # capture build output with color\n```\n\n## xargs — build commands from stdin\n\n```bash\nfind . -name \"*.tmp\" | xargs rm\ncat urls.txt | xargs -n1 curl -O\nfind . -name \"*.js\" | xargs grep \"TODO\"\n```\n\n## /dev/null — the void\n\n```bash\ncommand > /dev/null 2>&1        # silence all output\n```\n", "difficulty": 2, "tags": ["linux", "shell", "cli"]}, {"title": "Permissions", "body": "# 🔐 File Permissions\n\n```\n$ ls -la /usr/bin/passwd\n-rwsr-xr-x 1 root root 59736 Mar  5 passwd\n\nType: - (file) d (dir) l (symlink)\nPerms: rwx rwx rwx  (owner, group, others)\n       421 421 421  (add up for octal)\n```\n\n## chmod — change permissions\n\n```bash\nchmod 755 script.sh         # rwxr-xr-x: owner=all, group/others=rx\nchmod 644 file.txt          # rw-r--r--: standard for files\nchmod 600 ~/.ssh/id_rsa     # rw-------: private key (required!)\nchmod +x script.sh          # add execute for everyone\nchmod u+x,g-w file          # user +exec, group -write\nchmod -R 755 directory/     # recursive\n\n# Common values:\n# 755 = rwxr-xr-x (executables, dirs)\n# 644 = rw-r--r-- (regular files)\n# 600 = rw------- (private files)\n```\n\n## chown — change ownership\n\n```bash\nchown noah file.txt           # change owner\nchown noah:users file.txt     # change owner and group\nchown -R noah:noah dir/       # recursive\nsudo chown root:root /usr/local/bin/tool\n```\n\n## Special bits\n\n```bash\nchmod u+s /path/to/binary    # setuid: runs as file's owner\nchmod g+s /shared/dir/       # setgid: new files inherit group\nchmod +t /tmp                # sticky: only owner can delete\n```\n", "difficulty": 2, "tags": ["linux", "shell", "cli"]}, {"title": "Processes", "body": "# ⚙️ Process Management\n\n## Viewing Processes\n\n```bash\nps aux                        # all processes\nps aux | grep nginx           # find by name\npgrep nginx                   # get PID(s) by name\npidof sshd                    # PID of sshd\ntop                           # interactive viewer (q to quit)\nhtop                          # better (pacman -S htop)\n```\n\n## Killing Processes\n\n```bash\nkill 1234                     # send SIGTERM (polite shutdown)\nkill -9 1234                  # SIGKILL — force kill, no cleanup\nkill -HUP 1234                # SIGHUP — reload config (many daemons)\nkillall nginx                 # kill all named nginx\npkill -f \"python myapp.py\"    # kill by full command match\n```\n\n## Background & Foreground\n\n```bash\nlong_command &                # start in background\nCtrl+Z                        # pause current job\njobs                          # list paused/background jobs\nfg %1                         # bring job 1 to foreground\nbg %1                         # resume job 1 in background\nnohup command &               # survive terminal close\ndisown %1                     # detach from terminal (no nohup)\n```\n\n## Priorities\n\n```bash\nnice -n 10 heavy_job          # start with low priority\nrenice +10 -p 1234            # change priority of running process\nionice -c 3 command           # run with idle I/O priority\n```\n", "difficulty": 2, "tags": ["linux", "shell", "cli"]}, {"title": "Environment Variables", "body": "# 🌍 Environment Variables\n\n```bash\necho $HOME          # your home directory\necho $PATH          # directories searched for commands\necho $SHELL         # your current shell\necho $USER          # current username\necho $PWD           # current directory (like pwd)\necho $EDITOR        # default text editor\nenv                 # print all environment variables\nprintenv HOME       # print a specific one\n```\n\n## Setting Variables\n\n```bash\n# Temporary (current session only):\nexport MY_VAR=\"hello\"\nMY_VAR=\"hello\" command    # set only for this command's env\n\n# Permanent (add to ~/.bashrc or ~/.zshrc):\nexport EDITOR=nvim\nexport PATH=\"$HOME/.local/bin:$PATH\"  # prepend to PATH\n```\n\n## PATH\n\n```bash\necho $PATH\n# /usr/local/bin:/usr/bin:/bin:/home/noah/.local/bin\n\n# Add a dir to PATH (in ~/.zshrc):\nexport PATH=\"$HOME/.cargo/bin:$PATH\"\n\n# Check where a command comes from:\nwhich python\nwhich -a python     # all matches in PATH\ntype -a python      # includes aliases and functions too\n```\n\n## Important Defaults to Set\n\n```bash\nexport EDITOR=nvim\nexport VISUAL=nvim\nexport PAGER=less\nexport LESS='-R --mouse'       # color and mouse support in less\nexport MANPAGER='less -R'      # colored man pages\n```\n", "difficulty": 2, "tags": ["linux", "shell", "cli"]}, {"title": "Archives & Compression", "body": "# 🗜️ Archives & Compression\n\n## tar — the workhorse\n\n```bash\n# Create:\ntar -czf archive.tar.gz  dir/   # gzip compression\ntar -cJf archive.tar.xz  dir/   # xz (best ratio, slower)\ntar -cjf archive.tar.bz2 dir/   # bzip2\n\n# Extract:\ntar -xzf archive.tar.gz         # gzip\ntar -xJf archive.tar.xz         # xz\ntar -xjf archive.tar.bz2        # bzip2\n\n# List without extracting:\ntar -tzf archive.tar.gz\n```\n\n## Other formats\n\n```bash\nzip -r archive.zip dir/         # create zip\nunzip archive.zip               # extract zip\ngzip file.txt                   # compress (replaces original)\ngzip -d file.txt.gz             # decompress\n```\n\n## extract() — handle anything\n\nAdd to `.zshrc`/`.bashrc`:\n\n```bash\nextract() {\n  case \"$1\" in\n    *.tar.gz|*.tgz) tar -xzf \"$1\" ;;\n    *.tar.bz2)       tar -xjf \"$1\" ;;\n    *.tar.xz)        tar -xJf \"$1\" ;;\n    *.zip)           unzip \"$1\"    ;;\n    *.gz)            gzip -d \"$1\"  ;;\n    *) echo \"Unknown format: $1\"   ;;\n  esac\n}\n```\n", "difficulty": 1, "tags": ["linux", "shell", "cli"]}], "📁 File System": [{"title": "Linux Directory Structure", "body": "# 🌳 Linux Directory Structure (FHS)\n\n```\n/               Root — the top of everything\n├── bin         Essential binaries (ls, cp, bash)\n├── boot        Kernel and bootloader files\n├── dev         Device files (/dev/sda, /dev/null, /dev/tty)\n├── etc         System-wide config files\n├── home        User home directories (/home/noah)\n├── lib         Shared libraries for /bin and /sbin\n├── media       Mount point for removable media\n├── mnt         Temporary mount points\n├── opt         Optional/third-party software\n├── proc        Virtual FS: kernel & process info\n├── root        Home of the root user\n├── run         Runtime data (PIDs, sockets)\n├── sys         Virtual FS: hardware/kernel info\n├── tmp         Temporary files (cleared on reboot)\n├── usr         User programs and data\n│   ├── bin     Most executables live here\n│   ├── lib     Libraries\n│   ├── local   Locally installed software\n│   └── share   Architecture-independent data\n└── var         Variable data (logs, caches, databases)\n    ├── log     System logs\n    ├── cache   Application caches\n    └── spool   Print queues, mail\n```\n\n## Key Locations\n\n```bash\n/etc/fstab          # filesystem mount table\n/etc/hosts          # local DNS overrides\n/etc/pacman.conf    # pacman configuration\n~/.config/          # user config (XDG standard)\n~/.local/share/     # user data (XDG standard)\n/proc/cpuinfo       # CPU information\n/proc/meminfo       # memory information\n```\n", "difficulty": 1, "tags": ["linux", "filesystem", "storage"]}, {"title": "Disk Usage", "body": "# 💾 Disk Usage\n\n## df — disk free (filesystem level)\n\n```bash\ndf -h               # human-readable sizes for all filesystems\ndf -h /home         # just the filesystem containing /home\ndf -i               # inode usage instead of bytes\n```\n\n## du — disk usage (directory level)\n\n```bash\ndu -sh /var/log     # total size of /var/log\ndu -sh *            # size of each item in current dir\ndu -h --max-depth=1 /  # top-level dirs, one level deep\ndu -h | sort -h | tail -20  # largest directories\n```\n\n## ncdu — interactive disk analyzer\n\n```bash\nsudo pacman -S ncdu\nncdu /              # interactive browser — find what's eating space\nncdu --exclude /proc --exclude /sys /\n```\n\n## Find Large Files\n\n```bash\nfind / -type f -size +500M 2>/dev/null | sort\nfind /var -type f -size +100M 2>/dev/null\n```\n", "difficulty": 1, "tags": ["linux", "filesystem", "storage"]}, {"title": "Mounting Filesystems", "body": "# 🔌 Mounting Filesystems\n\n```bash\nmount                         # list all mounted filesystems\nlsblk                         # list block devices (drives, partitions)\nlsblk -f                      # also show filesystem types and UUIDs\nblkid /dev/sda1               # show UUID and filesystem type\n```\n\n## Manual Mount\n\n```bash\nsudo mount /dev/sdb1 /mnt           # mount a drive\nsudo mount -t ext4 /dev/sdb1 /mnt  # specify filesystem type\nsudo mount -o ro /dev/sdb1 /mnt    # read-only mount\nsudo umount /mnt                    # unmount\nsudo umount -l /mnt                 # lazy unmount (if busy)\n```\n\n## /etc/fstab — auto-mount on boot\n\n```bash\n# DEVICE          MOUNTPOINT   FSTYPE  OPTIONS      DUMP PASS\nUUID=abc123...    /home        ext4    defaults     0    2\ntmpfs             /tmp         tmpfs   size=2G      0    0\n\n# Use UUID (not /dev/sdX — that can change!):\nblkid /dev/sda2   # get UUID\n```\n\n## USB Drives\n\n```bash\nlsblk                         # find it (e.g., /dev/sdc1)\nsudo mount /dev/sdc1 /mnt/usb\nls /mnt/usb\nsudo umount /mnt/usb\n```\n", "difficulty": 2, "tags": ["linux", "filesystem", "storage"]}, {"title": "Symlinks & Hard Links", "body": "# 🔗 Links\n\n## Symbolic Links (symlinks)\n\nA symlink is a pointer to another file or directory.\n\n```bash\nln -s /path/to/target link_name      # create symlink\nln -s /usr/local/bin/python3 python  # make 'python' point to python3\nls -la                               # symlinks show as: link -> target\nreadlink -f symlink                  # resolve to actual path\n```\n\n## Hard Links\n\nA hard link is another name for the same file (same inode).\n\n```bash\nln /path/to/file hardlink_name       # create hard link (no -s)\n```\n\n## Symlink vs Hard Link\n\n| | Symlink | Hard Link |\n|--|---------|-----------|\n| Directories | ✓ | ✗ |\n| Cross-filesystem | ✓ | ✗ |\n| Survives original deletion | ✗ (broken) | ✓ |\n\n## Common Uses\n\n```bash\n# Version-agnostic executable:\nln -s /usr/bin/python3.12 /usr/local/bin/python\n\n# Config tracked in git repo:\nln -s ~/dotfiles/.zshrc ~/.zshrc\n\n# Find broken symlinks:\nfind . -xtype l\n```\n", "difficulty": 2, "tags": ["linux", "filesystem", "storage"]}, {"title": "/proc and /sys", "body": "# 🧠 /proc and /sys\n\nThese are **virtual filesystems** — no data on disk, the kernel generates them live.\n\n## /proc — process & kernel info\n\n```bash\ncat /proc/cpuinfo               # CPU model, cores, flags\ncat /proc/meminfo               # memory stats\ncat /proc/loadavg               # system load (1, 5, 15 min avg)\ncat /proc/version               # kernel version\ncat /proc/mounts                # currently mounted filesystems\ncat /proc/1234/cmdline          # command line of PID 1234\nls /proc/1234/fd                # open file descriptors of process\ncat /proc/sys/net/ipv4/ip_forward  # check if IP forwarding enabled\n```\n\n## /sys — hardware & driver info\n\n```bash\nls /sys/class/net/              # network interfaces\ncat /sys/class/net/eth0/address # MAC address\nls /sys/block/                  # block devices\ncat /sys/block/sda/size         # disk size in 512-byte sectors\ncat /sys/class/thermal/thermal_zone0/temp  # CPU temp (÷1000 = °C)\n```\n\n## Useful shortcuts\n\n```bash\ngrep -c processor /proc/cpuinfo  # CPU thread count\ngrep MemTotal /proc/meminfo      # total RAM\nls /proc | grep '^[0-9]' | wc -l # running process count\n```\n", "difficulty": 3, "tags": ["linux", "filesystem", "storage"]}, {"title": "File Attributes & ACLs", "body": "# 🏷️ File Attributes & ACLs\n\n## lsattr / chattr — immutable files\n\n```bash\nlsattr file.txt                 # list extended attributes\nchattr +i file.txt              # make immutable (even root can't delete)\nchattr -i file.txt              # remove immutable flag\nchattr +a logfile.txt           # append-only (can't overwrite or delete)\n```\n\n## ACLs — per-user permissions\n\nStandard Unix: one owner, one group. ACLs add fine-grained control.\n\n```bash\ngetfacl file.txt                # show ACL\nsetfacl -m u:bob:rw file.txt    # give bob read+write\nsetfacl -m g:devs:rx dir/       # give devs group read+execute\nsetfacl -x u:bob file.txt       # remove bob's ACL entry\nsetfacl -b file.txt             # remove all ACLs\n\n# Verify:\nls -la file.txt                 # shows '+' after perms if ACL set\n```\n\n## stat — full file metadata\n\n```bash\nstat file.txt\n# Shows: size, inode, links, access/modify/change times\n```\n", "difficulty": 3, "tags": ["linux", "filesystem", "storage"]}], "🏹 Arch Linux": [{"title": "Why Arch?", "body": "# 🏹 Why Arch Linux?\n\nArch Linux is a **rolling-release** distro built on simplicity and user control.\n\n## The Arch Way\n\n1. **Simplicity** — no hand-holding, just what you need\n2. **Modernity** — latest stable packages, always\n3. **Pragmatism** — solutions chosen on merit\n4. **Versatility** — build exactly the system you want\n\n## Rolling Release\n\nNo version upgrades — just continuously updated packages.\n\n```bash\nsudo pacman -Syu    # update everything, forever\n```\n\n## What You Build\n\nStarting from a minimal base, you choose:\n- Init system (systemd is default)\n- Display server (X11 or Wayland)\n- Desktop environment or window manager\n- Every single package\n\n## The Arch Wiki\n\nThe single best Linux resource in existence. Even useful for other distros.\n\n```\nhttps://wiki.archlinux.org\n```\n\n**Pro tip:** When something breaks on Ubuntu or Fedora, search the Arch Wiki.\n\n## Community\n\n- Forums: bbs.archlinux.org\n- r/archlinux\n- IRC: #archlinux on Libera.Chat\n- AUR: aur.archlinux.org\n", "difficulty": 1, "tags": ["arch", "linux", "pacman"]}, {"title": "pacman Essentials", "body": "# 📦 pacman — Package Manager\n\n## Install & Remove\n\n```bash\nsudo pacman -S package          # install\nsudo pacman -S pkg1 pkg2        # install multiple\nsudo pacman -R package          # remove (keep dependencies)\nsudo pacman -Rs package         # remove + unneeded dependencies\nsudo pacman -Rns package        # remove + deps + config files\n```\n\n## Update\n\n```bash\nsudo pacman -Syu                # sync databases and update all packages\nsudo pacman -Syuu               # allow downgrade if repo has older\n```\n\n## Search & Query\n\n```bash\npacman -Ss keyword              # search remote repos\npacman -Qs keyword              # search installed packages\npacman -Si package              # info about remote package\npacman -Qi package              # info about installed package\npacman -Ql package              # list files installed by package\npacman -Qo /usr/bin/git         # which package owns this file?\npacman -Qdtq                    # list orphan packages\nsudo pacman -Rns $(pacman -Qdtq)  # remove all orphans\n```\n", "difficulty": 1, "tags": ["arch", "linux", "pacman"]}, {"title": "pacman Advanced", "body": "# 🔬 pacman Advanced\n\n## Query Tricks\n\n```bash\npacman -Q                       # list ALL installed packages\npacman -Qe                      # explicitly installed (not as dep)\npacman -Qd                      # installed as dependencies\npacman -Qm                      # AUR / foreign packages\npacman -Q | wc -l               # count installed packages\n```\n\n## Package Groups\n\n```bash\npacman -Sg                      # list all groups\npacman -Sg base-devel           # list packages in group\nsudo pacman -S base-devel       # install a whole group\n```\n\n## Cache Management\n\n```bash\nls /var/cache/pacman/pkg/       # cached packages\nsudo pacman -Sc                 # remove uninstalled pkgs from cache\nsudo pacman -Scc                # clear entire cache (be careful)\npaccache -rk2                   # keep only 2 versions (pacman-contrib)\n```\n\n## Downgrade a Package\n\n```bash\n# From cache:\nsudo pacman -U /var/cache/pacman/pkg/package-1.2.3-1-x86_64.pkg.tar.zst\n\n# Or:\nyay -S downgrade\nsudo downgrade package\n```\n", "difficulty": 2, "tags": ["arch", "linux", "pacman"]}, {"title": "AUR — Arch User Repository", "body": "# 🌐 AUR — Arch User Repository\n\nThe AUR is a community repository with thousands of packages not in the official repos.\n\n**Warning:** Always read the PKGBUILD before installing.\n\n## Manually (no AUR helper)\n\n```bash\ngit clone https://aur.archlinux.org/package-name.git\ncd package-name\ncat PKGBUILD              # READ THIS before continuing!\nmakepkg -si               # build and install\n```\n\n## paru — recommended AUR helper\n\n```bash\n# Install paru:\nsudo pacman -S --needed base-devel git\ngit clone https://aur.archlinux.org/paru.git\ncd paru && makepkg -si\n\n# Use paru just like pacman, plus AUR:\nparu -S package           # from repos or AUR\nparu -Sua                 # update AUR packages only\nparu                      # update everything (repos + AUR)\n```\n\n## PKGBUILD — what to check\n\n```bash\ncat PKGBUILD\n# Look for:\n# source=()         — what it downloads\n# sha256sums=       — integrity check\n# build()           — what it compiles\n# package()         — what it installs\n# install= scripts  — runs as root, check carefully!\n```\n", "difficulty": 2, "tags": ["arch", "linux", "pacman"]}, {"title": "systemd-boot & GRUB", "body": "# 🥾 Bootloaders\n\n## systemd-boot (recommended for UEFI)\n\n```bash\nbootctl install             # install to EFI partition\nbootctl status              # check status\nsudo bootctl update         # update bootloader binary\n\n# Config lives in:\n/boot/loader/loader.conf\n/boot/loader/entries/       # one .conf file per boot entry\n```\n\n### Boot entry example:\n```ini\n# /boot/loader/entries/arch.conf\ntitle   Arch Linux\nlinux   /vmlinuz-linux\ninitrd  /amd-ucode.img\ninitrd  /initramfs-linux.img\noptions root=UUID=xxx rw quiet\n```\n\n## GRUB\n\n```bash\nsudo pacman -S grub efibootmgr\nsudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB\nsudo grub-mkconfig -o /boot/grub/grub.cfg\n\n# After any kernel update, regenerate:\nsudo grub-mkconfig -o /boot/grub/grub.cfg\n\n# Config:\n/etc/default/grub           # edit grub settings here\n```\n", "difficulty": 3, "tags": ["arch", "linux", "pacman"]}, {"title": "mkinitcpio", "body": "# 🚀 mkinitcpio — Initial Ramdisk\n\nThe initramfs is a tiny filesystem loaded before root. It handles:\n- Loading kernel modules\n- Unlocking encrypted drives (LUKS)\n- Assembling RAID arrays\n- Mounting the real root\n\n## Config\n\n```bash\n/etc/mkinitcpio.conf        # main config file\n\nMODULES=()                  # kernel modules to include\nHOOKS=(base udev autodetect modconf block filesystems keyboard fsck)\n```\n\n## Common HOOKS\n\n| Hook | Purpose |\n|------|---------|\n| `base` | basic utilities |\n| `udev` | device detection |\n| `autodetect` | only include needed modules |\n| `keyboard` | keyboard input early |\n| `encrypt` | LUKS encryption support |\n| `lvm2` | LVM support |\n| `filesystems` | mount root filesystem |\n| `fsck` | check filesystem on boot |\n\n## Rebuild\n\n```bash\nsudo mkinitcpio -P          # rebuild ALL presets\nsudo mkinitcpio -p linux    # rebuild just the linux preset\n```\n\n## Adding Encryption\n\n```\nHOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)\n```\nBoot entry options: `cryptdevice=UUID=xxx:root root=/dev/mapper/root`\n", "difficulty": 3, "tags": ["arch", "linux", "pacman"]}, {"title": "Mirrors & Reflector", "body": "# 🪞 Mirrors & Reflector\n\nFast mirrors = faster downloads. Keep them updated!\n\n## reflector — auto-select fastest mirrors\n\n```bash\nsudo pacman -S reflector\n\n# Get fastest HTTPS mirrors, sync'd in last 12 hours:\nsudo reflector --country \"United States\" --age 12   --protocol https --sort rate   --save /etc/pacman.d/mirrorlist\n```\n\n## Auto-update mirrors with systemd\n\n```bash\nsudo systemctl enable reflector.timer\nsudo systemctl start reflector.timer\n\n# Config at /etc/xdg/reflector/reflector.conf\n```\n\n## After changing mirrors\n\n```bash\nsudo pacman -Syy            # force refresh all databases\n```\n\n## Manual mirror edit\n\n```bash\nsudo nvim /etc/pacman.d/mirrorlist\n# Put fastest servers near the top\n# Lines starting with # are disabled\n```\n", "difficulty": 2, "tags": ["arch", "linux", "pacman"]}, {"title": "Arch Maintenance", "body": "# 🔧 Arch Maintenance\n\nArch requires a bit more care. These habits keep it healthy.\n\n## Before Every Major Update\n\n```bash\n# Check https://archlinux.org/news/ for manual intervention notices!\nsudo pacman -Syu\n```\n\n## Clean Up Regularly\n\n```bash\n# Remove orphaned packages:\nsudo pacman -Rns $(pacman -Qdtq)\n\n# Clean package cache (keep 2 versions):\nsudo paccache -rk2              # pacman-contrib\n\n# Clean AUR build dirs:\nparu -Sc\n```\n\n## Check System Health\n\n```bash\nsystemctl --failed          # any failed services?\njournalctl -p err -b        # errors from current boot\npacman -Qkk 2>&1 | grep warning  # modified package files\n```\n\n## Pacsave / Pacnew Files\n\nAfter some updates, config files need manual merging:\n\n```bash\nfind /etc -name \"*.pacnew\" -o -name \"*.pacsave\"\npacdiff                     # compare and merge (pacman-contrib)\n```\n", "difficulty": 2, "tags": ["arch", "linux", "pacman"]}], "💻 Bash": [{"title": "Variables & Strings", "body": "# 📝 Bash Variables & Strings\n\n```bash\nname=\"Alice\"\necho \"$name\"            # Alice — always quote variables!\necho \"${name}s\"         # Alices — curly braces for disambiguation\n\n# Default values:\necho \"${name:-default}\"       # use default if name is unset\necho \"${name:=default}\"       # set AND use default if unset\necho \"${name:?error message}\" # exit with error if unset\n```\n\n## String Manipulation\n\n```bash\nstr=\"Hello, World!\"\necho \"${#str}\"                  # length: 13\necho \"${str:0:5}\"               # substring: Hello\necho \"${str,,}\"                 # lowercase: hello, world!\necho \"${str^^}\"                 # uppercase: HELLO, WORLD!\necho \"${str/World/Bash}\"        # replace first: Hello, Bash!\necho \"${str//l/L}\"              # replace all l→L: HeLLo, WorLd!\n\n# Remove prefix/suffix:\nfile=\"image.png\"\necho \"${file%.png}\"             # image (remove suffix)\necho \"${file%.*}\"               # image (remove extension)\necho \"${file##*.}\"              # png (extension only)\npath=\"/usr/local/bin/python\"\necho \"${path##*/}\"              # python (basename)\necho \"${path%/*}\"               # /usr/local/bin (dirname)\n```\n", "difficulty": 1, "tags": ["bash", "scripting", "shell"]}, {"title": "Arrays", "body": "# 📚 Bash Arrays\n\n```bash\n# Indexed arrays:\nfruits=(\"apple\" \"banana\" \"cherry\")\necho \"${fruits[0]}\"            # apple\necho \"${fruits[@]}\"            # all: apple banana cherry\necho \"${#fruits[@]}\"           # count: 3\nfruits+=(\"date\")               # append\nunset fruits[1]                # remove index 1\n\n# Iterate:\nfor fruit in \"${fruits[@]}\"; do\n    echo \"$fruit\"\ndone\n\n# Associative arrays (bash 4+):\ndeclare -A colors\ncolors[red]=\"#ff0000\"\ncolors[green]=\"#00ff00\"\necho \"${colors[red]}\"          # #ff0000\necho \"${!colors[@]}\"           # keys: red green\necho \"${colors[@]}\"            # values\n```\n\n## Array Slices\n\n```bash\narr=(a b c d e)\necho \"${arr[@]:1:3}\"           # b c d (start at 1, take 3)\necho \"${arr[@]:(-2)}\"          # d e (last 2)\n```\n", "difficulty": 1, "tags": ["bash", "scripting", "shell"]}, {"title": "Control Flow", "body": "# 🔀 Bash Control Flow\n\n## if / elif / else\n\n```bash\nif [[ $1 -gt 10 ]]; then\n    echo \"big\"\nelif [[ $1 -eq 10 ]]; then\n    echo \"ten\"\nelse\n    echo \"small\"\nfi\n```\n\n## Test conditions [[ ]]\n\n```bash\n[[ -f file ]]       # file exists and is regular file\n[[ -d dir ]]        # directory exists\n[[ -z \"$str\" ]]     # string is empty\n[[ -n \"$str\" ]]     # string is non-empty\n[[ $a -eq $b ]]     # numbers equal\n[[ $a -lt $b ]]     # less than\n[[ $s == \"abc\" ]]   # string equals\n[[ $s =~ regex ]]   # regex match\n[[ c1 && c2 ]]      # AND\n[[ c1 || c2 ]]      # OR\n```\n\n## Loops\n\n```bash\nfor i in {1..10}; do echo $i; done\nfor f in *.txt; do echo \"$f\"; done\nfor ((i=0; i<10; i++)); do echo $i; done\n\nwhile [[ $count -lt 5 ]]; do ((count++)); done\n\n# Read lines from file:\nwhile IFS= read -r line; do\n    echo \"$line\"\ndone < file.txt\n```\n\n## case\n\n```bash\ncase \"$1\" in\n    start) systemctl start myservice ;;\n    stop)  systemctl stop myservice  ;;\n    *)     echo \"Usage: $0 start|stop\" ;;\nesac\n```\n", "difficulty": 2, "tags": ["bash", "scripting", "shell"]}, {"title": "Functions", "body": "# 🎯 Bash Functions\n\n```bash\ngreet() {\n    local name=\"$1\"           # local: stays in function scope\n    echo \"Hello, $name!\"\n}\n\ngreet \"World\"\n```\n\n## Arguments\n\n```bash\ndeploy() {\n    local env=\"${1:-staging}\"     # default to staging\n    local tag=\"${2:-latest}\"\n    echo \"Deploying $tag to $env\"\n}\n\ndeploy production v1.2.3\ndeploy staging                    # uses default tag\ndeploy                            # uses both defaults\n```\n\n## Return Values\n\n```bash\n# Functions return an exit code (0=success, 1-255=error):\nis_even() { (( $1 % 2 == 0 )); }\nif is_even 4; then echo \"even\"; fi\n\n# Return data via echo:\nget_date() { echo \"$(date +%Y-%m-%d)\"; }\ntoday=$(get_date)\n```\n\n## Useful Patterns\n\n```bash\ndie()     { echo \"Error: $*\" >&2; exit 1; }\nrequire() {\n    for cmd in \"$@\"; do\n        command -v \"$cmd\" &>/dev/null || die \"Required: $cmd\"\n    done\n}\nrequire git curl jq\n\n# Temp dir with cleanup:\nTMPDIR=$(mktemp -d)\ntrap 'rm -rf \"$TMPDIR\"' EXIT\n```\n", "difficulty": 2, "tags": ["bash", "scripting", "shell"]}, {"title": "Script Best Practices", "body": "# 🛡️ Script Best Practices\n\n## Always start scripts with:\n\n```bash\n#!/usr/bin/env bash\nset -euo pipefail\n# -e  exit on error\n# -u  exit on undefined variable\n# -o pipefail  exit on pipe failure\n```\n\n## Argument Parsing\n\n```bash\n#!/usr/bin/env bash\nset -euo pipefail\n\nusage() { echo \"Usage: $0 [-v] [-o output] input...\"; exit 1; }\n\nVERBOSE=0; OUTPUT=\"\"\nwhile getopts \"vo:h\" opt; do\n    case $opt in\n        v) VERBOSE=1 ;;\n        o) OUTPUT=\"$OPTARG\" ;;\n        h) usage ;;\n        *) usage ;;\n    esac\ndone\nshift $((OPTIND - 1))\n[[ $# -eq 0 ]] && usage\n```\n\n## Defensive Quoting\n\n```bash\nrm $file        # WRONG: breaks if file has spaces\nrm \"$file\"      # RIGHT\n\nIFS=',' read -ra items <<< \"a,b,c\"  # safe word splitting\n```\n\n## Logging\n\n```bash\nlog()  { echo \"[$(date +%T)] $*\"; }\nwarn() { echo \"[$(date +%T)] WARN: $*\" >&2; }\ndie()  { echo \"[$(date +%T)] ERROR: $*\" >&2; exit 1; }\n```\n\n## Lint your scripts\n\n```bash\nsudo pacman -S shellcheck\nshellcheck myscript.sh      # find bugs before running\n```\n", "difficulty": 2, "tags": ["bash", "scripting", "shell"]}, {"title": "Useful Snippets", "body": "# 🧰 Useful Bash Snippets\n\n## Check if running as root\n\n```bash\n[[ $EUID -eq 0 ]] || { echo \"Run as root\"; exit 1; }\n```\n\n## Check if command exists\n\n```bash\ncommand -v docker &>/dev/null || { echo \"Install docker first\"; exit 1; }\n```\n\n## Retry a command\n\n```bash\nretry() {\n    local n=3 delay=5\n    while ! \"$@\"; do\n        ((--n == 0)) && return 1\n        echo \"Retry in ${delay}s...\" >&2\n        sleep $delay\n    done\n}\nretry curl https://example.com/file.zip\n```\n\n## Parallel execution\n\n```bash\ncommand1 & command2 & command3 &\nwait        # wait for all background jobs\n```\n\n## Generate random string\n\n```bash\nopenssl rand -hex 16         # 32 char hex string\n```\n\n## Lock file (prevent concurrent runs)\n\n```bash\nLOCK=\"/tmp/myscript.lock\"\nexec 9>\"$LOCK\"\nflock -n 9 || { echo \"Already running\"; exit 1; }\n```\n", "difficulty": 3, "tags": ["bash", "scripting", "shell"]}, {"title": "Arithmetic & Debugging", "body": "# 🔢 Arithmetic & Debugging\n\n## Arithmetic\n\n```bash\n# (( )) for integer arithmetic:\n((result = 5 + 3))\n((count++))\n((total += price))\n\n# $((  )) for expansion:\necho $((2 ** 10))         # 1024\necho $((100 / 7))         # 14 (integer division)\necho $((100 % 7))         # 2 (remainder)\n\n# Floating point via bc:\necho \"scale=4; 22/7\" | bc          # 3.1428\npython3 -c \"print(22/7)\"            # easiest\n```\n\n## Debugging\n\n```bash\nset -x              # trace every command before executing\nset +x              # turn off trace\nset -n              # parse only, don't execute (dry run)\n\n# Debug a specific section:\n{ set -x; problem_code; set +x; } 2>&1\n\n# Check exit codes:\necho $?             # exit code of last command\n\n# Check variable values:\ndeclare -p varname  # shows type and value\n```\n\n## Common Mistakes\n\n```bash\nif [ $x=1 ]     # WRONG — always true (no spaces around =)\nif [ $x = 1 ]   # right\n\nrm $file         # wrong if filename has spaces\nrm \"$file\"       # right\n```\n", "difficulty": 3, "tags": ["bash", "scripting", "shell"]}, {"title": "Here Documents & Strings", "difficulty": 2, "tags": ["bash", "scripting", "heredoc"], "body": "# 📄 Here Documents & Here Strings\n\n## Here Document — multi-line input to a command\n\n```bash\ncat <<EOF\nLine one\nLine two with $variable expansion\nLine three\nEOF\n\n# No variable expansion (quoted delimiter):\ncat <<'EOF'\nThis is $literal — no expansion\n$(date) — also literal\nEOF\n\n# Indented (strip leading tabs with <<-):\nif true; then\n    cat <<-EOF\n        This is indented in source\n        but output has no leading tabs\n    EOF\nfi\n```\n\n## Here Document to file\n\n```bash\ncat > /etc/nginx/sites/myapp.conf <<EOF\nserver {\n    listen 80;\n    server_name $DOMAIN;\n    location / { proxy_pass http://localhost:3000; }\n}\nEOF\n```\n\n## Here String — single-line stdin\n\n```bash\n# Feed a string to a command that reads stdin:\ngrep \"pattern\" <<< \"the pattern is here\"\nbase64 <<< \"encode me\"\nread -r first rest <<< \"one two three\"\necho $first   # one\necho $rest    # two three\n\n# Useful with bc:\nbc <<< \"scale=4; 355/113\"    # 3.1415\n```\n"}], "🔧 Zsh & Config": [{"title": "Why Zsh?", "body": "# 🔧 Why Zsh?\n\nZsh is Bash-compatible but with powerful extras.\n\n## Better Completion\n\n```zsh\ngit <Tab>        # shows all git subcommands with descriptions\nkill <Tab>       # lists process names\nssh <Tab>        # completes from ~/.ssh/known_hosts\n```\n\n## Globbing Powers\n\n```zsh\nls **/*.py           # recursive glob (find all .py files)\nls *.{jpg,png,gif}   # multiple extensions\nls file<1-5>.txt     # numeric ranges: file1.txt...file5.txt\nls ^*.log            # negate: everything except .log files\n```\n\n## Spelling Correction\n\n```zsh\nsetopt correct\n$ gti status\nzsh: correct 'gti' to 'git' [nyae]?\n```\n\n## Start Using Zsh\n\n```bash\nchsh -s /bin/zsh    # make default shell (log out and back in)\n```\n", "difficulty": 1, "tags": ["zsh", "shell", "config"]}, {"title": "~/.zshrc Essentials", "body": "# ⚙️ ~/.zshrc Essentials\n\nYour zshrc runs every time you open a terminal.\n\n```zsh\n# ~/.zshrc\n\n# History\nHISTFILE=~/.zsh_history\nHISTSIZE=10000\nSAVEHIST=10000\nsetopt HIST_IGNORE_DUPS\nsetopt HIST_IGNORE_SPACE    # don't record lines starting with space\nsetopt SHARE_HISTORY        # share history between sessions\nsetopt HIST_VERIFY          # show expanded history before running\n\n# Options\nsetopt AUTO_CD              # type dir name to cd into it\nsetopt CORRECT              # spelling correction\nsetopt GLOB_DOTS            # include dotfiles in globs\nsetopt NO_BEEP\n\n# Completion\nautoload -Uz compinit && compinit\nzstyle ':completion:*' menu select\nzstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'\n\n# Key bindings\nbindkey -e                  # emacs mode\nbindkey '^[[A' history-search-backward   # Up arrow searches history\nbindkey '^[[B' history-search-forward    # Down arrow too\n```\n", "difficulty": 1, "tags": ["zsh", "shell", "config"]}, {"title": "Aliases & Functions", "body": "# ⚡ Aliases & Functions\n\n## Aliases\n\n```zsh\n# ~/.zshrc\n\n# Navigation\nalias ..='cd ..'\nalias ...='cd ../..'\nalias ....='cd ../../..'\n\n# ls\nalias ll='ls -lh'\nalias la='ls -lha'\nalias lt='ls -lht'\n\n# Safety\nalias rm='rm -i'\nalias cp='cp -i'\nalias mv='mv -i'\n\n# Shortcuts\nalias g='git'\nalias v='nvim'\nalias py='python3'\n\n# System\nalias update='sudo pacman -Syu'\nalias orphans='sudo pacman -Rns $(pacman -Qdtq)'\n\n# Useful\nalias path='echo $PATH | tr : \"\\n\"'\nalias ports='ss -tulnp'\nalias myip='curl -s ifconfig.me'\n```\n\n## Functions\n\n```zsh\n# Make dir and cd into it:\nmkcd() { mkdir -p \"$1\" && cd \"$1\" }\n\n# Back up a file:\nbak() { cp \"$1\"{,.bak}; }\n\n# Quick HTTP server:\nserve() { python3 -m http.server \"${1:-8000}\"; }\n```\n", "difficulty": 1, "tags": ["zsh", "shell", "config"]}, {"title": "Plugins", "body": "# 🔌 Zsh Plugins\n\n## Zinit — fast plugin manager\n\n```zsh\n# Install:\nbash -c \"$(curl --fail --show-error --silent --location   https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)\"\n\n# In ~/.zshrc:\nsource ~/.local/share/zinit/zinit.git/zinit.zsh\n\nzinit light zsh-users/zsh-autosuggestions\nzinit light zsh-users/zsh-syntax-highlighting\nzinit light zsh-users/zsh-completions\nzinit light Aloxaf/fzf-tab\n```\n\n## Must-Have Plugins\n\n**zsh-autosuggestions** — ghost-text completions from history. Press `→` to accept.\n\n**zsh-syntax-highlighting** — colors commands as you type (green=valid, red=error).\n\n## fzf — fuzzy finder\n\n```bash\nsudo pacman -S fzf\n\n# In ~/.zshrc:\nsource /usr/share/fzf/key-bindings.zsh\nsource /usr/share/fzf/completion.zsh\n# Ctrl+R = fuzzy history, Ctrl+T = fuzzy file, Alt+C = fuzzy cd\n```\n", "difficulty": 2, "tags": ["zsh", "shell", "config"]}, {"title": "Prompts & Themes", "body": "# 🎨 Prompts & Themes\n\n## Starship — cross-shell, fast, beautiful\n\n```bash\nsudo pacman -S starship\n\n# Add to end of ~/.zshrc:\neval \"$(starship init zsh)\"\n```\n\n```toml\n# ~/.config/starship.toml\n[character]\nsuccess_symbol = \"[❯](green)\"\nerror_symbol = \"[❯](red)\"\n\n[git_branch]\nsymbol = \" \"\n\n[directory]\ntruncation_length = 3\n```\n\n## Pure (minimal & fast)\n\n```zsh\nzinit ice pick\"async.zsh\" src\"pure.zsh\"\nzinit light sindresorhus/pure\n```\n\n## Powerlevel10k (most features)\n\n```bash\n# Install Nerd Font first: pacman -S ttf-meslo-nerd\nzinit ice depth=1\nzinit light romkatv/powerlevel10k\n# Then run: p10k configure\n```\n\n## DIY Minimal Prompt\n\n```zsh\nautoload -Uz vcs_info\nprecmd() { vcs_info }\nsetopt PROMPT_SUBST\nzstyle ':vcs_info:git:*' formats ' %b'\nPROMPT='%F{cyan}%~%F{yellow}${vcs_info_msg_0_}%f %# '\n```\n", "difficulty": 2, "tags": ["zsh", "shell", "config"]}, {"title": "History Tricks", "body": "# 📜 History Tricks\n\n```zsh\nhistory                     # show recent commands\nhistory 1                   # show ALL history\nhistory | grep docker       # search history\n```\n\n## History Expansion\n\n```zsh\n!!                          # repeat last command\n!git                        # repeat last command starting with 'git'\n!$                          # last argument of last command\n!^                          # first argument of last command\n^old^new                    # replace in last command\nsudo !!                     # run last command as root  ← use constantly\n\n# Examples:\n$ cat /etc/pacman.conf\n$ grep Server !!            # → grep Server /etc/pacman.conf\n$ nvim !$                   # → nvim /etc/pacman.conf\n```\n\n## fzf History Search\n\nWith fzf installed, `Ctrl+R` opens an interactive fuzzy history search.\nType to filter, Enter to select and run.\n\n## Shared History\n\n```zsh\nsetopt SHARE_HISTORY           # all terminals share one history file\nsetopt INC_APPEND_HISTORY      # write immediately, not at exit\n```\n", "difficulty": 2, "tags": ["zsh", "shell", "config"]}], "🌐 Networking": [{"title": "ip Command", "body": "# 🌐 ip — Modern Network Config\n\n`ip` replaced `ifconfig`. Use this.\n\n## Addresses\n\n```bash\nip addr                         # show all interfaces and IPs\nip addr show eth0               # show specific interface\nip addr add 192.168.1.5/24 dev eth0    # add IP address\nip addr del 192.168.1.5/24 dev eth0   # remove IP address\n\n# Shortcuts:\nip a        # ip addr\nip r        # ip route\nip l        # ip link\n```\n\n## Routes\n\n```bash\nip route                        # show routing table\nip route add default via 192.168.1.1   # add default gateway\nip route add 10.0.0.0/8 via 192.168.1.1  # static route\nip route del 10.0.0.0/8        # delete route\nip route get 8.8.8.8           # which interface would reach this?\n```\n\n## Links (interfaces)\n\n```bash\nip link                         # show all interfaces\nip link set eth0 up             # bring interface up\nip link set eth0 down           # bring interface down\nip link set dev eth0 mtu 9000  # set MTU (jumbo frames)\n```\n", "difficulty": 2, "tags": ["networking", "linux", "sysadmin"]}, {"title": "ss — Socket Statistics", "body": "# 🔌 ss — Socket Statistics\n\n`ss` replaced `netstat`. Faster and more information.\n\n```bash\nss -tlnp                        # TCP, Listening, Numeric, Process ← most useful\nss -tunlp                       # + UDP too\nss -t                           # TCP connections only\nss -u                           # UDP only\nss -l                           # listening sockets only\nss -s                           # summary statistics\n```\n\n## Filter by port or address\n\n```bash\nss -tlnp sport = :80            # what's on port 80\nss dst 192.168.1.100            # connections to specific host\nss state established            # only established connections\n```\n\n## lsof for ports\n\n```bash\nsudo lsof -i :8080              # what's using port 8080\nsudo lsof -i TCP:80             # TCP connections on port 80\n```\n", "difficulty": 2, "tags": ["networking", "linux", "sysadmin"]}, {"title": "curl & wget", "body": "# 🌍 curl & wget\n\n## curl\n\n```bash\ncurl https://example.com                    # fetch URL (stdout)\ncurl -O https://example.com/file.zip       # save with original name\ncurl -o myfile.zip https://example.com/f   # save with custom name\ncurl -L https://example.com                # follow redirects\ncurl -I https://example.com                # headers only (HEAD)\ncurl -s https://example.com                # silent (no progress)\ncurl -v https://example.com                # verbose (show headers)\n```\n\n## curl API calls\n\n```bash\n# GET with headers:\ncurl -H \"Authorization: Bearer TOKEN\" https://api.example.com/data\n\n# POST JSON:\ncurl -X POST -H \"Content-Type: application/json\"      -d '{\"key\": \"value\"}'      https://api.example.com/endpoint\n\n# With auth:\ncurl -u username:password https://api.example.com\n```\n\n## wget\n\n```bash\nwget https://example.com/file.zip           # download file\nwget -c https://example.com/large.zip       # resume interrupted download\nwget -q https://example.com/file            # quiet\nwget -r -np https://example.com/docs/       # mirror a directory\n```\n", "difficulty": 1, "tags": ["networking", "linux", "sysadmin"]}, {"title": "SSH", "body": "# 🔐 SSH\n\n## Basic Usage\n\n```bash\nssh user@host                   # connect\nssh -p 2222 user@host           # custom port\nssh user@host command           # run a single command\nssh -v user@host                # verbose (debug connection issues)\n```\n\n## SSH Keys\n\n```bash\nssh-keygen -t ed25519 -C \"your@email.com\"\n# Creates: ~/.ssh/id_ed25519 (private) and ~/.ssh/id_ed25519.pub\n\nssh-copy-id user@host           # copy public key to server\neval $(ssh-agent) && ssh-add    # start agent and add key\n```\n\n## ~/.ssh/config — save connection details\n\n```ini\nHost myserver\n    HostName 192.168.1.100\n    User noah\n    Port 22\n    IdentityFile ~/.ssh/id_ed25519\n    ForwardAgent yes\n\nHost jump\n    HostName jumphost.example.com\n    ProxyJump myserver          # connect through myserver\n```\n\nAfter this: `ssh myserver` just works.\n\n## SSH Tunneling\n\n```bash\n# Local forward — access remote service locally:\nssh -L 8080:localhost:80 user@host\n# Now http://localhost:8080 → port 80 on remote\n\n# SOCKS proxy:\nssh -D 1080 user@host\n# Configure browser to use SOCKS5 localhost:1080\n```\n", "difficulty": 2, "tags": ["networking", "linux", "sysadmin"]}, {"title": "rsync", "body": "# 🔄 rsync — Smart File Sync\n\nrsync only transfers what changed. Essential for backups.\n\n```bash\nrsync -av src/ dest/            # sync src/ into dest/\nrsync -avzP src/ user@host:/path/  # remote sync with progress\nrsync -avz --delete src/ dest/  # mirror (delete files not in src)\n\n# Key flags:\n# -a  archive: recursive, preserve permissions+timestamps+symlinks\n# -v  verbose\n# -z  compress during transfer\n# -P  show progress + resume partial transfers\n# -n  dry run (show what would change, don't do it)\n```\n\n## The Trailing Slash Rule\n\n```bash\nrsync -av /src  /dest    # copies /src DIR into /dest → /dest/src/\nrsync -av /src/ /dest    # copies /src CONTENTS into /dest  ← usually what you want\n#              ^\n#         trailing slash matters!\n```\n\n## Exclude Patterns\n\n```bash\nrsync -av --exclude='.git' --exclude='node_modules' src/ dest/\nrsync -av --exclude-from='.rsyncignore' src/ dest/\n```\n", "difficulty": 2, "tags": ["networking", "linux", "sysadmin"]}, {"title": "Firewall: nftables", "body": "# 🛡️ Firewall: nftables\n\nnftables is the modern Linux firewall (replaces iptables).\n\n## Basic stateful firewall\n\n```bash\n# /etc/nftables.conf\ntable inet filter {\n    chain input {\n        type filter hook input priority 0; policy drop;\n\n        iif lo accept                          # loopback\n        ct state established,related accept    # existing connections\n        ct state invalid drop                  # bad packets\n\n        tcp dport 22 accept                    # SSH\n        tcp dport { 80, 443 } accept           # HTTP/HTTPS\n        icmp type echo-request accept          # ping\n    }\n\n    chain forward { type filter hook forward priority 0; policy drop; }\n    chain output  { type filter hook output  priority 0; policy accept; }\n}\n```\n\n## Apply & enable\n\n```bash\nsudo nft -f /etc/nftables.conf\nsudo systemctl enable --now nftables\n```\n\n## Check current rules\n\n```bash\nsudo nft list ruleset           # show all rules\n```\n", "difficulty": 3, "tags": ["networking", "linux", "sysadmin"]}, {"title": "DNS & Debugging", "body": "# 🔍 DNS & Network Debugging\n\n## DNS Lookups\n\n```bash\ndig example.com                         # full DNS query\ndig example.com A                       # A records only\ndig @8.8.8.8 example.com               # query specific DNS server\ndig +short example.com                  # just the IPs\nhost example.com                        # simple lookup\n```\n\n## Connectivity Tests\n\n```bash\nping -c 4 google.com                    # 4 pings then stop\ntraceroute google.com                   # trace network path\nmtr google.com                          # continuous traceroute (pacman -S mtr)\n```\n\n## Port Testing\n\n```bash\nnc -zv host 80                          # test if port is open\nnc -zv host 80-90                       # test port range\n```\n\n## Network Stats\n\n```bash\nip -s link                              # interface packet statistics\niftop -i eth0                           # live bandwidth by connection\nnethogs eth0                            # bandwidth by process\n```\n\n## /etc/hosts\n\n```bash\n# Override DNS locally:\nsudo nvim /etc/hosts\n# Add: 127.0.0.1 mydev.local\n```\n", "difficulty": 3, "tags": ["networking", "linux", "sysadmin"]}, {"title": "NetworkManager", "body": "# 🔗 NetworkManager\n\nNetworkManager is the standard way to manage connections on Arch desktop.\n\n## nmcli — command line interface\n\n```bash\nnmcli device                            # list devices\nnmcli device status                     # status of all devices\nnmcli connection show                   # list connections\nnmcli connection up \"My WiFi\"           # connect\nnmcli connection down \"My WiFi\"         # disconnect\n```\n\n## WiFi\n\n```bash\nnmcli device wifi list                  # scan for networks\nnmcli device wifi connect \"SSID\" password \"mypassword\"\nnmcli device wifi connect \"SSID\" --ask  # prompt for password\n```\n\n## Create/Modify Connections\n\n```bash\n# Static IP:\nnmcli connection modify \"eth0\"     ipv4.method manual     ipv4.addresses \"192.168.1.50/24\"     ipv4.gateway \"192.168.1.1\"     ipv4.dns \"8.8.8.8,8.8.4.4\"\n\n# Back to DHCP:\nnmcli connection modify \"eth0\" ipv4.method auto\nnmcli connection up \"eth0\"\n```\n\n## nmtui — text UI (easier)\n\n```bash\nnmtui                                   # interactive TUI for NetworkManager\n```\n", "difficulty": 2, "tags": ["networking", "linux", "sysadmin"]}, {"title": "tcpdump & Packet Capture", "body": "# 📡 tcpdump — Packet Capture\n\nInspect network traffic on the wire. Great for debugging connectivity.\n\n```bash\nsudo tcpdump -i eth0                  # capture on interface eth0\nsudo tcpdump -i any                   # all interfaces\nsudo tcpdump -n                       # don't resolve names (faster)\nsudo tcpdump -c 100                   # stop after 100 packets\nsudo tcpdump -w capture.pcap          # save to file (open in Wireshark)\nsudo tcpdump -r capture.pcap          # read a saved capture\n```\n\n## Filters\n\n```bash\nsudo tcpdump host 192.168.1.10        # traffic to/from a host\nsudo tcpdump port 443                 # only HTTPS\nsudo tcpdump tcp port 22              # SSH traffic\nsudo tcpdump 'src 10.0.0.5 and dst port 80'   # combine\nsudo tcpdump -A port 80               # print payload as ASCII\n```\n\n## Quick Diagnostics\n\n```bash\n# Is anything reaching my web server?\nsudo tcpdump -i any -n port 80\n\n# Watch DNS lookups:\nsudo tcpdump -n -i any port 53\n```\n\nFor a friendly GUI, capture with `-w` and open the `.pcap` in **Wireshark**.\nThis is for inspecting *your own* networks and authorized troubleshooting.\n", "difficulty": 3, "tags": ["networking", "linux", "sysadmin"]}], "⚙️ System Admin": [{"title": "systemctl", "body": "# ⚙️ systemctl — systemd Control\n\n## Service Management\n\n```bash\nsudo systemctl start nginx          # start a service\nsudo systemctl stop nginx           # stop\nsudo systemctl restart nginx        # stop + start\nsudo systemctl reload nginx         # reload config without stopping\nsudo systemctl status nginx         # show status + recent logs\nsudo systemctl enable nginx         # auto-start on boot\nsudo systemctl disable nginx        # remove auto-start\nsudo systemctl enable --now nginx   # enable AND start immediately\n```\n\n## Query Services\n\n```bash\nsystemctl list-units                # all active units\nsystemctl list-units --failed       # failed units  ← check this!\nsystemctl list-units --type=service # services only\nsystemctl list-unit-files           # all installed units + enabled status\n```\n\n## System State\n\n```bash\nsudo systemctl poweroff             # shutdown\nsudo systemctl reboot               # reboot\nsudo systemctl suspend              # suspend to RAM\nsudo systemctl hibernate            # suspend to disk\n```\n\n## Analyze Boot Time\n\n```bash\nsystemd-analyze                     # total boot time\nsystemd-analyze blame               # per-service startup time\nsystemd-analyze critical-chain      # slowest startup chain\n```\n", "difficulty": 2, "tags": ["sysadmin", "linux", "systemd"]}, {"title": "journalctl — Logs", "body": "# 📋 journalctl — View Logs\n\n```bash\njournalctl -r                       # all logs, newest first\njournalctl -f                       # follow (like tail -f)\njournalctl -n 50                    # last 50 lines\njournalctl -b                       # logs from current boot\njournalctl -b -1                    # logs from previous boot\njournalctl --since \"1 hour ago\"\n```\n\n## Filter by Service\n\n```bash\njournalctl -u nginx                 # logs for nginx service\njournalctl -u nginx -f              # follow nginx logs\njournalctl -u nginx -b              # nginx logs from current boot\n```\n\n## Filter by Priority\n\n```bash\njournalctl -p err                   # errors and above\njournalctl -p err -b                # errors this boot ← health check\n```\n\n## Output Formats\n\n```bash\njournalctl -o json-pretty           # pretty JSON\njournalctl -o cat                   # messages only, no metadata\n```\n\n## Disk Usage\n\n```bash\njournalctl --disk-usage             # how much space logs use\nsudo journalctl --vacuum-size=500M  # trim to 500MB\nsudo journalctl --vacuum-time=1month # delete logs older than 1 month\n```\n", "difficulty": 2, "tags": ["sysadmin", "linux", "systemd"]}, {"title": "Users & Groups", "body": "# 👤 Users & Groups\n\n## User Management\n\n```bash\nsudo useradd -m -G wheel,audio,video noah   # create user with groups\nsudo useradd -m -s /bin/zsh -G wheel noah   # with zsh shell\nsudo passwd noah                             # set password\nsudo userdel -r noah                         # delete user + home dir\n\nid noah                                      # show UID, GID, groups\ncat /etc/passwd                              # all users\n```\n\n## Group Management\n\n```bash\nsudo groupadd mygroup                   # create group\nsudo usermod -aG docker noah            # add noah to docker group (-a = append!)\nsudo gpasswd -d noah docker             # remove from group\ngroups noah                             # list groups for user\n```\n\n## Important Groups on Arch\n\n| Group | Access |\n|-------|--------|\n| `wheel` | sudo access |\n| `audio` | sound devices |\n| `video` | video devices / GPU |\n| `storage` | USB drives |\n| `network` | NetworkManager |\n| `docker` | Docker without sudo |\n| `input` | input devices |\n\n## Switch Users\n\n```bash\nsu - noah               # switch to noah (full login shell)\nsudo -u noah command    # run command as noah\nsudo -i                 # root shell\n```\n", "difficulty": 2, "tags": ["sysadmin", "linux", "systemd"]}, {"title": "sudo Configuration", "body": "# 🔑 sudo Configuration\n\n## ALWAYS edit with visudo\n\n```bash\nsudo visudo             # validates syntax before saving\n# NEVER edit /etc/sudoers directly — syntax error = locked out!\n```\n\n## Common Configurations\n\n```\n# Allow wheel group (standard on Arch):\n%wheel ALL=(ALL:ALL) ALL\n\n# Allow without password (use carefully):\nnoah ALL=(ALL:ALL) NOPASSWD: ALL\n\n# Allow specific commands only:\nnoah ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl restart nginx\n```\n\n## /etc/sudoers.d/ — drop-in files\n\n```bash\n# Create a separate file (cleaner):\nsudo visudo -f /etc/sudoers.d/noah\n# Must have mode 440:\nsudo chmod 440 /etc/sudoers.d/noah\n```\n\n## sudo Tips\n\n```bash\nsudo -l                     # list your sudo permissions\nsudo -v                     # extend sudo timeout\nsudo -k                     # invalidate cached credentials now\nsudo !!                     # run last command as root\n```\n", "difficulty": 3, "tags": ["sysadmin", "linux", "systemd"]}, {"title": "systemd Timers", "body": "# ⏱️ systemd Timers (replace cron)\n\nsystemd timers are more powerful than cron: logging, dependencies, catch-up.\n\n## Create a Timer\n\n```ini\n# /etc/systemd/system/backup.service\n[Unit]\nDescription=Daily backup\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/backup.sh\nUser=noah\n```\n\n```ini\n# /etc/systemd/system/backup.timer\n[Unit]\nDescription=Run backup daily\n\n[Timer]\nOnCalendar=daily\nPersistent=true            # run missed timer on next boot\n\n[Install]\nWantedBy=timers.target\n```\n\n```bash\nsudo systemctl enable --now backup.timer\nsystemctl list-timers --all         # see next run times\n```\n\n## OnCalendar Syntax\n\n```\ndaily              = *-*-* 00:00:00\nweekly             = Mon 00:00:00\nhourly             = *-*-* *:00:00\n*:0/15             = every 15 minutes\nMon..Fri 09:00     = weekdays at 9am\n```\n", "difficulty": 3, "tags": ["sysadmin", "linux", "systemd"]}, {"title": "Performance & Monitoring", "body": "# 📊 Performance & Monitoring\n\n## CPU & Memory\n\n```bash\nhtop                        # interactive, best overview (pacman -S htop)\ntop                         # built-in, press 1 for per-CPU view\nvmstat 1                    # vm stats every 1 second\nfree -h                     # memory usage, human-readable\ncat /proc/loadavg           # 1/5/15 minute load averages\n```\n\n## Disk I/O\n\n```bash\niostat -xz 1                # disk I/O stats (sysstat package)\niotop                       # I/O by process (pacman -S iotop)\n```\n\n## Find What's Slow\n\n```bash\nps aux --sort=-%cpu | head -10   # top CPU consumers\nps aux --sort=-%mem | head -10   # top memory consumers\nsudo iotop -ao                   # accumulated disk I/O\n```\n\n## System Info\n\n```bash\nuname -a                    # kernel version\nlscpu                       # CPU info\nlsmem                       # memory info\nlspci                       # PCI devices\nlsusb                       # USB devices\n```\n", "difficulty": 2, "tags": ["sysadmin", "linux", "systemd"]}, {"title": "Text Processing: sed, awk, cut", "body": "# 🔤 Text Processing\n\n## cut — extract columns\n\n```bash\ncut -d: -f1 /etc/passwd             # first field, colon-delimited → usernames\ncut -d, -f2,4 data.csv              # fields 2 and 4 from CSV\ncut -c1-10 file.txt                 # characters 1-10 of each line\n```\n\n## sort & uniq\n\n```bash\nsort file.txt                        # alphabetical sort\nsort -n file.txt                     # numeric sort\nsort -rn file.txt                    # reverse numeric\nsort -k2 file.txt                    # sort by 2nd column\nsort file.txt | uniq                  # remove duplicate lines\nsort file.txt | uniq -c | sort -rn   # frequency analysis\n```\n\n## sed — stream editor\n\n```bash\nsed 's/old/new/' file               # replace first occurrence per line\nsed 's/old/new/g' file              # replace ALL occurrences\nsed -i 's/old/new/g' file           # in-place edit (modifies file)\nsed -i.bak 's/old/new/g' file       # in-place with backup\nsed '/^#/d' config.txt              # delete comment lines\nsed '/^$/d' file.txt                # delete empty lines\n```\n\n## awk — field processing\n\n```bash\nawk '{print $1}' file               # print first column\nawk -F: '{print $1}' /etc/passwd    # custom delimiter\nawk '$3 > 1000' /etc/passwd         # filter: UID > 1000\nawk '{sum += $1} END {print sum}'   # sum a column\n```\n", "difficulty": 3, "tags": ["sysadmin", "linux", "systemd"]}, {"title": "cron (classic scheduler)", "body": "# ⏰ cron — Classic Job Scheduler\n\nsystemd timers are more powerful, but cron is everywhere and simple.\n\n```bash\ncrontab -e                    # edit your user's crontab\ncrontab -l                    # list your cron jobs\ncrontab -r                    # remove all (careful!)\nsudo crontab -e -u www-data   # edit another user's crontab\n```\n\n## The Five Fields\n\n```\n┌── minute (0-59)\n│ ┌── hour (0-23)\n│ │ ┌── day of month (1-31)\n│ │ │ ┌── month (1-12)\n│ │ │ │ ┌── day of week (0-7, 0 & 7 = Sunday)\n│ │ │ │ │\n* * * * *  command-to-run\n```\n\n## Examples\n\n```bash\n0 2 * * *      /backup.sh           # daily at 2:00 AM\n*/15 * * * *   /check.sh            # every 15 minutes\n0 9 * * 1-5    /report.sh           # weekdays at 9 AM\n0 0 1 * *      /monthly.sh          # 1st of each month at midnight\n@reboot        /startup.sh          # once at boot\n@daily         /cleanup.sh          # shorthand for 0 0 * * *\n```\n\n## Gotchas\n\n- cron runs with a **minimal PATH** — use absolute paths to binaries.\n- No terminal — redirect output: `0 2 * * * /backup.sh >> /var/log/backup.log 2>&1`\n- Test the command manually first.\n- Use https://crontab.guru to decode/build schedules.\n", "difficulty": 2, "tags": ["sysadmin", "linux", "systemd"]}], "🌿 Git": [{"title": "Git Basics", "body": "# 🌿 Git Basics\n\n```bash\ngit init                      # start a new repo in current dir\ngit clone <url>               # copy a remote repo\ngit status                    # what's changed? (run this constantly)\ngit add file.txt              # stage a file\ngit add .                     # stage everything\ngit add -p                    # stage interactively, chunk by chunk\ngit commit -m \"message\"       # commit staged changes\ngit commit -am \"message\"      # add tracked + commit in one step\ngit diff                      # unstaged changes\ngit diff --staged             # staged changes (about to be committed)\ngit log --oneline --graph     # compact history with branch graph\n```\n\n## First-Time Setup\n\n```bash\ngit config --global user.name  \"Your Name\"\ngit config --global user.email \"you@example.com\"\ngit config --global init.defaultBranch main\ngit config --global core.editor nvim\ngit config --global pull.rebase true   # cleaner history on pull\n```\n\n## The Three Areas\n\n```\nWorking Dir  →  Staging Area  →  Repository\n  (edit)         (git add)       (git commit)\n```\n\nA good commit message: short summary line (<50 chars), blank line, then why.\n", "difficulty": 1, "tags": ["git", "vcs", "workflow"]}, {"title": "Branching & Merging", "body": "# 🌳 Branching & Merging\n\n```bash\ngit branch                    # list branches (* = current)\ngit branch feature            # create branch\ngit switch feature            # switch to it (modern)\ngit switch -c feature         # create AND switch\ngit checkout -b feature       # older equivalent of -c\ngit branch -d feature         # delete merged branch\ngit branch -D feature         # force delete unmerged branch\n```\n\n## Merging\n\n```bash\ngit switch main\ngit merge feature             # merge feature into main\ngit merge --no-ff feature     # always create a merge commit\n```\n\n## Rebasing (linear history)\n\n```bash\ngit switch feature\ngit rebase main               # replay feature commits on top of main\ngit rebase -i HEAD~3          # interactively squash/edit last 3 commits\n```\n\n**Golden rule:** never rebase commits you've already pushed and shared.\n\n## Resolving Conflicts\n\n```bash\n# After a conflicting merge:\ngit status                    # see conflicted files\n# Edit files, remove <<<<<<< ======= >>>>>>> markers\ngit add resolved-file.txt\ngit commit                    # (or git merge --continue)\ngit merge --abort             # bail out entirely\n```\n", "difficulty": 2, "tags": ["git", "vcs", "workflow"]}, {"title": "Undoing Mistakes", "body": "# ⏪ Undoing Mistakes\n\n```bash\n# Discard unstaged changes to a file:\ngit restore file.txt\ngit checkout -- file.txt      # older syntax\n\n# Unstage a file (keep the edits):\ngit restore --staged file.txt\ngit reset HEAD file.txt       # older syntax\n\n# Amend the last commit (message or forgotten files):\ngit commit --amend -m \"better message\"\n\n# Undo last commit, KEEP changes staged:\ngit reset --soft HEAD~1\n\n# Undo last commit, keep changes unstaged:\ngit reset HEAD~1\n\n# Nuke last commit and changes (DANGEROUS):\ngit reset --hard HEAD~1\n```\n\n## Safely Revert a Public Commit\n\n```bash\ngit revert <hash>             # creates a NEW commit that undoes <hash>\n```\n\n## The Safety Net: reflog\n\n```bash\ngit reflog                    # history of where HEAD has been\ngit reset --hard HEAD@{2}     # jump back to a previous state\n```\n\nEven \"lost\" commits usually live in the reflog for ~90 days. Don't panic.\n", "difficulty": 2, "tags": ["git", "vcs", "workflow"]}, {"title": "Remotes & Collaboration", "body": "# 🤝 Remotes & Collaboration\n\n```bash\ngit remote -v                 # list remotes\ngit remote add origin <url>   # add a remote named origin\ngit push -u origin main       # push and set upstream (first time)\ngit push                      # push current branch\ngit pull                      # fetch + merge remote changes\ngit fetch                     # download remote changes, DON'T merge\n```\n\n## Typical Feature Workflow\n\n```bash\ngit switch -c feature/login   # 1. branch\n# ... make changes ...\ngit add . && git commit -m \"Add login form\"\ngit push -u origin feature/login   # 2. push branch\n# 3. open a Pull Request on GitHub/GitLab\n# 4. after review + merge:\ngit switch main && git pull   # 5. sync local main\ngit branch -d feature/login   # 6. clean up\n```\n\n## Useful Remote Commands\n\n```bash\ngit push origin --delete old-branch   # delete remote branch\ngit fetch --prune                     # remove stale remote refs\ngit remote set-url origin <new-url>   # change remote URL\n```\n\n## gh CLI (GitHub)\n\n```bash\nsudo pacman -S github-cli\ngh auth login\ngh pr create                  # open a PR from current branch\ngh pr checkout 42             # check out PR #42 locally\ngh repo clone owner/repo\n```\n", "difficulty": 2, "tags": ["git", "vcs", "workflow"]}, {"title": "Stash, Log & Blame", "body": "# 🔎 Stash, Log & Blame\n\n## Stash — shelve work in progress\n\n```bash\ngit stash                     # save uncommitted changes, clean working dir\ngit stash -u                  # include untracked files\ngit stash list                # see all stashes\ngit stash pop                 # reapply latest stash and remove it\ngit stash apply               # reapply but keep the stash\ngit stash drop                # delete latest stash\ngit stash show -p             # diff of what's stashed\n```\n\n## Searching History\n\n```bash\ngit log --oneline -10                 # last 10 commits, compact\ngit log --author=\"Alice\"              # commits by Alice\ngit log --since=\"2 weeks ago\"\ngit log -p file.txt                   # full diff history of one file\ngit log -S \"functionName\"             # commits that added/removed a string\ngit log --grep=\"bugfix\"               # search commit messages\n```\n\n## Blame — who changed this line?\n\n```bash\ngit blame file.txt            # annotate each line with last commit\ngit blame -L 10,20 file.txt   # only lines 10-20\ngit show <hash>               # full details of a commit\n```\n\n## Find a Bug with Bisect\n\n```bash\ngit bisect start\ngit bisect bad                # current is broken\ngit bisect good v1.0          # v1.0 was fine\n# Git checks out the midpoint; test, then mark good/bad. Repeat.\ngit bisect reset              # when done\n```\n", "difficulty": 3, "tags": ["git", "vcs", "workflow"]}, {"title": "Git Config & Aliases", "difficulty": 2, "tags": ["git", "config", "workflow"], "body": "# ⚙️ Git Config & Aliases\n\n## Useful Global Config\n\n```bash\ngit config --global core.autocrlf input     # LF on checkout (Linux)\ngit config --global push.autoSetupRemote true  # no more -u origin\ngit config --global rerere.enabled true        # remember conflict resolutions\ngit config --global diff.colorMoved zebra      # colored moved lines in diff\ngit config --global log.abbrevCommit true\ngit config --global merge.conflictstyle zdiff3  # better conflict markers\n```\n\n## Powerful Aliases\n\n```bash\ngit config --global alias.lg \"log --oneline --graph --all --decorate\"\ngit config --global alias.st \"status -sb\"\ngit config --global alias.co \"checkout\"\ngit config --global alias.br \"branch\"\ngit config --global alias.unstage \"restore --staged\"\ngit config --global alias.last \"log -1 HEAD --stat\"\ngit config --global alias.aliases \"config --get-regexp alias\"\ngit config --global alias.undo \"reset HEAD~1 --mixed\"\ngit config --global alias.amend \"commit --amend --no-edit\"\n\n# Now:\ngit lg                         # beautiful graph history\ngit st                         # compact status\ngit undo                       # undo last commit, keep changes\n```\n\n## Conditional Config (per directory)\n\n```bash\n# ~/.gitconfig\n[includeIf \"gitdir:~/work/\"]\n    path = ~/.gitconfig-work\n\n# ~/.gitconfig-work\n[user]\n    email = me@company.com\n    signingkey = WORK_KEY_ID\n```\n\n## Sign Your Commits\n\n```bash\ngpg --list-secret-keys --keyid-format LONG\ngit config --global user.signingkey KEY_ID\ngit config --global commit.gpgsign true\n```\n"}], "🖥️ Tmux & Editors": [{"title": "tmux Basics", "body": "# 🖥️ tmux — Terminal Multiplexer\n\nRun multiple terminals in one window, and keep sessions alive after disconnect.\n\n```bash\nsudo pacman -S tmux\n\ntmux                          # start a new session\ntmux new -s work              # named session\ntmux ls                       # list sessions\ntmux attach -t work           # reattach to a session\ntmux kill-session -t work\n```\n\n## The Prefix Key\n\nEvery tmux command starts with the **prefix**: `Ctrl+b` (default), then a key.\n\n| Keys | Action |\n|------|--------|\n| `prefix` `c` | new window |\n| `prefix` `n` / `p` | next / previous window |\n| `prefix` `0-9` | jump to window N |\n| `prefix` `,` | rename window |\n| `prefix` `%` | split pane vertically |\n| `prefix` `\"` | split pane horizontally |\n| `prefix` `←↑↓→` | move between panes |\n| `prefix` `z` | zoom pane (toggle fullscreen) |\n| `prefix` `d` | detach (session keeps running!) |\n| `prefix` `[` | scroll mode (q to exit) |\n\n## Why It's Great\n\nRun a long job over SSH, `prefix d` to detach, close your laptop — the job keeps\nrunning on the server. Reconnect later with `tmux attach`.\n\n## Minimal ~/.tmux.conf\n\n```bash\nset -g mouse on               # mouse support\nset -g base-index 1           # windows start at 1\nsetw -g mode-keys vi          # vi keys in scroll mode\n```\n", "difficulty": 2, "tags": ["tools", "editors", "terminal"]}, {"title": "Vim Survival Guide", "body": "# ⌨️ Vim Survival Guide\n\nVim is modal: keys do different things in different modes.\n\n## The Modes\n\n| Mode | Enter with | Purpose |\n|------|-----------|---------|\n| Normal | `Esc` | navigate & run commands |\n| Insert | `i` | type text |\n| Visual | `v` | select text |\n| Command | `:` | save, quit, search |\n\n## Escaping (the famous question)\n\n```\n:w      save\n:q      quit\n:wq     save and quit\n:q!     quit WITHOUT saving\n:x      save and quit (only writes if changed)\nZZ      save and quit (normal mode, no colon)\n```\n\n## Movement (Normal mode)\n\n```\nh j k l   left, down, up, right\nw / b     next / previous word\n0 / $     start / end of line\ngg / G    top / bottom of file\n:42       go to line 42\nCtrl+d/u  half page down / up\n```\n\n## Editing\n\n```\ni  a      insert before / after cursor\no  O      open new line below / above\nx         delete character\ndd        delete (cut) line\nyy        yank (copy) line\np         paste\nu         undo\nCtrl+r    redo\n.         repeat last change\n```\n\n## Search & Replace\n\n```\n/word            search forward (n = next, N = prev)\n:%s/old/new/g    replace all in file\n:%s/old/new/gc   replace all, confirm each\n```\n\n**Tip:** run `vimtutor` in your terminal for a free 30-minute interactive lesson.\n", "difficulty": 1, "tags": ["tools", "editors", "terminal"]}, {"title": "nano (the simple editor)", "body": "# 📝 nano — The Beginner-Friendly Editor\n\nWhen you just need to edit a config fast and Vim feels like too much.\n\n```bash\nnano file.txt                 # open (or create) a file\nnano +25 file.txt             # open at line 25\nsudo nano /etc/fstab          # edit a system file\n```\n\n## Shortcuts (`^` means Ctrl)\n\n| Keys | Action |\n|------|--------|\n| `^O` | write Out (save) — then Enter |\n| `^X` | exit |\n| `^W` | Where is (search) |\n| `^\\` | search and replace |\n| `^K` | cut current line |\n| `^U` | paste (uncut) |\n| `^G` | help |\n| `^_` | go to line number |\n| `^A` / `^E` | start / end of line |\n| `M-U` | undo (M = Alt) |\n\nThe shortcut bar is always shown at the bottom — no memorization needed.\n\n## Make it nicer (~/.nanorc)\n\n```bash\nset linenumbers               # show line numbers\nset tabsize 4\nset tabstospaces\nset autoindent\ninclude /usr/share/nano/*.nanorc   # syntax highlighting\n```\n", "difficulty": 1, "tags": ["tools", "editors", "terminal"]}, {"title": "tmux Config & Workflows", "difficulty": 2, "tags": ["tmux", "terminal", "workflow"], "body": "# ⚙️ Tmux Config & Power Workflows\n\n## A Solid `~/.tmux.conf`\n\n```bash\n# Quality of life\nset -g mouse on                    # mouse support\nset -g base-index 1                # windows start at 1\nsetw -g pane-base-index 1\nset -g history-limit 10000\nset -g escape-time 0               # no delay after Escape\n\n# Better prefix: Ctrl+a (like screen)\nunbind C-b\nset -g prefix C-a\nbind C-a send-prefix\n\n# Pane navigation with Alt+arrow (no prefix needed)\nbind -n M-Left  select-pane -L\nbind -n M-Right select-pane -R\nbind -n M-Up    select-pane -U\nbind -n M-Down  select-pane -D\n\n# Easier splits\nbind | split-window -h -c \"#{pane_current_path}\"\nbind - split-window -v -c \"#{pane_current_path}\"\n\n# Reload config\nbind r source-file ~/.tmux.conf \\; display \"Reloaded!\"\n\n# Vi keys in copy mode\nsetw -g mode-keys vi\nbind-key -T copy-mode-vi v send-keys -X begin-selection\nbind-key -T copy-mode-vi y send-keys -X copy-selection\n\n# Status bar\nset -g status-style bg='#161b22',fg='#8b949e'\nset -g window-status-current-style fg='#58a6ff',bold\n```\n\n## Power Workflows\n\n```bash\n# Open a new pane in the same directory:\nprefix |    # split right, same dir\nprefix -    # split down, same dir\n\n# Sync panes (type in all at once):\nprefix :setw synchronize-panes on\n\n# Save/restore sessions (with tmux-resurrect):\n# prefix Ctrl+s = save; prefix Ctrl+r = restore\n```\n"}, {"title": "Neovim — Getting Started", "difficulty": 2, "tags": ["neovim", "editor", "vim"], "body": "# 📝 Neovim — The Modern Vim\n\nNeovim is a modernized Vim fork with Lua config, LSP support, and a huge plugin ecosystem.\n\n```bash\nsudo pacman -S neovim\n```\n\n## Why Neovim over Vim?\n\n- **Lua config** — faster and more expressive than Vimscript\n- **Built-in LSP** — language server protocol for IDE-like features\n- **Tree-sitter** — better syntax highlighting\n- **Async** — plugins don't block the UI\n\n## Sensible Defaults (`~/.config/nvim/init.lua`)\n\n```lua\n-- Basic settings\nvim.opt.number = true            -- line numbers\nvim.opt.relativenumber = true    -- relative numbers\nvim.opt.tabstop = 4\nvim.opt.shiftwidth = 4\nvim.opt.expandtab = true\nvim.opt.smartindent = true\nvim.opt.wrap = false\nvim.opt.termguicolors = true\n\n-- Better search\nvim.opt.ignorecase = true\nvim.opt.smartcase = true\n\n-- Clipboard\nvim.opt.clipboard = \"unnamedplus\"   -- system clipboard\n\n-- Keymaps (leader = space)\nvim.g.mapleader = \" \"\nvim.keymap.set(\"n\", \"<leader>w\", \":w<CR>\")\nvim.keymap.set(\"n\", \"<leader>q\", \":q<CR>\")\nvim.keymap.set(\"n\", \"<Esc>\", \":noh<CR>\")  -- clear search highlight\n```\n\n## Recommended Distros (if you don't want to configure from scratch)\n\n- **LazyVim** — modern, well-curated: `https://lazyvim.org`\n- **AstroNvim** — beautiful out of the box\n- **kickstart.nvim** — minimal starting point you actually understand\n"}, {"title": "Shell Multiplexing Patterns", "difficulty": 3, "tags": ["tmux", "zsh", "workflow", "ssh"], "body": "# 🔀 Shell Multiplexing Patterns\n\n## Persistent Dev Environment\n\nThe real power: your whole dev environment lives in named sessions.\n\n```bash\n# Setup script (~/.local/bin/dev):\n#!/bin/bash\nSESSION=\"dev\"\ntmux new-session -d -s $SESSION -n editor 2>/dev/null || true\ntmux new-window -t $SESSION:2 -n server\ntmux new-window -t $SESSION:3 -n logs\ntmux send-keys -t $SESSION:1 \"nvim\" Enter\ntmux send-keys -t $SESSION:2 \"cd ~/project && npm run dev\" Enter\ntmux send-keys -t $SESSION:3 \"journalctl -f\" Enter\ntmux select-window -t $SESSION:1\ntmux attach-session -t $SESSION\n```\n\n## SSH + tmux: Never Lose Work\n\n```bash\n# On remote server, always attach or create:\nssh server \"tmux attach || tmux new -s main\"\n\n# Or add to ~/.ssh/config:\n# Host myserver\n#   RequestTTY yes\n#   RemoteCommand tmux attach || tmux new\n```\n\n## Nested tmux (local + remote)\n\n```bash\n# When inside a remote tmux, prefix key conflict solution:\n# Outer: Ctrl+a, Inner: Ctrl+b\n# Double-prefix to send to inner: Ctrl+a Ctrl+b\n\n# Or toggle off outer tmux:\nbind -n C-F11 set -qg status off \\; set -qg prefix None\nbind -n C-F12 set -qg status on  \\; set -qg prefix C-a\n```\n\n## tmux + fzf Session Switcher\n\n```bash\n# Add to ~/.zshrc:\nts() {\n  local session\n  session=$(tmux list-sessions -F '#{session_name}' 2>/dev/null | fzf --exit-0)     && tmux switch-client -t \"$session\" || tmux new-session -d -s \"${1:-main}\" && tmux switch-client -t \"${1:-main}\"\n}\n```\n"}], "🐳 Docker": [{"title": "Docker Basics", "difficulty": 2, "tags": ["docker", "containers", "devops"], "body": "# 🐳 Docker Basics\n\nDocker packages apps and their dependencies into portable containers.\n\n```bash\nsudo pacman -S docker\nsudo systemctl enable --now docker\nsudo usermod -aG docker $USER   # run docker without sudo (re-login after)\n```\n\n## Core Concepts\n\n| Term | Meaning |\n|------|---------|\n| **Image** | Read-only template (like a class) |\n| **Container** | Running instance of an image (like an object) |\n| **Registry** | Hub where images are stored (Docker Hub) |\n| **Volume** | Persistent storage for containers |\n\n## Essential Commands\n\n```bash\ndocker pull nginx               # download an image\ndocker images                   # list local images\ndocker run nginx                # run a container (downloads if needed)\ndocker run -d nginx             # run in background (detached)\ndocker ps                       # list running containers\ndocker ps -a                    # all containers (including stopped)\ndocker stop <id>                # stop a container\ndocker rm <id>                  # remove a stopped container\ndocker rmi nginx                # remove an image\n```\n"}, {"title": "Running Containers", "difficulty": 2, "tags": ["docker", "containers", "ports"], "body": "# 🚀 Running Containers\n\n```bash\n# Map ports: -p host:container\ndocker run -d -p 8080:80 nginx       # nginx on localhost:8080\n\n# Name your containers:\ndocker run -d --name myapp -p 3000:3000 node:20\n\n# Environment variables:\ndocker run -e POSTGRES_PASSWORD=secret postgres\n\n# Mount a volume:\ndocker run -v /host/data:/container/data nginx\n\n# Interactive shell inside a container:\ndocker run -it ubuntu bash\ndocker exec -it myapp bash           # shell in running container\n\n# Logs:\ndocker logs myapp\ndocker logs -f myapp                 # follow (like tail -f)\n```\n\n## Useful Combos\n\n```bash\n# Stop and remove all containers:\ndocker stop $(docker ps -q) && docker rm $(docker ps -aq)\n\n# Remove all unused images:\ndocker image prune -a\n\n# See what's running + resource usage:\ndocker stats\n\n# Copy a file into a running container:\ndocker cp file.txt myapp:/app/file.txt\n```\n"}, {"title": "Dockerfile", "difficulty": 2, "tags": ["docker", "dockerfile", "build"], "body": "# 📄 Dockerfile — Build Your Own Image\n\nA Dockerfile is a recipe for building a custom image.\n\n```dockerfile\n# Dockerfile\nFROM python:3.12-slim            # base image\n\nWORKDIR /app                     # working directory inside container\n\nCOPY requirements.txt .          # copy files from host\nRUN pip install -r requirements.txt  # run commands during build\n\nCOPY . .                         # copy the rest of the source\n\nEXPOSE 8000                      # document which port to use\n\nCMD [\"python\", \"server.py\"]      # default command when container starts\n```\n\n## Build & Run\n\n```bash\ndocker build -t myapp:latest .   # build from Dockerfile in current dir\ndocker build -t myapp:1.0 .      # with explicit tag\ndocker run -p 8000:8000 myapp    # run your image\ndocker tag myapp:latest myuser/myapp:latest  # tag for Docker Hub\ndocker push myuser/myapp:latest  # push to registry\n```\n\n## Dockerfile Best Practices\n\n```dockerfile\n# Use specific tags, not 'latest':\nFROM node:20-alpine              # alpine = tiny\n\n# Combine RUN steps to reduce layers:\nRUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*\n\n# Non-root user:\nRUN useradd -m app && chown -R app /app\nUSER app\n\n# .dockerignore (like .gitignore):\nnode_modules\n.git\n*.log\n```\n"}, {"title": "Docker Compose", "difficulty": 2, "tags": ["docker", "compose", "devops"], "body": "# 🎼 Docker Compose — Multi-Container Apps\n\nCompose defines and runs multi-container apps from a single YAML file.\n\n```yaml\n# docker-compose.yml\nservices:\n  web:\n    build: .\n    ports:\n      - \"3000:3000\"\n    environment:\n      - DATABASE_URL=postgres://user:pass@db/myapp\n    depends_on:\n      - db\n    volumes:\n      - ./src:/app/src          # live reload during development\n\n  db:\n    image: postgres:16\n    environment:\n      POSTGRES_USER: user\n      POSTGRES_PASSWORD: pass\n      POSTGRES_DB: myapp\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n\nvolumes:\n  pgdata:\n```\n\n## Commands\n\n```bash\ndocker compose up               # start everything (foreground)\ndocker compose up -d            # start in background\ndocker compose down             # stop and remove containers\ndocker compose down -v          # also remove volumes (deletes data!)\ndocker compose logs -f          # follow all logs\ndocker compose logs -f web      # follow just the web service\ndocker compose ps               # status of all services\ndocker compose exec web bash    # shell into web service\ndocker compose build            # rebuild images\ndocker compose restart web      # restart one service\n```\n"}, {"title": "Volumes & Networking", "difficulty": 3, "tags": ["docker", "volumes", "networking"], "body": "# 💾 Volumes & Networks\n\n## Volumes — Persistent Data\n\n```bash\ndocker volume create mydata           # create a named volume\ndocker volume ls                      # list volumes\ndocker volume inspect mydata          # details\ndocker volume rm mydata               # remove\ndocker volume prune                   # remove all unused volumes\n\n# Mount a named volume:\ndocker run -v mydata:/data myimage\n\n# Bind mount (host directory):\ndocker run -v /host/path:/container/path myimage\n\n# Read-only mount:\ndocker run -v /host/config:/app/config:ro myimage\n```\n\n## Networks\n\n```bash\ndocker network create mynet           # create a network\ndocker network ls                     # list networks\ndocker network inspect mynet\n\n# Connect containers to a network:\ndocker run --network mynet --name api myimage\ndocker run --network mynet --name db postgres\n# Now 'api' can reach 'db' by name: postgres://db/myapp\n```\n\n## Inspect & Debug\n\n```bash\ndocker inspect container_id           # full JSON metadata\ndocker inspect -f '{{.NetworkSettings.IPAddress}}' myapp\ndocker top myapp                      # processes inside container\ndocker diff myapp                     # changed files vs image\ndocker commit myapp myapp-debug       # snapshot running container\n```\n"}, {"title": "Docker Security", "difficulty": 3, "tags": ["docker", "security", "devops"], "body": "# 🔒 Docker Security\n\n## Run as Non-Root\n\n```dockerfile\n# In your Dockerfile:\nRUN groupadd -r app && useradd -r -g app app\nUSER app\n```\n\n```bash\n# Check who's running in a container:\ndocker exec myapp whoami\n```\n\n## Limit Resources\n\n```bash\n# CPU and memory limits:\ndocker run --cpus=\"0.5\" --memory=\"512m\" myapp\n\n# Read-only filesystem (great for security):\ndocker run --read-only myapp\n\n# Drop capabilities:\ndocker run --cap-drop ALL --cap-add NET_BIND_SERVICE myapp\n```\n\n## Image Security\n\n```bash\n# Scan for vulnerabilities:\ndocker scout cves myimage\ndocker scan myimage          # older syntax\n\n# Use minimal base images:\nFROM scratch                 # truly empty\nFROM alpine:3.19             # 7MB\nFROM distroless/python3      # no shell, just runtime\n```\n\n## Secrets (don't bake into images!)\n\n```bash\n# Use Docker secrets (Swarm) or environment files:\ndocker run --env-file .env myapp    # .env NOT committed to git\n\n# Or mount secrets at runtime:\ndocker run -v /run/secrets:/secrets:ro myapp\n\n# Audit: are secrets in image history?\ndocker history --no-trunc myimage | grep -i pass\n```\n"}, {"title": "Useful Docker Aliases", "difficulty": 2, "tags": ["docker", "workflow", "tips"], "body": "# ⚡ Useful Docker Aliases & Tricks\n\n## Add to `~/.zshrc` or `~/.bashrc`\n\n```bash\n# Quick aliases:\nalias d='docker'\nalias dc='docker compose'\nalias dps='docker ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"'\nalias di='docker images --format \"table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}\"'\n\n# Kill everything:\nalias dstop='docker stop $(docker ps -q)'\nalias dclean='docker system prune -af --volumes'\n\n# Shell into any running container:\ndsh() { docker exec -it \"${1}\" ${2:-bash}; }\n\n# Tail logs of latest container:\ndlogs() { docker logs -f $(docker ps -lq); }\n\n# Pull and run an image as a quick shell:\ndrun() { docker run --rm -it \"$1\" bash; }\n```\n\n## Docker System Housekeeping\n\n```bash\ndocker system df              # see how much space Docker is using\ndocker system prune           # remove stopped containers, unused images, networks\ndocker system prune -af       # aggressive: remove everything unused\ndocker buildx prune           # clean build cache\n```\n\n## Multi-Platform Builds\n\n```bash\n# Build for linux/amd64 and linux/arm64:\ndocker buildx build --platform linux/amd64,linux/arm64 -t myapp:latest --push .\n```\n"}, {"title": "Podman — Docker Alternative", "difficulty": 2, "tags": ["docker", "podman", "containers"], "body": "# 🦭 Podman — Rootless Docker Alternative\n\nPodman is 100% Docker-compatible but runs without a daemon and without root.\n\n```bash\nsudo pacman -S podman podman-compose\n```\n\n## Drop-in Replacement\n\n```bash\n# Everything is the same syntax:\npodman pull nginx\npodman run -d -p 8080:80 nginx\npodman ps\npodman exec -it myapp bash\npodman-compose up -d\n\n# Alias it:\nalias docker=podman\nalias docker-compose=podman-compose\n```\n\n## Key Differences from Docker\n\n| Feature | Docker | Podman |\n|---------|--------|--------|\n| Daemon required | Yes | No |\n| Root required | No (with group) | No (truly rootless) |\n| Systemd integration | Manual | Built-in |\n| Compose | docker-compose | podman-compose |\n\n## Generate Systemd Services\n\n```bash\n# Auto-start a container as a systemd service:\npodman generate systemd --name myapp > ~/.config/systemd/user/myapp.service\nsystemctl --user enable --now myapp\n\n# Now it starts on login and can be managed with systemctl!\n```\n"}]};
+const TIPS    = [{"title": "cd to the previous directory", "tip": "cd -    # jumps back to the last directory you were in — like a browser back button."}, {"title": "Run the last command as root", "tip": "sudo !!    # re-runs your previous command with sudo. Saves retyping."}, {"title": "Reuse the last argument", "tip": "mkdir /tmp/foo && cd !$    # !$ expands to the last argument of the previous command."}, {"title": "Fix a typo in the last command", "tip": "^old^new    # reruns the last command replacing the first 'old' with 'new'."}, {"title": "Find what's using a port", "tip": "sudo ss -tlnp sport = :8080    # shows the process listening on port 8080."}, {"title": "Watch a log live", "tip": "journalctl -u nginx -f    # follow a service's logs in real time, like tail -f."}, {"title": "Find big space hogs", "tip": "du -h --max-depth=1 / | sort -h    # ranks top-level directories by size."}, {"title": "Make and enter a directory", "tip": "mkcd() { mkdir -p \"$1\" && cd \"$1\"; }    # one function, no more mkdir-then-cd."}, {"title": "Search history fuzzily", "tip": "Install fzf, then press Ctrl+R for an interactive fuzzy search of your shell history."}, {"title": "Remove orphan packages", "tip": "sudo pacman -Rns $(pacman -Qdtq)    # cleans up dependencies nothing needs anymore."}, {"title": "Resume a broken download", "tip": "wget -c https://example.com/big.iso    # -c continues a partially downloaded file."}, {"title": "Stash work in progress", "tip": "git stash    # shelve uncommitted changes to switch branches, git stash pop to bring them back."}, {"title": "Colorful man pages", "tip": "export MANPAGER='less -R'    # in your shell rc for readable, colored manual pages."}, {"title": "Don't fear rm", "tip": "Install trash-cli and alias rm='trash' — deleted files go to a recoverable trash instead of oblivion."}, {"title": "Detach a long job", "tip": "Run it inside tmux, press Ctrl+b d to detach, and it keeps running even if you disconnect."}, {"title": "Compose is your docker alias", "tip": "alias dc='docker compose'  # saves typing constantly"}, {"title": "Git undo last commit safely", "tip": "git reset HEAD~1 --mixed  # undo commit but keep your changes staged"}, {"title": "Find which process opened a port", "tip": "sudo ss -tlnp sport = :8080  # shows PID and process name"}, {"title": "Recover deleted file from git", "tip": "git checkout HEAD~1 -- path/to/file.txt  # restore a file deleted in the last commit"}, {"title": "Run last command as root", "tip": "sudo !!  # the !! expands to your entire previous command"}];
+const CATS    = Object.keys(LESSONS);
+const FLAT    = [];
+CATS.forEach(c => LESSONS[c].forEach((_, i) => FLAT.push([c, i])));
+
+let progress  = new Set(JSON.parse(localStorage.getItem('aa_progress')  || '[]'));
+let favorites = new Set(JSON.parse(localStorage.getItem('aa_favorites') || '[]'));
+let notes     = JSON.parse(localStorage.getItem('aa_notes') || '{}');
+let cur       = [CATS[0], 0];
+let curDiff   = 0;  // 0=all, 1/2/3
+let curSearch = '';
+
+const DIFF_NAME = ['', 'Beginner', 'Intermediate', 'Advanced'];
+const DIFF_ICON = ['', '🟢', '🟡', '🔴'];
+
+const k = (c, i) => c + ':' + i;
+
+function saveProgress() {
+  localStorage.setItem('aa_progress',  JSON.stringify([...progress]));
+  localStorage.setItem('aa_favorites', JSON.stringify([...favorites]));
+}
+function saveNotes() {
+  localStorage.setItem('aa_notes', JSON.stringify(notes));
+}
+
+/* ── Theme ──────────────────────────────────────────────────────────────────── */
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('aa_theme', t);
+  document.getElementById('themeSelect').value = t;
+}
+(function initTheme() {
+  const t = localStorage.getItem('aa_theme') || 'dark';
+  setTheme(t);
+})();
+
+/* ── Syntax highlighting ─────────────────────────────────────────────────────── */
+const SH_KW = new Set([
+  'if','then','else','elif','fi','for','while','do','done','case','esac',
+  'function','return','local','export','source','alias','unset','true','false',
+  'exit','break','continue','in','declare','readonly','typeset','select',
+  'shift','until','trap','eval','exec',
+]);
+const SH_BI = new Set([
+  'echo','printf','read','test','cd','pwd','ls','mkdir','rm','cp','mv',
+  'cat','grep','find','sed','awk','sort','uniq','wc','head','tail','tr',
+  'cut','xargs','tee','date','sleep','kill','which','type','curl','wget',
+  'sudo','apt','pacman','pip','pip3','python','python3','git','ssh','scp',
+  'rsync','chmod','chown','chgrp','touch','ln','stat','du','df','mount',
+  'umount','ps','top','pkill','pgrep','systemctl','journalctl','ip','ping',
+  'netstat','ss','docker','podman','make','gcc','go','node','npm','yarn',
+  'cargo','rustc','tmux','vim','nvim','nano','less','more','man','bc',
+  'expr','seq','tput','stty','basename','dirname','realpath','env',
+  'pass','gpg','tar','gzip','gunzip','zip','unzip','diff','patch',
+  'lsblk','fdisk','parted','mkfs','blkid','fstab','sysctl','modprobe',
+  'lsmod','lspci','lsusb','nmcli','iwctl','wpa_supplicant','dhcpcd',
+]);
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightLine(line) {
+  let out = '', i = 0, n = line.length;
+  while (i < n) {
+    const ch = line[i];
+    // Comment (only when preceded by whitespace or at start)
+    if (ch === '#' && (i === 0 || /[\s\t(|&;]/.test(line[i-1]))) {
+      out += '<span class="sh-cm">' + esc(line.slice(i)) + '</span>';
+      return out;
+    }
+    // Single-quoted string
+    if (ch === "'") {
+      let j = i + 1;
+      while (j < n && line[j] !== "'") j++;
+      out += '<span class="sh-str">' + esc(line.slice(i, j+1)) + '</span>';
+      i = j + 1; continue;
+    }
+    // Double-quoted string (with $VAR highlighting inside)
+    if (ch === '"') {
+      let j = i + 1;
+      while (j < n && line[j] !== '"') { if (line[j] === '\\') j++; j++; }
+      const raw = esc(line.slice(i, j+1));
+      // Highlight $VAR / ${VAR} inside the already-escaped string
+      const inner = raw.replace(
+        /\$\{[^}]+\}|\$[a-zA-Z_][a-zA-Z0-9_]*|\$[#@*?!0-9]/g,
+        m => '<span class="sh-var">'+m+'</span>'
+      );
+      out += '<span class="sh-str">' + inner + '</span>';
+      i = j + 1; continue;
+    }
+    // $(...) subshell or variable
+    if (ch === '$') {
+      let j = i + 1;
+      if (j < n && line[j] === '(') {
+        // $( ) — scan for balanced close, render whole thing as var
+        let depth = 1; j++;
+        while (j < n && depth > 0) {
+          if (line[j] === '(') depth++;
+          if (line[j] === ')') depth--;
+          j++;
+        }
+      } else if (j < n && line[j] === '{') {
+        let end = line.indexOf('}', j); j = end !== -1 ? end+1 : n;
+      } else {
+        while (j < n && /[a-zA-Z0-9_#@*?!]/.test(line[j])) j++;
+      }
+      out += '<span class="sh-var">' + esc(line.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    // Flag: -x or --long, preceded by space/start
+    if (ch === '-' && (i === 0 || /[\s\t(|&;]/.test(line[i-1])) && i+1 < n && /[-a-zA-Z]/.test(line[i+1])) {
+      let j = i + 1;
+      while (j < n && /[a-zA-Z0-9_=-]/.test(line[j])) j++;
+      out += '<span class="sh-flag">' + esc(line.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    // Operators
+    if ('|&;<>(){}[]'.includes(ch)) {
+      out += '<span class="sh-op">' + esc(ch) + '</span>';
+      i++; continue;
+    }
+    // Word: keyword, builtin, or identifier
+    if (/[a-zA-Z_]/.test(ch)) {
+      let j = i;
+      while (j < n && /[a-zA-Z0-9_\-\.\/]/.test(line[j])) j++;
+      const w = line.slice(i, j);
+      if (SH_KW.has(w))      out += '<span class="sh-kw">'+esc(w)+'</span>';
+      else if (SH_BI.has(w)) out += '<span class="sh-bi">'+esc(w)+'</span>';
+      else                    out += esc(w);
+      i = j; continue;
+    }
+    // Number
+    if (/[0-9]/.test(ch)) {
+      let j = i;
+      while (j < n && /[0-9.]/.test(line[j])) j++;
+      out += '<span class="sh-num">'+esc(line.slice(i,j))+'</span>';
+      i = j; continue;
+    }
+    out += esc(ch); i++;
+  }
+  return out;
+}
+
+const BASH_LANGS = new Set(['', 'bash', 'sh', 'shell', 'zsh', 'fish']);
+
+function highlightCode(raw, lang) {
+  if (BASH_LANGS.has(lang)) {
+    return raw.split('\n').map(highlightLine).join('\n');
+  }
+  // Generic: only comment lines
+  return raw.split('\n').map(line => {
+    const t = line.trimStart();
+    if (t.startsWith('#') || t.startsWith('//') || t.startsWith('--')) {
+      return '<span class="sh-cm">'+esc(line)+'</span>';
+    }
+    if (t.startsWith('---') || t.match(/^[A-Z][A-Z_]+\s*:/)) {
+      return '<span class="sh-kw">'+esc(line)+'</span>';  // YAML/Dockerfile keys
+    }
+    return esc(line);
+  }).join('\n');
+}
+
+/* ── Markdown renderer ──────────────────────────────────────────────────────── */
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/`([^`]+)`/g, '<code class="inline">$1</code>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  return s;
+}
+
+function render(md) {
+  const lines = md.split('\n');
+  let html = '', i = 0;
+  while (i < lines.length) {
+    let line = lines[i];
+    if (line.startsWith('```')) {
+      const lang = line.slice(3).trim().toLowerCase();
+      const code = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) { code.push(lines[i]); i++; }
+      i++;
+      const highlighted = highlightCode(code.join('\n'), lang);
+      const langTag = lang ? `<span class="lang-tag">${esc(lang)}</span>` : '';
+      html += `<div class="codeblock">${langTag}<button class="copy" onclick="copyCode(this)">copy</button><pre>${highlighted}</pre></div>`;
+      continue;
+    }
+    if (line.startsWith('### ')){ html += '<h3>'+inline(line.slice(4))+'</h3>'; i++; continue; }
+    if (line.startsWith('## ')) { html += '<h2>'+inline(line.slice(3))+'</h2>'; i++; continue; }
+    if (line.startsWith('# '))  { html += '<h1>'+inline(line.slice(2))+'</h1>'; i++; continue; }
+    if (line.trim() === '---')  { html += '<hr>'; i++; continue; }
+    if (line.trim().startsWith('|')) {
+      const rows = [];
+      while (i < lines.length && lines[i].trim().startsWith('|')) { rows.push(lines[i]); i++; }
+      html += renderTable(rows); continue;
+    }
+    if (/^[-*] /.test(line)) {
+      const items = [];
+      while (i < lines.length && /^[-*] /.test(lines[i])) { items.push(lines[i].slice(2)); i++; }
+      html += '<ul>'+items.map(t => '<li>'+inline(t)+'</li>').join('')+'</ul>';
+      continue;
+    }
+    if (line.trim() === '') { i++; continue; }
+    html += '<p>'+inline(line)+'</p>'; i++;
+  }
+  return html;
+}
+
+function renderTable(rows) {
+  const cells = r => r.trim().replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+  if (rows.length < 2) return '';
+  const head = cells(rows[0]);
+  let h = '<table><thead><tr>'+head.map(c=>'<th>'+inline(c)+'</th>').join('')+'</tr></thead><tbody>';
+  for (let r = 2; r < rows.length; r++) {
+    h += '<tr>'+cells(rows[r]).map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>';
+  }
+  return h + '</tbody></table>';
+}
+
+/* ── Sidebar tree ──────────────────────────────────────────────────────────── */
+function buildTree() {
+  const tree = document.getElementById('tree');
+  tree.innerHTML = '';
+  const q = curSearch;
+  CATS.forEach(cat => {
+    const total = LESSONS[cat].length;
+    const done  = LESSONS[cat].filter((_,i) => progress.has(k(cat,i))).length;
+    let catVisible = false;
+
+    const catEl = document.createElement('div');
+    catEl.className = 'cat' + (done === total ? ' done' : '');
+    catEl.innerHTML = '<span class="chev">▼</span><span>'+cat+'</span><span class="count">'+done+'/'+total+'</span>';
+    catEl.onclick = () => catEl.classList.toggle('collapsed');
+    tree.appendChild(catEl);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'lessons';
+
+    LESSONS[cat].forEach((lesson, i) => {
+      const dl = lesson.difficulty || 2;
+      const key = k(cat, i);
+      // Filter by difficulty
+      if (curDiff && dl !== curDiff) return;
+      // Filter by search
+      if (q && !lesson.title.toLowerCase().includes(q) && !lesson.body.toLowerCase().includes(q)) return;
+      catVisible = true;
+
+      const el = document.createElement('div');
+      el.className = 'lesson' + (cur[0]===cat && cur[1]===i ? ' active' : '');
+      el.dataset.key = key;
+      const learned = progress.has(key), fav = favorites.has(key), hasNote = notes[key] && notes[key].trim();
+      el.innerHTML =
+        '<span class="check">'+(learned?'✓':'')+'</span>'+
+        '<span class="ltitle">'+esc(lesson.title)+'</span>'+
+        '<span class="diff-dot">'+DIFF_ICON[dl]+'</span>'+
+        (hasNote ? '<span class="note-dot">📝</span>' : '')+
+        (fav ? '<span class="star">★</span>' : '');
+      el.onclick = () => load(cat, i);
+      wrap.appendChild(el);
+    });
+
+    tree.appendChild(wrap);
+    if (!catVisible) catEl.style.display = 'none';
+    else catEl.style.display = '';
+    if (q || curDiff) catEl.classList.remove('collapsed');
+  });
+}
+
+/* ── Load lesson ─────────────────────────────────────────────────────────────── */
+function load(cat, i) {
+  // Save current notes before switching
+  if (cur[0] !== cat || cur[1] !== i) {
+    const oldKey = k(cur[0], cur[1]);
+    const val = document.getElementById('notesArea').value;
+    if (val.trim()) { notes[oldKey] = val; saveNotes(); }
+    else if (notes[oldKey]) { delete notes[oldKey]; saveNotes(); }
+  }
+  cur = [cat, i];
+  const lesson = LESSONS[cat][i];
+  const dl = lesson.difficulty || 2;
+
+  document.getElementById('content').innerHTML = render(lesson.body);
+  document.getElementById('content').scrollTop = 0;
+
+  const learned = progress.has(k(cat,i)), fav = favorites.has(k(cat,i));
+  document.getElementById('crumb').innerHTML =
+    '<span class="diff-badge">'+DIFF_ICON[dl]+' '+DIFF_NAME[dl]+'</span>'+
+    '<span class="trail">'+esc(cat)+' › '+esc(lesson.title)+
+    '  <span class="mark'+(learned?' learned':'')+'">['+(learned?'✓ learned':'○ not learned')+']</span>'+
+    (fav?' <span class="fav">★</span>':'')+
+    '</span>';
+  document.getElementById('learnBtn').className = 'btn'+(learned?' on':'');
+  document.getElementById('learnBtn').textContent = learned ? '✓ Learned' : '✓ Mark Learned';
+  document.getElementById('favBtn').className = 'btn fav'+(fav?' on':'');
+
+  // Load notes for this lesson
+  document.getElementById('notesArea').value = notes[k(cat,i)] || '';
+
+  buildTree(); // rebuild to highlight active + update note dots
+}
+
+/* ── Notes auto-save ─────────────────────────────────────────────────────────── */
+document.getElementById('notesArea').addEventListener('input', () => {
+  const key = k(cur[0], cur[1]);
+  const val = document.getElementById('notesArea').value;
+  if (val.trim()) { notes[key] = val; }
+  else { delete notes[key]; }
+  saveNotes();
+});
+
+/* ── Actions ─────────────────────────────────────────────────────────────────── */
+function toggleLearned() {
+  const key = k(cur[0], cur[1]);
+  progress.has(key) ? progress.delete(key) : progress.add(key);
+  saveProgress(); load(cur[0], cur[1]); updateProgress();
+  toast(progress.has(key) ? '✓ Marked as learned' : 'Unmarked');
+}
+function toggleFav() {
+  const key = k(cur[0], cur[1]);
+  favorites.has(key) ? favorites.delete(key) : favorites.add(key);
+  saveProgress(); load(cur[0], cur[1]);
+  toast(favorites.has(key) ? '★ Favorited' : '☆ Unfavorited');
+}
+function nav(d) {
+  let pos = FLAT.findIndex(([c,i]) => c===cur[0] && i===cur[1]);
+  pos = (pos + d + FLAT.length) % FLAT.length;
+  load(FLAT[pos][0], FLAT[pos][1]);
+}
+function nextUnlearned() {
+  let pos = FLAT.findIndex(([c,i]) => c===cur[0] && i===cur[1]);
+  for (let s = 1; s <= FLAT.length; s++) {
+    const [c,i] = FLAT[(pos+s)%FLAT.length];
+    if (!progress.has(k(c,i))) { load(c,i); toast('⏭ '+LESSONS[c][i].title); return; }
+  }
+  toast('🎉 Everything is learned!');
+}
+function randomLesson() {
+  const pool = FLAT.filter(([c,i]) => !progress.has(k(c,i)));
+  const arr  = pool.length ? pool : FLAT;
+  const [c,i] = arr[Math.floor(Math.random()*arr.length)];
+  load(c,i); toast('🎲 '+LESSONS[c][i].title);
+}
+function copyLesson() {
+  const l = LESSONS[cur[0]][cur[1]];
+  navigator.clipboard.writeText('# '+l.title+'\n\n'+l.body);
+  toast('📋 Copied lesson to clipboard');
+}
+function copyCode(btn) {
+  navigator.clipboard.writeText(btn.parentElement.querySelector('pre').innerText);
+  btn.textContent = 'copied!';
+  setTimeout(() => btn.textContent = 'copy', 1200);
+}
+
+function exportMd() {
+  let md = '# Arch Academy — My Notes & Favorites\n\n';
+  let count = 0;
+  CATS.forEach(cat => {
+    LESSONS[cat].forEach((lesson, i) => {
+      const key = k(cat, i);
+      const isFav = favorites.has(key);
+      const myNote = notes[key] && notes[key].trim();
+      if (!isFav && !myNote) return;
+      count++;
+      md += '## '+lesson.title+'\n';
+      md += '_'+cat+'_\n\n';
+      if (isFav) md += lesson.body + '\n\n';
+      if (myNote) md += '### My Notes\n'+myNote+'\n\n';
+      md += '---\n\n';
+    });
+  });
+  if (count === 0) { toast('No favorites or notes yet — star some lessons first!'); return; }
+  const blob = new Blob([md], {type:'text/markdown'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'arch-academy-export.md';
+  a.click();
+  toast('📤 Exported '+count+' lessons');
+}
+
+function updateProgress() {
+  const total = FLAT.length, done = progress.size;
+  const pct = total ? Math.round(100*done/total) : 0;
+  document.getElementById('pfill').style.width = pct+'%';
+  document.getElementById('pct').textContent  = pct+'%';
+  document.getElementById('pct2').textContent = done+'/'+total+' ('+pct+'%)';
+  const C = 2*Math.PI*14;
+  document.getElementById('ring').style.strokeDashoffset = C*(1-pct/100);
+}
+
+/* ── Difficulty filter ───────────────────────────────────────────────────────── */
+function filterDiff(d) {
+  curDiff = d;
+  document.querySelectorAll('.df').forEach((btn, i) => {
+    btn.classList.toggle('active', i === d);
+  });
+  buildTree();
+}
+
+/* ── Search ─────────────────────────────────────────────────────────────────── */
+document.getElementById('search').addEventListener('input', e => {
+  curSearch = e.target.value.trim().toLowerCase();
+  buildTree();
+});
+
+/* ── Keyboard ─────────────────────────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  const tag = e.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') {
+    if (e.key === 'Escape') e.target.blur();
+    return;
+  }
+  if (!document.getElementById('tipOverlay').classList.contains('hidden')) {
+    closeTip(); return;
+  }
+  const map = {
+    'n': () => nav(1),    'j': () => nav(1),
+    'p': () => nav(-1),   'k': () => nav(-1),
+    'u': nextUnlearned,
+    'r': randomLesson,
+    'c': copyLesson,
+    'f': toggleFav,
+    '1': () => filterDiff(curDiff===1 ? 0 : 1),
+    '2': () => filterDiff(curDiff===2 ? 0 : 2),
+    '3': () => filterDiff(curDiff===3 ? 0 : 3),
+    'e': () => { e.preventDefault(); document.getElementById('notesArea').focus(); },
+    '/': () => { e.preventDefault(); document.getElementById('search').focus(); },
+  };
+  if (e.key === 'l' || e.key === ' ') { e.preventDefault(); toggleLearned(); return; }
+  if (map[e.key]) { map[e.key](); }
+});
+
+/* ── Toast ───────────────────────────────────────────────────────────────────── */
+let toastT;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+/* ── Tip modal ───────────────────────────────────────────────────────────────── */
+function showTip() {
+  const tip = TIPS[Math.floor(Math.random()*TIPS.length)];
+  document.getElementById('tipTitle').textContent = tip.title;
+  document.getElementById('tipCode').textContent  = tip.tip;
+}
+function closeTip() { document.getElementById('tipOverlay').classList.add('hidden'); }
+
+/* ── Init ───────────────────────────────────────────────────────────────────── */
+showTip();
+buildTree();
+load(CATS[0], 0);
+updateProgress();
+</script>
+</body>
+</html>
