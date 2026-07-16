@@ -16,6 +16,9 @@ TEMPLATE = r"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🐧 Linux Academy</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,__TUX_B64__">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── Themes ─────────────────────────────────────────────────────────────────── */
 :root,[data-theme="dark"] {
@@ -63,17 +66,22 @@ body{
   font-family:'Inter',system-ui,'Segoe UI',sans-serif;
   height:100vh;overflow:hidden;display:flex;flex-direction:column;
   transition:background .2s,color .2s;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
 }
 ::selection{background:var(--sel);}
+:focus-visible{outline:2px solid var(--blue2);outline-offset:2px;}
 
 /* ── Topbar ────────────────────────────────────────────────────────────────── */
 .topbar{
   display:flex;align-items:center;gap:14px;
   background:var(--bg-dark);border-bottom:1px solid var(--border);
   padding:0 18px;height:52px;flex-shrink:0;
+  box-shadow:0 1px 0 rgba(0,0,0,.15),0 4px 16px rgba(0,0,0,.12);
+  position:relative;z-index:2;
 }
 .logo{font-size:17px;font-weight:800;color:var(--blue);letter-spacing:.4px;white-space:nowrap;display:flex;align-items:center;gap:8px;}
-.logo-tux{width:24px;height:24px;object-fit:contain;vertical-align:middle;}
+.logo-tux{width:24px;height:24px;object-fit:contain;vertical-align:middle;
+  filter:drop-shadow(0 0 6px rgba(88,166,255,.35));}
 .logo .tag{color:var(--dimmer);font-weight:400;font-size:12px;margin-left:10px;}
 .kbd{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dimmer);
   background:var(--border);padding:1px 5px;border-radius:3px;}
@@ -96,6 +104,7 @@ body{
 .sidebar{
   width:320px;background:var(--bg);border-right:1px solid var(--border);
   display:flex;flex-direction:column;flex-shrink:0;
+  box-shadow:2px 0 12px rgba(0,0,0,.1);position:relative;z-index:1;
 }
 .search-wrap{padding:12px 12px 0;}
 .search{
@@ -123,9 +132,9 @@ body{
 .cat{
   display:flex;align-items:center;gap:6px;padding:7px 10px;cursor:pointer;
   color:var(--dim);font-weight:700;font-size:13.5px;border-radius:6px;
-  user-select:none;
+  user-select:none;transition:background .12s,color .12s;
 }
-.cat:hover{background:var(--panel);}
+.cat:hover{background:var(--panel);color:var(--fg);}
 .cat .chev{font-size:10px;transition:transform .15s;color:var(--dimmer);flex-shrink:0;}
 .cat.collapsed .chev{transform:rotate(-90deg);}
 .cat .count{margin-left:auto;font-family:'JetBrains Mono',monospace;
@@ -137,14 +146,19 @@ body{
   display:flex;align-items:center;gap:6px;padding:6px 10px 6px 26px;
   cursor:pointer;color:var(--fg);font-size:13px;border-radius:6px;
   user-select:none;border-left:2px solid transparent;
+  transition:background .12s,border-color .12s;
 }
 .lesson:hover{background:var(--panel);}
-.lesson.active{background:var(--sel);color:var(--cyan);border-left-color:var(--blue);}
+.lesson.active{background:var(--sel);color:var(--cyan);border-left-color:var(--blue);
+  box-shadow:inset 0 0 0 1px rgba(88,166,255,.12);}
 .lesson .check{width:14px;color:var(--green);font-weight:700;flex-shrink:0;font-size:11px;}
 .lesson .ltitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lesson .diff-dot{flex-shrink:0;font-size:10px;line-height:1;}
 .lesson .star{flex-shrink:0;color:var(--yellow);font-size:11px;}
 .lesson .note-dot{flex-shrink:0;color:var(--dim);font-size:10px;}
+.lesson .ltitle mark{background:var(--yellow);color:#000;border-radius:3px;padding:0 1px;}
+.lesson .body-hit{flex-shrink:0;color:var(--dimmer);font-size:10px;font-style:italic;
+  border:1px solid var(--border);border-radius:8px;padding:0 5px;}
 
 /* Progress footer */
 .pfoot{background:var(--bg-dark);border-top:1px solid var(--border);padding:12px 16px;}
@@ -185,7 +199,7 @@ body{
 
 /* ── Code blocks ─────────────────────────────────────────────────────────────── */
 .codeblock{position:relative;margin:14px 0;border-radius:8px;overflow:hidden;
-  border:1px solid var(--border);}
+  border:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.15);}
 .codeblock .lang-tag{
   position:absolute;top:0;left:0;
   background:var(--border);color:var(--dimmer);
@@ -251,23 +265,27 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
 .btn{
   background:var(--border);color:var(--fg);border:none;border-radius:7px;
   padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
-  transition:background .15s,color .15s;
+  transition:background .15s,color .15s,transform .1s,box-shadow .15s;
 }
-.btn:hover{background:var(--blue2);color:#fff;}
+.btn:hover{background:var(--blue2);color:#fff;box-shadow:0 3px 10px rgba(56,139,253,.35);transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
 .btn.on{background:var(--green);color:#fff;}
 .btn.fav.on{background:var(--yellow);color:#000;}
 
 /* ── Modal ──────────────────────────────────────────────────────────────────── */
 .overlay{
-  position:fixed;inset:0;background:rgba(1,4,9,.8);display:flex;
+  position:fixed;inset:0;background:rgba(1,4,9,.72);display:flex;
   align-items:center;justify-content:center;z-index:100;
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
 }
 .overlay.hidden{display:none;}
 .modal{
   background:var(--bg);border:2px solid var(--blue);border-radius:14px;
   padding:30px 34px;max-width:560px;width:90%;text-align:center;
-  box-shadow:0 16px 48px rgba(0,0,0,.6);
+  box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 0 1px rgba(88,166,255,.08);
+  animation:modal-in .18s ease-out;
 }
+@keyframes modal-in{from{opacity:0;transform:translateY(8px) scale(.98);}to{opacity:1;transform:none;}}
 .modal .ml{font-size:22px;font-weight:800;color:var(--blue);display:flex;align-items:center;justify-content:center;gap:10px;}
 .modal .ml .logo-tux{width:30px;height:30px;}
 .modal .tl{color:var(--green);font-weight:700;font-size:13px;margin:16px 0 8px;letter-spacing:1px;}
@@ -291,6 +309,11 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
 .tree::-webkit-scrollbar,.content::-webkit-scrollbar{width:8px;}
 .tree::-webkit-scrollbar-thumb,.content::-webkit-scrollbar-thumb{
   background:var(--border);border-radius:4px;}
+.tree,.content{scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+
+/* ── Content transition ─────────────────────────────────────────────────────── */
+.content{animation:content-in .15s ease-out;}
+@keyframes content-in{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 </style>
 </head>
 <body>
@@ -440,6 +463,13 @@ const SH_BI = new Set([
 
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightMatch(text, q) {
+  if (!q) return esc(text);
+  const idx = text.toLowerCase().indexOf(q);
+  if (idx === -1) return esc(text);
+  return esc(text.slice(0, idx)) + '<mark>' + esc(text.slice(idx, idx + q.length)) + '</mark>' + esc(text.slice(idx + q.length));
 }
 
 function highlightLine(line) {
@@ -631,9 +661,12 @@ function buildTree() {
       el.className = 'lesson' + (cur[0]===cat && cur[1]===i ? ' active' : '');
       el.dataset.key = key;
       const learned = progress.has(key), fav = favorites.has(key), hasNote = notes[key] && notes[key].trim();
+      const titleHit = q && lesson.title.toLowerCase().includes(q);
+      const bodyOnlyHit = q && !titleHit && lesson.body.toLowerCase().includes(q);
       el.innerHTML =
         '<span class="check">'+(learned?'✓':'')+'</span>'+
-        '<span class="ltitle">'+esc(lesson.title)+'</span>'+
+        '<span class="ltitle">'+highlightMatch(lesson.title, q)+'</span>'+
+        (bodyOnlyHit ? '<span class="body-hit" title="Match found in lesson body">in body</span>' : '')+
         '<span class="diff-dot">'+DIFF_ICON[dl]+'</span>'+
         (hasNote ? '<span class="note-dot">📝</span>' : '')+
         (fav ? '<span class="star">★</span>' : '');
@@ -661,8 +694,12 @@ function load(cat, i) {
   const lesson = LESSONS[cat][i];
   const dl = lesson.difficulty || 2;
 
-  document.getElementById('content').innerHTML = render(lesson.body);
-  document.getElementById('content').scrollTop = 0;
+  const contentEl = document.getElementById('content');
+  contentEl.innerHTML = render(lesson.body);
+  contentEl.scrollTop = 0;
+  contentEl.style.animation = 'none';
+  void contentEl.offsetWidth;
+  contentEl.style.animation = '';
 
   const learned = progress.has(k(cat,i)), fav = favorites.has(k(cat,i));
   document.getElementById('crumb').innerHTML =

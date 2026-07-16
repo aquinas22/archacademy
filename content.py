@@ -317,6 +317,16 @@ LESSONS = {
         "heredoc"
       ],
       "body": "# 📄 Here Documents & Here Strings\n\n## Here Document — multi-line input to a command\n\n```bash\ncat <<EOF\nLine one\nLine two with $variable expansion\nLine three\nEOF\n\n# No variable expansion (quoted delimiter):\ncat <<'EOF'\nThis is $literal — no expansion\n$(date) — also literal\nEOF\n\n# Indented (strip leading tabs with <<-):\nif true; then\n    cat <<-EOF\n        This is indented in source\n        but output has no leading tabs\n    EOF\nfi\n```\n\n## Here Document to file\n\n```bash\ncat > /etc/nginx/sites/myapp.conf <<EOF\nserver {\n    listen 80;\n    server_name $DOMAIN;\n    location / { proxy_pass http://localhost:3000; }\n}\nEOF\n```\n\n## Here String — single-line stdin\n\n```bash\n# Feed a string to a command that reads stdin:\ngrep \"pattern\" <<< \"the pattern is here\"\nbase64 <<< \"encode me\"\nread -r first rest <<< \"one two three\"\necho $first   # one\necho $rest    # two three\n\n# Useful with bc:\nbc <<< \"scale=4; 355/113\"    # 3.1415\n```\n"
+    },
+    {
+      "title": "Readline Shortcuts",
+      "body": "# ⌨️ Readline Shortcuts\n\nBash uses **GNU Readline** for line editing. These work at any prompt, not just bash.\n\n## Movement\n\n```\nCtrl+A / Home     start of line\nCtrl+E / End      end of line\nAlt+B             back one word\nAlt+F             forward one word\nCtrl+←  / Ctrl+→  word jump (most terminal emulators)\n```\n\n## Editing\n\n```\nCtrl+U    delete from cursor to start of line\nCtrl+K    delete from cursor to end of line\nCtrl+W    delete word before cursor\nAlt+D     delete word after cursor\nCtrl+Y    paste (yank) last killed text\nCtrl+_    undo (Ctrl+/ on some terminals)\nCtrl+T    transpose last two characters\nAlt+T     transpose last two words\n```\n\n## History\n\n```\nCtrl+R    reverse incremental search — type to filter, Ctrl+R again for next match\nCtrl+G    abort search, restore original line\nCtrl+P/N  previous / next history entry (same as Up/Down)\nAlt+.     insert last argument of previous command — repeat to cycle further back\n!!        repeat last command (see History Tricks lesson)\n```\n\n## Process control\n\n```\nCtrl+C    SIGINT — kill the running command\nCtrl+Z    SIGTSTP — suspend to background (bg/fg to resume)\nCtrl+D    EOF — exits shell on an empty line, deletes char under cursor otherwise\nCtrl+L    clear screen (same as `clear`)\n```\n\n## Power move: edit in your real editor\n\n```bash\n# Bind once in ~/.bashrc:\nset -o vi     # OR leave default emacs mode\n\n# Always available (emacs mode):\nCtrl+X Ctrl+E   # opens current command line in $EDITOR — save & quit to run it\n```\n\nGreat for multi-line commands or anything you'd rather write with real syntax highlighting.\n",
+      "difficulty": 2,
+      "tags": [
+        "bash",
+        "shell",
+        "keybindings"
+      ]
     }
   ],
   "🔧 Zsh & Config": [
@@ -378,6 +388,16 @@ LESSONS = {
         "zsh",
         "shell",
         "config"
+      ]
+    },
+    {
+      "title": "Zsh Keybindings (ZLE)",
+      "body": "# ⌨️ Zsh Line Editor (ZLE) Keybindings\n\nZsh's line editor (ZLE) supports Readline-style defaults plus its own widgets.\n\n## Pick a mode\n\n```zsh\nbindkey -e     # emacs mode — same muscle memory as bash (Ctrl+A/E/W/U/K/R...)\nbindkey -v     # vi mode — modal editing\nbindkey -l     # print the active keymap name\n```\n\n## Vi mode basics (`bindkey -v`)\n\n```\nEsc            enter Normal mode\ni / a          insert before / after cursor\nhjkl           move (Normal mode)\ndd, cw, x      vi-style edit commands\nv              visual mode\n/pattern       search command line\n```\n\n## Widgets that work in both modes\n\n```\nCtrl+R          incremental history search (or fzf history if configured)\nCtrl+U / Ctrl+K kill to start / end of line\nCtrl+Y          yank last kill\nAlt+.           insert-last-word — same trick as bash\nCtrl+X Ctrl+E   edit command line in $EDITOR (needs setup below)\n```\n\n## Custom bindings — `bindkey 'sequence' widget`\n\n```zsh\n# ~/.zshrc\nbindkey '^[[A' history-search-backward   # Up — filters by what you've typed\nbindkey '^[[B' history-search-forward    # Down\nbindkey '^[[1;5C' forward-word           # Ctrl+Right\nbindkey '^[[1;5D' backward-word          # Ctrl+Left\nbindkey '^H' backward-kill-word          # Ctrl+Backspace\n```\n\n## Find a key's escape sequence\n\nPress `Ctrl+V` then the key combo in a zsh prompt — it prints the raw\nsequence (e.g. `^[[1;5C`) so you know what to bind.\n\n## Edit the command line in your real editor\n\n```zsh\n# ~/.zshrc\nautoload -Uz edit-command-line\nzle -N edit-command-line\nbindkey '^X^E' edit-command-line\n```\n",
+      "difficulty": 2,
+      "tags": [
+        "zsh",
+        "shell",
+        "keybindings"
       ]
     }
   ],
@@ -839,6 +859,17 @@ LESSONS = {
         "timers",
         "scheduling"
       ]
+    },
+    {
+      "title": "GnuPG & OpenSSL \u2014 Encryption & Certificates",
+      "body": "# 🔏 GnuPG & OpenSSL \u2014 Encryption & Certificates\n\nTwo workhorses for encryption, signing, and certificates from the shell.\n\n## GnuPG \u2014 Encrypt, Sign, Verify\n\n```bash\nsudo pacman -S gnupg\n\ngpg --full-generate-key            # create a keypair (follow the prompts)\ngpg --list-secret-keys --keyid-format LONG\n```\n\n```bash\n# Encrypt a file for someone (needs their public key imported):\ngpg --encrypt --recipient them@example.com file.txt    # \u2192 file.txt.gpg\ngpg --decrypt file.txt.gpg > file.txt\n\n# Sign a file (proves it came from you, unmodified):\ngpg --sign file.txt                 # \u2192 file.txt.gpg (binary signature)\ngpg --clearsign file.txt            # human-readable, signature wrapped around text\ngpg --verify file.txt.asc\n\n# Symmetric (password-based, no keys involved):\ngpg -c secret.txt                   # \u2192 secret.txt.gpg, prompts for a password\ngpg -d secret.txt.gpg\n```\n\n## Key Management\n\n```bash\ngpg --export --armor you@example.com > pubkey.asc     # share your public key\ngpg --import pubkey.asc                                 # import someone else's\ngpg --export-secret-keys --armor > private-backup.asc   # BACK THIS UP SAFELY\n```\n\n## OpenSSL \u2014 Certificates & Quick Crypto\n\n```bash\n# Self-signed cert for local dev:\nopenssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\n\n# Inspect a certificate:\nopenssl x509 -in cert.pem -text -noout\n\n# Check a live server's cert:\nopenssl s_client -connect example.com:443 -servername example.com\n```\n\n## Hashing & Encoding\n\n```bash\nopenssl dgst -sha256 file.txt        # SHA-256 hash of a file\nsha256sum file.txt                    # same thing, simpler tool\n\necho -n \"hello\" | base64              # aGVsbG8=\necho \"aGVsbG8=\" | base64 -d           # hello\n\nopenssl rand -hex 32                  # random 32-byte hex string \u2014 good for secrets/tokens\n```\n\n## Which to Reach For\n\n- **GnuPG**: encrypting/signing files and email, verifying downloads (`.asc` signatures).\n- **OpenSSL**: TLS certificates, quick hashing, one-off crypto from a script.\n",
+      "difficulty": 2,
+      "tags": [
+              "gpg",
+              "openssl",
+              "security",
+              "encryption"
+      ]
     }
   ],
   "🛠️ Dev Environments": [
@@ -896,6 +927,16 @@ LESSONS = {
         "mise",
         "versioning"
       ]
+    },
+    {
+      "title": "Make & Makefiles",
+      "body": "# 🔨 Make & Makefiles\n\nThe original build automation tool \u2014 still everywhere as a universal\n`make build` / `make test` interface regardless of language.\n\n## Anatomy of a Rule\n\n```makefile\ntarget: dependencies\n\tcommand   # MUST be indented with a real TAB, not spaces\n```\n\n```makefile\napp: main.o utils.o\n\tgcc -o app main.o utils.o\n\nmain.o: main.c\n\tgcc -c main.c\n```\n\n```bash\nmake          # builds the first target in the file\nmake app       # builds a specific target\n```\n\n## Phony Targets\n\nTargets that aren't real files \u2014 always run when invoked:\n\n```makefile\n.PHONY: build test clean\n\nbuild:\n\tgo build -o bin/app .\n\ntest:\n\tgo test ./...\n\nclean:\n\trm -rf bin/\n```\n\n## Variables\n\n```makefile\nCC = gcc\nCFLAGS = -Wall -O2\n\napp: main.c\n\t$(CC) $(CFLAGS) -o app main.c\n```\n\n```bash\nmake CFLAGS=-g          # override a variable from the command line\n```\n\n## Common Project Makefile\n\n```makefile\n.PHONY: install run test lint clean\n\ninstall:\n\tnpm install\n\nrun:\n\tnpm run dev\n\ntest:\n\tnpm test\n\nlint:\n\tnpm run lint\n\nclean:\n\trm -rf node_modules dist\n```\n\n## Useful Flags\n\n```bash\nmake -j4           # run up to 4 jobs in parallel\nmake -n             # dry run \u2014 print commands without running them\nmake -B              # force rebuild even if targets look up to date\n```\n\n## Why It's Still Used\n\nEvery language has its own build tool, but `make` gives contributors one\npredictable entry point (`make build`, `make test`) no matter what's\nunderneath \u2014 Go, C, a Docker build, or a shell script.\n",
+      "difficulty": 2,
+      "tags": [
+              "make",
+              "build",
+              "tooling"
+      ]
     }
   ],
   "📦 Package Managers": [
@@ -941,6 +982,59 @@ LESSONS = {
         "snap",
         "appimage",
         "packaging"
+      ]
+    }
+  ],
+  "🗄\ufe0f Databases & Servers": [
+    {
+      "title": "PostgreSQL \u2014 psql Basics",
+      "body": "# 🐘 PostgreSQL \u2014 psql Basics\n\nThe open-source relational database. `psql` is its interactive CLI client.\n\n## Install & Start\n\n```bash\nsudo pacman -S postgresql\nsudo -iu postgres initdb -D /var/lib/postgres/data   # first-time setup\nsudo systemctl enable --now postgresql\n```\n\n## Connecting\n\n```bash\nsudo -iu postgres psql                # connect as the postgres superuser\npsql -U myuser -d mydb -h localhost   # connect to a specific db\n```\n\n## Creating Users & Databases\n\n```sql\nCREATE USER noah WITH PASSWORD 'secret';\nCREATE DATABASE myapp OWNER noah;\nGRANT ALL PRIVILEGES ON DATABASE myapp TO noah;\n```\n\n## psql Meta-Commands\n\n```\n\\l          list databases\n\\c mydb     connect to a database\n\\dt         list tables\n\\d table    describe a table's columns\n\\du         list roles/users\n\\x          toggle expanded (vertical) output \u2014 great for wide rows\n\\timing     show query execution time\n\\q          quit\n```\n\n## Basic SQL\n\n```sql\nSELECT * FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;\nINSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com');\nUPDATE users SET active = false WHERE id = 42;\nDELETE FROM users WHERE id = 42;\n```\n\n## Backup & Restore\n\n```bash\npg_dump mydb > backup.sql              # plain SQL dump\npg_dump -Fc mydb > backup.dump         # custom format, use with pg_restore\npsql mydb < backup.sql                 # restore a plain SQL dump\npg_restore -d mydb backup.dump         # restore a custom-format dump\n```\n\n## Tips\n\n- Run `psql` as the `postgres` OS user only for admin tasks \u2014 create a real role for your app.\n- `EXPLAIN ANALYZE SELECT ...` shows the query plan and actual timing \u2014 the first stop when a query is slow.\n",
+      "difficulty": 2,
+      "tags": [
+              "postgresql",
+              "database",
+              "sql"
+      ]
+    },
+    {
+      "title": "MySQL & MariaDB \u2014 mysql Basics",
+      "body": "# 🐬 MySQL & MariaDB \u2014 mysql Basics\n\nMariaDB is the open-source fork of MySQL, drop-in compatible and the default\non most Linux distros' repos.\n\n## Install & Start\n\n```bash\nsudo pacman -S mariadb\nsudo mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql\nsudo systemctl enable --now mariadb\nsudo mysql_secure_installation      # set root password, remove test db/anon users\n```\n\n## Connecting\n\n```bash\nmysql -u root -p                        # interactive shell, prompts for password\nmysql -u myuser -p mydb                 # connect straight into a database\nmysql -u root -p -e \"SHOW DATABASES;\"   # run one statement and exit\n```\n\n## Creating Users & Databases\n\n```sql\nCREATE DATABASE myapp;\nCREATE USER 'noah'@'localhost' IDENTIFIED BY 'secret';\nGRANT ALL PRIVILEGES ON myapp.* TO 'noah'@'localhost';\nFLUSH PRIVILEGES;\n```\n\n## Exploring\n\n```sql\nSHOW DATABASES;\nUSE myapp;\nSHOW TABLES;\nDESCRIBE users;              -- column names, types, keys\nSHOW CREATE TABLE users;     -- exact DDL that created it\n```\n\n## Basic SQL\n\n```sql\nSELECT * FROM users WHERE active = 1 ORDER BY created_at DESC LIMIT 10;\nINSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com');\nUPDATE users SET active = 0 WHERE id = 42;\nDELETE FROM users WHERE id = 42;\n```\n\n## Backup & Restore\n\n```bash\nmysqldump -u root -p myapp > backup.sql     # dump one database\nmysqldump -u root -p --all-databases > all.sql\nmysql -u root -p myapp < backup.sql         # restore\n```\n\n## MySQL vs MariaDB\n\nSame SQL dialect and wire protocol \u2014 the `mysql` client, `mysqldump`, and most\ndrivers work unchanged against either. MariaDB is the default in most distro\nrepos; MySQL itself needs Oracle's repo on some distros.\n",
+      "difficulty": 2,
+      "tags": [
+              "mysql",
+              "mariadb",
+              "database",
+              "sql"
+      ]
+    },
+    {
+      "title": "SQLite \u2014 Zero-Config Database",
+      "body": "# 🪶 SQLite \u2014 Zero-Config Database\n\nA whole SQL database in a single file, no server process required. Ships\nwith Python, and is the default embedded database for countless apps.\n\n## Install & Open\n\n```bash\nsudo pacman -S sqlite\n\nsqlite3 mydb.db          # opens (creating if needed) a local file\nsqlite3 :memory:         # scratch, in-memory-only database\n```\n\n## Dot Commands\n\n```\n.tables             list tables\n.schema users        show the CREATE TABLE statement for a table\n.headers on          show column names in query output\n.mode column         pretty-print in aligned columns\n.mode csv            output as CSV \u2014 good for piping/exporting\n.output out.csv      redirect results to a file\n.backup backup.db     live backup to another file\n.quit                exit\n```\n\n## Basic SQL\n\n```sql\nCREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE);\nINSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com');\nSELECT * FROM users WHERE name LIKE 'A%';\nUPDATE users SET name = 'Alice B.' WHERE id = 1;\n```\n\n## From the Shell, No Interactive Session\n\n```bash\nsqlite3 mydb.db \"SELECT * FROM users;\"\nsqlite3 mydb.db < schema.sql            # run a whole script\necho \"SELECT COUNT(*) FROM users;\" | sqlite3 mydb.db\n```\n\n## When to Reach for SQLite\n\n- Single-user or low-concurrency apps, CLI tools, mobile/desktop apps, tests.\n- Anything that wants a real SQL database without running a separate server.\n- **Not** ideal for high write-concurrency from many processes at once \u2014 reach\n  for PostgreSQL/MySQL there.\n",
+      "difficulty": 1,
+      "tags": [
+              "sqlite",
+              "database",
+              "sql"
+      ]
+    },
+    {
+      "title": "Redis \u2014 In-Memory Data Store",
+      "body": "# 🧠 Redis \u2014 In-Memory Data Store\n\nAn in-memory key-value store used for caching, queues, sessions, and\npub/sub \u2014 reads and writes far faster than disk-backed databases.\n\n## Install & Start\n\n```bash\nsudo pacman -S redis\nsudo systemctl enable --now redis\nredis-cli ping             # PONG means it's alive\n```\n\n## redis-cli Basics\n\n```bash\nredis-cli                  # interactive shell\nredis-cli SET name \"Alice\"\nredis-cli GET name\nredis-cli --scan           # iterate keys safely (never use KEYS * in prod)\n```\n\n## Strings\n\n```\nSET key value\nGET key\nSET key value EX 60        # expire after 60 seconds\nTTL key                    # seconds remaining, -1 = no expiry\nINCR counter                # atomic increment\nDEL key\n```\n\n## Lists, Hashes, Sets\n\n```\nLPUSH queue job1                # push onto a list (use as a simple queue)\nRPOP queue                       # pop from the other end\nHSET user:1 name Alice age 30   # hash \u2014 like a mini-object\nHGETALL user:1\nSADD tags redis cache fast       # set \u2014 unique members\nSISMEMBER tags redis\n```\n\n## Persistence\n\n```\nSAVE          # synchronous RDB snapshot (blocks)\nBGSAVE        # background RDB snapshot (non-blocking)\n```\n\n```\n# redis.conf\nappendonly yes         # AOF: log every write, replay on restart \u2014 safer, bigger files\nsave 900 1              # RDB: snapshot if >=1 key changed in 900s\n```\n\n## Common Uses\n\n- **Cache**: `SET` with `EX` as a TTL in front of a slow database query.\n- **Session store**: fast, expiring key-value for web session data.\n- **Queue**: `LPUSH`/`BRPOP` for a simple job queue.\n- **Rate limiting**: `INCR` + `EXPIRE` on a per-user key.\n",
+      "difficulty": 2,
+      "tags": [
+              "redis",
+              "database",
+              "cache"
+      ]
+    },
+    {
+      "title": "Nginx \u2014 Web Server & Reverse Proxy",
+      "body": "# 🌐 Nginx \u2014 Web Server & Reverse Proxy\n\nThe most widely deployed open-source web server \u2014 also the default choice\nfor reverse proxying and load balancing.\n\n## Install & Control\n\n```bash\nsudo pacman -S nginx\nsudo systemctl enable --now nginx\nsudo nginx -t                  # test config syntax BEFORE reloading\nsudo systemctl reload nginx    # apply changes without dropping connections\n```\n\n## Config Layout\n\n```\n/etc/nginx/nginx.conf          # main config\n/etc/nginx/sites-available/    # Debian/Ubuntu: define sites here\n/etc/nginx/sites-enabled/      # symlinks to the sites actually served\n/etc/nginx/conf.d/             # Arch/RHEL-style: drop .conf files here directly\n```\n\n## Static Site Server Block\n\n```nginx\nserver {\n    listen 80;\n    server_name example.com;\n    root /var/www/example.com;\n    index index.html;\n\n    location / {\n        try_files $uri $uri/ =404;\n    }\n}\n```\n\n## Reverse Proxy (to a local app)\n\n```nginx\nserver {\n    listen 80;\n    server_name api.example.com;\n\n    location / {\n        proxy_pass http://localhost:3000;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}\n```\n\n## Enabling a Site (Debian/Ubuntu style)\n\n```bash\nsudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/\nsudo nginx -t && sudo systemctl reload nginx\n```\n\n## Logs\n\n```bash\ntail -f /var/log/nginx/access.log\ntail -f /var/log/nginx/error.log\n```\n\n## HTTPS with Certbot\n\n```bash\nsudo pacman -S certbot certbot-nginx\nsudo certbot --nginx -d example.com -d www.example.com   # gets cert AND edits config\nsudo certbot renew --dry-run                              # test auto-renewal\n```\n",
+      "difficulty": 2,
+      "tags": [
+              "nginx",
+              "web-server",
+              "proxy"
       ]
     }
   ]

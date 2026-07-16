@@ -3,7 +3,11 @@
 ## Already shipped ✅
 
 - [x] Three front-ends sharing one content source: **TUI** (Textual), **GUI** (Tkinter), **Web** (single HTML)
-- [x] **90 lessons** across **13 categories** (Linux, File System, Arch, Bash, Zsh, Networking, SysAdmin, Git, Tmux/Editors, Docker, CLI Power Tools, Dev Environments, Package Managers)
+- [x] **99 lessons** across **14 categories** (Linux, File System, Arch, Bash, Zsh, Networking, SysAdmin, Git, Tmux/Editors, Docker, CLI Power Tools, Dev Environments, Package Managers, Databases & Servers)
+- [x] **Readline / ZLE keybinding cheat sheets** for Bash and Zsh (Ctrl+R, Ctrl+X Ctrl+E, vi mode, custom `bindkey`)
+- [x] **Databases & Servers** category — PostgreSQL, MySQL/MariaDB, SQLite, Redis, Nginx
+- [x] **Make & Makefiles**, **GnuPG & OpenSSL** lessons
+- [x] **Search match highlighting** (checklist idea #9) — bolds the matched substring in sidebar titles, tags body-only hits
 - [x] **Difficulty levels** — 🟢 Beginner / 🟡 Intermediate / 🔴 Advanced on every lesson
 - [x] **Bash syntax highlighting** in web app (keywords, builtins, strings, variables, flags, comments, operators)
 - [x] **4 themes** — GitHub Dark, GitHub Light, Nord, Gruvbox (web app, persists)
@@ -40,6 +44,4 @@
 
 - [ ] **8. User-contributed lessons** — Load extra lessons from `~/.config/linux-academy/` drop-in folder so teams can add their own runbooks.
 
-- [ ] **9. Highlight matches in search** — Bold the matching substring in search results for faster scanning.
-
-- [ ] **10. TUI theme switcher** — Port the 4 themes to the Textual TUI using CSS custom properties / `--variable` syntax.
+- [ ] **9. TUI theme switcher** — Port the 4 themes to the Textual TUI using CSS custom properties / `--variable` syntax.

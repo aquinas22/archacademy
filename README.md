@@ -3,7 +3,7 @@
 Learn Linux, Arch, Bash, Zsh, Networking, Git, Docker and more — three ways.
 All three front-ends share the same lessons from `content.py`.
 
-**90 lessons · 13 categories · 20 tips**
+**99 lessons · 14 categories · 20 tips**
 
 ## Run it
 
@@ -74,16 +74,17 @@ shared between the TUI and GUI (web uses localStorage separately).
 | 🐧 Linux Basics | 9 |
 | 📁 File System | 6 |
 | 🏹 Arch Linux | 8 |
-| 💻 Bash | 8 |
-| 🔧 Zsh & Config | 6 |
+| 💻 Bash | 9 |
+| 🔧 Zsh & Config | 7 |
 | 🌐 Networking | 9 |
 | ⚙️ System Admin | 8 |
 | 🌿 Git | 6 |
 | 🖥️ Tmux & Editors | 6 |
 | 🐳 Docker | 8 |
-| 🧰 CLI Power Tools | 7 |
-| 🛠️ Dev Environments | 5 |
+| 🧰 CLI Power Tools | 8 |
+| 🛠️ Dev Environments | 6 |
 | 📦 Package Managers | 4 |
+| 🗄️ Databases & Servers | 5 |
 
 ## Editing content
 
