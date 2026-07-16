@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 """Generate a self-contained index.html from content.py (no server needed)."""
 
+import base64
 import json
+from pathlib import Path
+
 from content import LESSONS, TIPS
+
+TUX_B64 = base64.b64encode((Path(__file__).parent / "assets" / "tux-64.png").read_bytes()).decode()
 
 TEMPLATE = r"""<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ Arch Academy</title>
+<title>🐧 Linux Academy</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,__TUX_B64__">
 <style>
 /* ── Themes ─────────────────────────────────────────────────────────────────── */
 :root,[data-theme="dark"] {
@@ -66,7 +72,8 @@ body{
   background:var(--bg-dark);border-bottom:1px solid var(--border);
   padding:0 18px;height:52px;flex-shrink:0;
 }
-.logo{font-size:17px;font-weight:800;color:var(--blue);letter-spacing:.4px;white-space:nowrap;}
+.logo{font-size:17px;font-weight:800;color:var(--blue);letter-spacing:.4px;white-space:nowrap;display:flex;align-items:center;gap:8px;}
+.logo-tux{width:24px;height:24px;object-fit:contain;vertical-align:middle;}
 .logo .tag{color:var(--dimmer);font-weight:400;font-size:12px;margin-left:10px;}
 .kbd{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dimmer);
   background:var(--border);padding:1px 5px;border-radius:3px;}
@@ -261,7 +268,8 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
   padding:30px 34px;max-width:560px;width:90%;text-align:center;
   box-shadow:0 16px 48px rgba(0,0,0,.6);
 }
-.modal .ml{font-size:22px;font-weight:800;color:var(--blue);}
+.modal .ml{font-size:22px;font-weight:800;color:var(--blue);display:flex;align-items:center;justify-content:center;gap:10px;}
+.modal .ml .logo-tux{width:30px;height:30px;}
 .modal .tl{color:var(--green);font-weight:700;font-size:13px;margin:16px 0 8px;letter-spacing:1px;}
 .modal .tt{font-size:16px;font-weight:700;margin-bottom:14px;}
 .modal .tip-code{
@@ -289,7 +297,7 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
 
 <!-- Topbar -->
 <div class="topbar">
-  <div class="logo">⚡ ARCH ACADEMY
+  <div class="logo"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"> LINUX ACADEMY
     <span class="tag">
       <span class="kbd">n/p</span> nav ·
       <span class="kbd">l</span> learn ·
@@ -353,7 +361,6 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
       <button class="btn" onclick="copyLesson()">📋 Copy</button>
       <button class="btn" onclick="randomLesson()">🎲 Random</button>
       <button class="btn" onclick="nextUnlearned()">⏭ Next New</button>
-      <button class="btn" onclick="exportMd()">📤 Export</button>
       <button class="btn" onclick="nav(1)">Next ▶</button>
     </div>
   </main>
@@ -362,7 +369,7 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
 <!-- Tip modal -->
 <div class="overlay" id="tipOverlay">
   <div class="modal">
-    <div class="ml">⚡ ARCH ACADEMY</div>
+    <div class="ml"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"> LINUX ACADEMY</div>
     <div class="tl">✨ TIP OF THE DAY</div>
     <div class="tt" id="tipTitle"></div>
     <div class="tip-code" id="tipCode"></div>
@@ -726,32 +733,6 @@ function copyCode(btn) {
   setTimeout(() => btn.textContent = 'copy', 1200);
 }
 
-function exportMd() {
-  let md = '# Arch Academy — My Notes & Favorites\n\n';
-  let count = 0;
-  CATS.forEach(cat => {
-    LESSONS[cat].forEach((lesson, i) => {
-      const key = k(cat, i);
-      const isFav = favorites.has(key);
-      const myNote = notes[key] && notes[key].trim();
-      if (!isFav && !myNote) return;
-      count++;
-      md += '## '+lesson.title+'\n';
-      md += '_'+cat+'_\n\n';
-      if (isFav) md += lesson.body + '\n\n';
-      if (myNote) md += '### My Notes\n'+myNote+'\n\n';
-      md += '---\n\n';
-    });
-  });
-  if (count === 0) { toast('No favorites or notes yet — star some lessons first!'); return; }
-  const blob = new Blob([md], {type:'text/markdown'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'arch-academy-export.md';
-  a.click();
-  toast('📤 Exported '+count+' lessons');
-}
-
 function updateProgress() {
   const total = FLAT.length, done = progress.size;
   const pct = total ? Math.round(100*done/total) : 0;
@@ -835,6 +816,7 @@ updateProgress();
 def main():
     html = TEMPLATE.replace("__LESSONS__", json.dumps(LESSONS, ensure_ascii=False))
     html = html.replace("__TIPS__",    json.dumps(TIPS,    ensure_ascii=False))
+    html = html.replace("__TUX_B64__", TUX_B64)
     with open("index.html", "w") as f:
         f.write(html)
     total = sum(len(v) for v in LESSONS.values())

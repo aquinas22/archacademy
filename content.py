@@ -1,4 +1,4 @@
-"""Arch Academy content — single source of truth for TUI, GUI, and web."""
+"""Linux Academy content — single source of truth for TUI, GUI, and web."""
 
 LESSONS = {
   "🐧 Linux Basics": [
@@ -760,6 +760,188 @@ LESSONS = {
         "containers"
       ],
       "body": "# 🦭 Podman — Rootless Docker Alternative\n\nPodman is 100% Docker-compatible but runs without a daemon and without root.\n\n```bash\nsudo pacman -S podman podman-compose\n```\n\n## Drop-in Replacement\n\n```bash\n# Everything is the same syntax:\npodman pull nginx\npodman run -d -p 8080:80 nginx\npodman ps\npodman exec -it myapp bash\npodman-compose up -d\n\n# Alias it:\nalias docker=podman\nalias docker-compose=podman-compose\n```\n\n## Key Differences from Docker\n\n| Feature | Docker | Podman |\n|---------|--------|--------|\n| Daemon required | Yes | No |\n| Root required | No (with group) | No (truly rootless) |\n| Systemd integration | Manual | Built-in |\n| Compose | docker-compose | podman-compose |\n\n## Generate Systemd Services\n\n```bash\n# Auto-start a container as a systemd service:\npodman generate systemd --name myapp > ~/.config/systemd/user/myapp.service\nsystemctl --user enable --now myapp\n\n# Now it starts on login and can be managed with systemctl!\n```\n"
+    }
+  ],
+  "🧰 CLI Power Tools": [
+    {
+      "title": "fzf — Fuzzy Finder",
+      "body": "# 🔍 fzf — Command-Line Fuzzy Finder\n\nfzf is a general-purpose fuzzy finder that turns any list into an interactive,\nsearchable menu. Once installed it rewires several shell shortcuts for the better.\n\n```bash\nsudo pacman -S fzf              # Arch\nsudo apt install fzf            # Debian/Ubuntu\nsudo dnf install fzf            # Fedora\nbrew install fzf                # macOS / Linuxbrew\n```\n\n## Basic Usage\n\n```bash\nfzf                    # fuzzy-search files under the current dir, prints the pick\nvim $(fzf)              # open the picked file in vim\ncd $(find . -type d | fzf)   # fuzzy-cd into any subdirectory\n```\n\nType to filter, use arrow keys or `Ctrl+j`/`Ctrl+k` to move, `Enter` to select,\n`Tab` to multi-select, `Esc` to bail out.\n\n## Shell Integration\n\n```bash\n# ~/.bashrc or ~/.zshrc:\nsource /usr/share/fzf/key-bindings.bash   # or key-bindings.zsh\nsource /usr/share/fzf/completion.bash     # or completion.zsh\n```\n\n| Shortcut | Action |\n|----------|--------|\n| `Ctrl+R` | fuzzy search shell **history** |\n| `Ctrl+T` | fuzzy search **files** and paste path at cursor |\n| `Alt+C` | fuzzy **cd** into a subdirectory |\n| `**<Tab>` | fuzzy completion anywhere a normal completion works |\n\n```bash\nvim **<Tab>              # fuzzy-pick a file to open\nssh **<Tab>               # fuzzy-pick from known hosts\nkill -9 **<Tab>           # fuzzy-pick a PID\n```\n\n## Real Workflows\n\n```bash\n# Fuzzy git branch checkout:\ngit checkout $(git branch --all | fzf | tr -d '* ')\n\n# Fuzzy kill a process:\nkill -9 $(ps aux | fzf | awk '{print $2}')\n\n# Preview file contents while browsing (needs bat):\nfzf --preview 'bat --style=numbers --color=always {}'\n```\n\n## Tips\n\n- `FZF_DEFAULT_COMMAND='rg --files'` makes fzf use ripgrep, which respects `.gitignore`.\n- Combine with `xargs`: `fzf -m | xargs -o vim` to open multiple picks in one editor.\n",
+      "difficulty": 2,
+      "tags": [
+        "fzf",
+        "cli",
+        "productivity",
+        "shell"
+      ]
+    },
+    {
+      "title": "jq — JSON on the Command Line",
+      "body": "# 🧩 jq — JSON on the Command Line\n\njq is `sed`/`awk` for JSON: a tiny language for slicing, filtering, and\nreshaping JSON documents from the shell.\n\n```bash\nsudo pacman -S jq\nsudo apt install jq\nsudo dnf install jq\n```\n\n## Pretty-Print & Basic Access\n\n```bash\necho '{\"name\":\"Alice\",\"age\":30}' | jq .        # pretty-print with color\necho '{\"user\":{\"name\":\"Alice\"}}' | jq '.user.name'   # \"Alice\"\necho '{\"items\":[1,2,3]}' | jq '.items[0]'      # 1 — first array element\n```\n\n## Iterating Arrays\n\n```bash\necho '[{\"id\":1},{\"id\":2}]' | jq '.[]'          # stream each object\necho '[{\"id\":1},{\"id\":2}]' | jq '.[].id'       # 1 \\n 2\n```\n\n## Filtering with select()\n\n```bash\necho '[{\"id\":1,\"ok\":true},{\"id\":2,\"ok\":false}]' \\\n  | jq '.[] | select(.ok == true)'             # only the passing objects\n\njq '.[] | select(.age > 25)' users.json         # filter by predicate\n```\n\n## Mapping & Building Objects\n\n```bash\njq 'map(.name)' users.json                      # array of just the names\njq 'map({id: .id, label: .name})' users.json     # reshape each element\njq '{count: length, first: .[0]}' users.json     # build a new object\n```\n\n## Raw Output (-r)\n\n```bash\njq -r '.name' data.json          # strips the surrounding quotes\njq -r '.items[] | \"\\(.id): \\(.name)\"' data.json  # formatted lines, script-friendly\n```\n\n## With curl — Query a Live API\n\n```bash\ncurl -s https://api.github.com/repos/torvalds/linux \\\n  | jq '{name: .full_name, stars: .stargazers_count}'\n\ncurl -s https://api.github.com/users/torvalds/repos \\\n  | jq -r '.[] | select(.fork == false) | .name'\n```\n\n## Color & Compact Output\n\n```bash\njq -C . file.json | less -R      # force color, page through it\njq -c . file.json                # compact, one JSON object per line\n```\n",
+      "difficulty": 2,
+      "tags": [
+        "jq",
+        "json",
+        "cli",
+        "api"
+      ]
+    },
+    {
+      "title": "sed & awk — Stream Editing",
+      "body": "# ✂️ sed & awk — Stream Editing\n\nTwo classic text-processing tools. `sed` edits streams line by line; `awk`\nsplits lines into fields and runs a tiny program per line.\n\n## sed — the stream editor\n\n```bash\nsed 's/old/new/' file.txt          # replace FIRST match per line\nsed 's/old/new/g' file.txt         # replace ALL matches per line\nsed -i 's/old/new/g' file.txt      # edit the file IN PLACE\nsed -i.bak 's/old/new/g' file.txt  # in-place, keep a .bak backup\n```\n\n## Line Addressing\n\n```bash\nsed '3d' file.txt              # delete line 3\nsed '2,4d' file.txt            # delete lines 2 through 4\nsed '/^#/d' file.txt           # delete lines starting with #\nsed '/^$/d' file.txt           # delete blank lines\nsed -n '5,10p' file.txt        # print ONLY lines 5-10 (-n suppresses default)\n```\n\n## Multiple Edits with -e\n\n```bash\nsed -e 's/foo/bar/' -e 's/baz/qux/' file.txt   # chain two substitutions\n```\n\n## awk — field processing\n\n```bash\nawk '{print $1}' file.txt              # print first whitespace field\nawk '{print $1, $3}' file.txt          # first and third fields\nawk -F: '{print $1}' /etc/passwd       # custom field separator (:)\nawk -F, '{print $2}' data.csv          # CSV, second column\n```\n\n## BEGIN / END and Patterns\n\n```bash\nawk 'BEGIN{print \"Report:\"} {print $0} END{print \"Done\"}' file.txt\nawk '$3 > 1000 {print $1}' /etc/passwd     # only lines where field 3 > 1000\nawk '/error/ {print}' app.log              # only lines matching /error/\n```\n\n## Classic One-Liners\n\n```bash\n# Sum a numeric column:\nawk '{sum += $1} END {print sum}' numbers.txt\n\n# Print filename + line count for every file:\nwc -l *.txt | awk '{print $2, $1}'\n\n# Dedupe without sorting (preserve order):\nawk '!seen[$0]++' file.txt\n\n# Print fields 2 and 4, tab-separated:\nawk '{print $2\"\\t\"$4}' data.txt\n```\n",
+      "difficulty": 2,
+      "tags": [
+        "sed",
+        "awk",
+        "text-processing",
+        "cli"
+      ]
+    },
+    {
+      "title": "curl & wget — Fetching Data",
+      "body": "# 🌐 curl & wget — Fetching Data\n\nBoth fetch data over HTTP(S) and other protocols. curl is a Swiss-army knife\nfor talking to APIs; wget shines at bulk/recursive downloads.\n\n## curl — the essentials\n\n```bash\ncurl https://example.com                 # GET, prints body to stdout\ncurl -O https://example.com/file.zip     # save using the remote filename\ncurl -o out.zip https://example.com/f    # save with a custom filename\ncurl -I https://example.com              # HEAD request — headers only\n```\n\n## Making Requests\n\n```bash\ncurl -X POST -d '{\"key\":\"value\"}' \\\n  -H \"Content-Type: application/json\" \\\n  https://api.example.com/endpoint        # POST JSON body\n\ncurl -H \"Authorization: Bearer TOKEN\" https://api.example.com/data\ncurl -X DELETE https://api.example.com/items/42\n```\n\n## Redirects & Debugging\n\n```bash\ncurl -L https://example.com        # follow redirects (301/302)\ncurl -s https://example.com        # silent — no progress meter\ncurl -S https://example.com        # show errors even with -s\ncurl -sS https://example.com       # the combo you actually want in scripts\ncurl -v https://example.com        # verbose — dump request/response headers\n```\n\n## wget — recursive & resumable downloads\n\n```bash\nwget https://example.com/file.iso       # simple download\nwget -c https://example.com/big.iso     # resume a partial download\nwget -r -np -k https://example.com/docs/  # mirror a directory (recursive,\n                                           # no-parent, fix links for offline use)\nwget -q https://example.com/file        # quiet mode\n```\n\n## When to Use Which\n\n- **curl**: talking to APIs, sending custom methods/headers/bodies, piping to `jq`.\n- **wget**: downloading whole directory trees, mirroring sites, unattended resume\n  of huge files (`-c` is more forgiving than curl's `-C -`).\n",
+      "difficulty": 1,
+      "tags": [
+        "curl",
+        "wget",
+        "http",
+        "cli"
+      ]
+    },
+    {
+      "title": "ssh, scp & rsync — Remote Access & Transfer",
+      "body": "# 🔐 ssh, scp & rsync — Remote Access & Transfer\n\nThe core toolkit for working with remote machines: log in, copy files, sync\ndirectories.\n\n## SSH Basics\n\n```bash\nssh user@host                # connect\nssh -p 2222 user@host        # non-default port\nssh user@host 'uptime'       # run one command and exit\n```\n\n## Key-Based Auth\n\n```bash\nssh-keygen -t ed25519 -C \"you@example.com\"   # generate a keypair\nssh-copy-id user@host                         # install your public key remotely\neval \"$(ssh-agent)\" && ssh-add ~/.ssh/id_ed25519  # cache the passphrase\n```\n\n## ~/.ssh/config — Host Aliases\n\n```ini\nHost box\n    HostName 203.0.113.42\n    User noah\n    Port 2222\n    IdentityFile ~/.ssh/id_ed25519\n```\n\n```bash\nssh box              # now just works — no flags to remember\n```\n\n## Port Forwarding\n\n```bash\nssh -L 8080:localhost:80 user@host    # local: remote:80 → your localhost:8080\nssh -R 9000:localhost:3000 user@host  # remote: your local:3000 exposed on remote:9000\n```\n\n## scp — Simple Copy\n\n```bash\nscp file.txt user@host:/remote/path/     # upload\nscp user@host:/remote/file.txt .         # download\nscp -r localdir/ user@host:/remote/      # recursive directory copy\n```\n\n## rsync — the Better Alternative\n\nrsync only transfers the bytes that changed, and can resume.\n\n```bash\nrsync -avz src/ user@host:/remote/dest/   # archive, verbose, compressed\nrsync -avz --delete src/ dest/            # mirror: also delete extras in dest\nrsync -avz -e ssh src/ user@host:/dest/   # explicit: use ssh as the transport\n```\n\n## Real Backup One-Liner\n\n```bash\nrsync -avz --delete -e \"ssh -p 2222\" \\\n  ~/projects/ user@host:/backups/projects/\n```\n\n`-a` preserves permissions/timestamps/symlinks; `--delete` keeps the backup an\nexact mirror; the trailing slash on the source copies its *contents*, not the\ndirectory itself.\n",
+      "difficulty": 2,
+      "tags": [
+        "ssh",
+        "scp",
+        "rsync",
+        "networking"
+      ]
+    },
+    {
+      "title": "systemctl & journalctl — systemd Services & Logs",
+      "body": "# ⚙️ systemctl & journalctl — Services & Logs\n\nManaging and diagnosing systemd services, in one place.\n\n## Controlling Services\n\n```bash\nsudo systemctl start nginx      # start now\nsudo systemctl stop nginx       # stop now\nsudo systemctl restart nginx    # stop + start\nsudo systemctl enable nginx     # start automatically on boot\nsudo systemctl enable --now nginx  # enable AND start in one shot\nsudo systemctl status nginx     # state + last log lines\n```\n\n## User Services\n\nServices that run as your user, no root/sudo required:\n\n```bash\nsystemctl --user start myapp\nsystemctl --user enable --now myapp\nloginctl enable-linger $USER    # keep user services alive after logout\n```\n\n## Finding Problems\n\n```bash\nsystemctl list-units --failed       # anything currently broken?\nsystemctl list-units --type=service # every active service\n```\n\n## journalctl — Reading the Logs\n\n```bash\njournalctl -u nginx             # all logs for the nginx unit\njournalctl -u nginx -f          # follow live, like tail -f\njournalctl --since \"1 hour ago\" # time-windowed\njournalctl --since today -u nginx\njournalctl -p err               # priority: errors and above\njournalctl -p err -b            # errors from the current boot only\n```\n\n## Disk Usage & Vacuuming\n\n```bash\njournalctl --disk-usage             # how much space the journal is using\nsudo journalctl --vacuum-size=500M  # trim to 500MB\nsudo journalctl --vacuum-time=2weeks  # drop entries older than 2 weeks\n```\n\n## Tips\n\n- `systemctl status` truncates logs — use `journalctl -u <service> -f` for the\n  full live stream while debugging a startup failure.\n- `journalctl -k` shows only kernel messages (like `dmesg`).\n",
+      "difficulty": 2,
+      "tags": [
+        "systemd",
+        "systemctl",
+        "journalctl",
+        "logs"
+      ]
+    },
+    {
+      "title": "cron & systemd Timers — Scheduling Jobs",
+      "body": "# ⏰ cron & systemd Timers — Scheduling Jobs\n\nTwo ways to run a command on a schedule: the classic `cron`, and the modern\nsystemd timer.\n\n## cron\n\n```bash\ncrontab -e           # edit your user's crontab\ncrontab -l            # list your current jobs\n```\n\n```\n┌── minute (0-59)\n│ ┌── hour (0-23)\n│ │ ┌── day of month (1-31)\n│ │ │ ┌── month (1-12)\n│ │ │ │ ┌── day of week (0-6, Sun=0)\n* * * * *  command\n```\n\n```bash\n0 2 * * *      /home/noah/backup.sh      # every day at 2:00 AM\n*/15 * * * *   /home/noah/check.sh       # every 15 minutes\n0 9 * * 1-5    /home/noah/report.sh      # weekdays at 9 AM\n```\n\n## Special Strings\n\n```bash\n@reboot   /home/noah/startup.sh   # once, at boot\n@daily    /home/noah/cleanup.sh   # shorthand for 0 0 * * *\n@hourly   /home/noah/poll.sh\n```\n\n## Logging cron Output\n\ncron discards output by default — always redirect it:\n\n```bash\n0 2 * * * /home/noah/backup.sh >> /var/log/backup.log 2>&1\n```\n\n## systemd Timers — the Modern Alternative\n\nA timer pairs with a `.service` unit that does the actual work.\n\n```ini\n# /etc/systemd/system/backup.service\n[Unit]\nDescription=Nightly backup\n\n[Service]\nType=oneshot\nExecStart=/home/noah/backup.sh\n```\n\n```ini\n# /etc/systemd/system/backup.timer\n[Unit]\nDescription=Run backup.service nightly\n\n[Timer]\nOnCalendar=*-*-* 02:00:00\nPersistent=true     # if the machine was off, run it on next boot\n\n[Install]\nWantedBy=timers.target\n```\n\n```bash\nsudo systemctl enable --now backup.timer\nsystemctl list-timers --all         # see every timer and its next run\n```\n\n## Why Timers Are Often Preferred\n\n- Logs go to `journalctl -u backup.service` automatically — no manual redirect.\n- `Persistent=true` catches up missed runs after downtime; cron just skips them.\n- Full systemd dependency control (`After=`, `Requires=network-online.target`).\n- One command (`systemctl list-timers`) shows every schedule and its next run.\n",
+      "difficulty": 2,
+      "tags": [
+        "cron",
+        "systemd",
+        "timers",
+        "scheduling"
+      ]
+    }
+  ],
+  "🛠️ Dev Environments": [
+    {
+      "title": "Python venv & pip",
+      "body": "# 🐍 Python venv & pip\n\nEvery Python project should get its own isolated environment — never install\npackages into the system Python.\n\n## Create & Activate a venv\n\n```bash\npython -m venv .venv          # create an environment in ./.venv\nsource .venv/bin/activate     # activate it (Linux/macOS)\n# .venv\\Scripts\\activate      # Windows (for reference)\ndeactivate                    # leave the environment\n```\n\nOnce activated, your prompt shows `(.venv)` and `python`/`pip` point inside it.\n\n## Installing Packages\n\n```bash\npip install requests           # install into the active venv\npip install requests==2.31.0   # pin a specific version\npip install -U requests        # upgrade\npip uninstall requests\npip list                       # what's installed here\n```\n\n## requirements.txt — Reproducible Installs\n\n```bash\npip freeze > requirements.txt      # snapshot exact versions\npip install -r requirements.txt    # recreate that environment elsewhere\n```\n\n```\n# requirements.txt\nrequests==2.31.0\nflask==3.0.0\n```\n\n## Never `sudo pip install`\n\nInstalling globally with `sudo pip install` can clobber packages your distro\ndepends on, and every project ends up fighting over one shared set of\nversions. Always use a venv per project instead.\n\n```bash\n# Bad:\nsudo pip install some-package\n\n# Good:\npython -m venv .venv && source .venv/bin/activate && pip install some-package\n```\n\n## pipx — for CLI Tools, Not Libraries\n\nWhen you want a Python-based *command* (like `black` or `httpie`) available\neverywhere without polluting any project's venv:\n\n```bash\nsudo pacman -S python-pipx      # or: python3 -m pip install --user pipx\npipx install black\npipx install httpie\npipx list\n```\n\nEach tool gets its own isolated venv under the hood, but the executable lands\non your `PATH`.\n",
+      "difficulty": 1,
+      "tags": [
+        "python",
+        "venv",
+        "pip",
+        "packaging"
+      ]
+    },
+    {
+      "title": "Node.js & npm",
+      "body": "# 📦 Node.js & npm\n\nnpm is Node's package manager and task runner, driven by `package.json`.\n\n## Starting a Project\n\n```bash\nnpm init                # interactive prompts\nnpm init -y              # accept all defaults, no prompts\n```\n\nThis creates `package.json`, the manifest describing your project, its\nscripts, and its dependencies.\n\n## Installing Packages\n\n```bash\nnpm install express          # local — adds to node_modules/ + package.json\nnpm install -D typescript    # dev dependency (build/test tools only)\nnpm install -g nodemon       # global — available as a command anywhere\nnpm uninstall express\n```\n\n`package.json` records what you asked for; `package-lock.json` pins the exact\nresolved versions of the whole dependency tree — always commit both.\n\n```bash\nnpm ci                  # clean install strictly from package-lock.json\n                         # (faster and safer than `npm install` in CI)\n```\n\n## Running Scripts\n\n```json\n// package.json\n{\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\",\n    \"test\": \"vitest run\"\n  }\n}\n```\n\n```bash\nnpm run dev\nnpm run build\nnpm test                 # npm special-cases \"test\" — no \"run\" needed\n```\n\n## npx — Run a Package Without Installing It\n\n```bash\nnpx create-react-app myapp     # runs the latest version, once\nnpx cowsay \"hello\"              # try a CLI tool without polluting your system\n```\n\n## nvm — Managing Node Versions\n\nDifferent projects often need different Node versions:\n\n```bash\ncurl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash\nnvm install --lts        # install latest LTS\nnvm install 20            # install a specific major version\nnvm use 20                 # switch for the current shell\nnvm alias default 20       # make it the default for new shells\n```\n",
+      "difficulty": 1,
+      "tags": [
+        "nodejs",
+        "npm",
+        "javascript",
+        "packaging"
+      ]
+    },
+    {
+      "title": "Rust & Cargo",
+      "body": "# 🦀 Rust & Cargo\n\nCargo is Rust's build tool, package manager, and test runner all in one.\n\n## Installing Rust\n\n```bash\ncurl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.dev | sh   # rustup\n# or: sudo pacman -S rustup && rustup default stable\n\nrustc --version\ncargo --version\nrustup update             # keep the toolchain current\n```\n\n## Creating a Project\n\n```bash\ncargo new myapp           # new binary project with a git repo\ncargo new --lib mylib     # new library project\ncd myapp\n```\n\n```\nmyapp/\n├── Cargo.toml     # manifest: name, version, dependencies\n└── src/\n    └── main.rs    # entry point (fn main())\n```\n\n## Build, Run, Test\n\n```bash\ncargo build            # compile (debug profile, target/debug/)\ncargo run               # compile + run in one step\ncargo test               # run all #[test] functions\ncargo build --release    # optimized build, target/release/\n```\n\n## Dependencies\n\n```toml\n# Cargo.toml\n[dependencies]\nserde = { version = \"1\", features = [\"derive\"] }\ntokio = { version = \"1\", features = [\"full\"] }\n```\n\n```bash\ncargo add serde --features derive     # adds to Cargo.toml automatically\ncargo add tokio -F full\ncargo remove serde\ncargo update                            # bump within semver ranges\n```\n\n## Formatting & Linting\n\n```bash\ncargo fmt                # auto-format per rustfmt rules\ncargo clippy             # catch common mistakes and non-idiomatic code\ncargo clippy --fix        # apply the safe suggestions automatically\n```\n\n## Tips\n\n- `Cargo.lock` pins exact dependency versions — commit it for binaries, it's\n  optional (but common) to commit for libraries too.\n- `cargo check` type-checks without producing a binary — much faster while\n  iterating.\n",
+      "difficulty": 2,
+      "tags": [
+        "rust",
+        "cargo",
+        "packaging",
+        "compiler"
+      ]
+    },
+    {
+      "title": "Go Modules",
+      "body": "# 🐹 Go Modules\n\nGo's built-in dependency management, no separate package manager needed.\n\n## Starting a Module\n\n```bash\ngo mod init github.com/you/myapp    # creates go.mod, module path is arbitrary\n```\n\n```\n// go.mod\nmodule github.com/you/myapp\n\ngo 1.22\n```\n\n## Adding Dependencies\n\n```bash\ngo get github.com/gin-gonic/gin           # latest compatible version\ngo get github.com/gin-gonic/gin@v1.9.1    # a specific version\ngo get -u ./...                            # upgrade everything\n```\n\n`go.mod` lists direct dependencies and the Go version; `go.sum` records\ncryptographic checksums of every module in the dependency graph — commit both.\n\n## Build, Run, Test\n\n```bash\ngo build              # compile to a binary in the current directory\ngo build -o bin/app   # compile to a specific output path\ngo run main.go        # compile + run in one step, no binary left behind\ngo test ./...         # run all tests in the module\ngo test -v ./...      # verbose test output\n```\n\n## GOPATH vs Modules\n\nOld Go (pre-1.11) required all code to live under a single `$GOPATH/src`\ntree. Modules (default since Go 1.16) decouple your code from any specific\nlocation — `go.mod` is the source of truth, and you can work anywhere on disk.\n\n```bash\ngo env GOPATH          # still used for the module cache & installed binaries\n```\n\n## Installing CLI Tools\n\n```bash\ngo install github.com/golangci/golangci-lint/cmd/golangci-lint@latest\n# binary lands in $(go env GOPATH)/bin — make sure that's on your PATH\nexport PATH=\"$(go env GOPATH)/bin:$PATH\"\n```\n\n## Tips\n\n```bash\ngo mod tidy      # add missing requirements, drop unused ones\ngo mod why golang.org/x/text   # explain why a dependency is present\ngo vet ./...      # static analysis for suspicious constructs\n```\n",
+      "difficulty": 2,
+      "tags": [
+        "go",
+        "golang",
+        "modules",
+        "packaging"
+      ]
+    },
+    {
+      "title": "Version Managers — asdf, direnv, mise",
+      "body": "# 🧬 Version Managers — asdf, direnv, mise\n\n## The Problem\n\nProject A needs Node 18, project B needs Node 20, and your system Python has\nto stay untouched for OS scripts. Installing everything globally doesn't work.\n\n## asdf — One Tool, Every Language\n\n```bash\ngit clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.0\n# add to ~/.zshrc or ~/.bashrc:\n. \"$HOME/.asdf/asdf.sh\"\n\nasdf plugin add nodejs\nasdf plugin add python\nasdf plugin add rust\n\nasdf install nodejs 20.11.0\nasdf install python 3.12.1\n\nasdf global nodejs 20.11.0     # default version everywhere\nasdf local nodejs 18.19.0       # override for this directory (writes .tool-versions)\n```\n\n```\n# .tool-versions (commit this to your repo)\nnodejs 18.19.0\npython 3.11.7\n```\n\n`asdf` reads `.tool-versions` and automatically switches the active version\nwhen you `cd` into the directory.\n\n## direnv — Per-Directory Environment Variables\n\n```bash\nsudo pacman -S direnv\n# add to end of ~/.zshrc or ~/.bashrc:\neval \"$(direnv hook zsh)\"     # or bash\n```\n\n```bash\n# .envrc in your project root\nexport DATABASE_URL=\"postgres://localhost/myapp_dev\"\nexport DEBUG=1\n```\n\n```bash\ndirenv allow          # required once per .envrc — a security check\ncd ..\ncd myproject           # DATABASE_URL and DEBUG are now set automatically\ncd ..                  # and unset again on the way out\n```\n\n## mise — Faster, asdf-Compatible\n\n`mise` (formerly `rtx`) reimplements the asdf idea in Rust: faster shims, a\nsingle binary, and it reads existing `.tool-versions` files.\n\n```bash\ncurl https://mise.run | sh\nmise install node@20\nmise use node@20         # like asdf local\nmise use -g node@20       # like asdf global\n```\n\nIt's a drop-in replacement if your team already relies on asdf's plugin\necosystem but wants less startup overhead.\n",
+      "difficulty": 2,
+      "tags": [
+        "asdf",
+        "direnv",
+        "mise",
+        "versioning"
+      ]
+    }
+  ],
+  "📦 Package Managers": [
+    {
+      "title": "APT — Debian & Ubuntu",
+      "body": "# 📦 APT — Debian & Ubuntu\n\nAPT (Advanced Package Tool) is the package manager for Debian, Ubuntu, and\ntheir many derivatives.\n\n## Update & Upgrade\n\n```bash\nsudo apt update          # refresh the package index (always do this first)\nsudo apt upgrade         # upgrade all installed packages\nsudo apt full-upgrade    # upgrade + handle changed dependencies (may remove pkgs)\n```\n\n## Install & Remove\n\n```bash\nsudo apt install nginx           # install a package\nsudo apt install nginx git curl  # install several at once\nsudo apt remove nginx            # remove, keep config files\nsudo apt purge nginx             # remove AND config files\nsudo apt autoremove               # clean up unneeded dependencies\n```\n\n## Searching & Info\n\n```bash\napt search nginx              # search package names/descriptions\napt list --installed          # everything currently installed\napt list --installed | grep nginx\napt show nginx                # description, version, dependencies\napt-cache policy nginx        # installed vs candidate version, which repo\n```\n\n## PPAs — Personal Package Archives (Ubuntu)\n\nThird-party repositories for software not in the default archive:\n\n```bash\nsudo add-apt-repository ppa:some/ppa\nsudo apt update\nsudo apt install some-package\nsudo add-apt-repository --remove ppa:some/ppa   # remove it later\n```\n\n## Installing a .deb File Directly\n\n```bash\nsudo dpkg -i package.deb          # install a downloaded .deb\nsudo apt install -f               # fix any missing dependencies afterward\n```\n\n## Housekeeping\n\n```bash\nsudo apt autoremove       # drop orphaned dependencies\nsudo apt clean             # clear the downloaded .deb cache entirely\nsudo apt autoclean         # clear only outdated cached .debs\n```\n",
+      "difficulty": 1,
+      "tags": [
+        "apt",
+        "debian",
+        "ubuntu",
+        "packaging"
+      ]
+    },
+    {
+      "title": "DNF — Fedora & RHEL",
+      "body": "# 📦 DNF — Fedora & RHEL\n\nDNF is the package manager for Fedora, RHEL, CentOS Stream, and Rocky/Alma\nLinux — the modern successor to `yum` (same command surface, better\ndependency resolution and speed).\n\n## Install, Remove, Update\n\n```bash\nsudo dnf install nginx          # install\nsudo dnf remove nginx           # remove\nsudo dnf update                 # update all packages\nsudo dnf update nginx           # update just one package\nsudo dnf upgrade                # alias for update on modern DNF\n```\n\n## Searching & Listing\n\n```bash\ndnf search nginx                 # search by name/description\ndnf list installed                # everything installed\ndnf list installed | grep nginx\ndnf info nginx                    # description, size, repo, version\n```\n\n## History — Undo an Update\n\nDNF tracks every transaction, and you can roll one back:\n\n```bash\ndnf history                       # list past transactions\ndnf history info 42                # details of transaction 42\nsudo dnf history undo 42           # revert transaction 42\nsudo dnf history rollback 40       # revert back to state after transaction 40\n```\n\n## COPR — Community Repositories\n\nFedora's equivalent of Ubuntu PPAs — community-built extra packages:\n\n```bash\nsudo dnf install dnf-plugins-core\nsudo dnf copr enable someuser/somerepo\nsudo dnf install some-package\nsudo dnf copr disable someuser/somerepo\n```\n\n## Installing an .rpm Directly\n\n```bash\nsudo rpm -i package.rpm            # basic install, no dependency resolution\nsudo dnf install ./package.rpm     # preferred — DNF resolves dependencies too\n```\n\n## yum vs dnf\n\n`yum` is the legacy tool on older RHEL/CentOS 7; `dnf` replaced it starting\nwith Fedora 22 and RHEL 8, offering a faster SAT-based dependency resolver\nand a stable, documented plugin API. On modern systems `yum` is usually just\na symlink to `dnf`.\n",
+      "difficulty": 1,
+      "tags": [
+        "dnf",
+        "fedora",
+        "rhel",
+        "packaging"
+      ]
+    },
+    {
+      "title": "Homebrew — macOS & Linux",
+      "body": "# 🍺 Homebrew — macOS & Linux\n\nHomebrew is the de facto package manager for macOS, and also works on Linux\n(installing into `/home/linuxbrew` rather than needing root).\n\n## Installing Homebrew\n\n```bash\n/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"\n```\n\n## Install & Remove Packages\n\n```bash\nbrew install wget          # install a \"formula\"\nbrew install jq ripgrep    # several at once\nbrew uninstall wget\n```\n\n## Searching & Listing\n\n```bash\nbrew search wget           # search available formulae/casks\nbrew list                  # everything currently installed\nbrew info wget              # version, dependencies, caveats\n```\n\n## Keeping Things Updated\n\n```bash\nbrew update                 # refresh Homebrew's own package index\nbrew upgrade                 # upgrade all installed formulae\nbrew upgrade wget             # upgrade just one\nbrew outdated                 # what's behind the latest version?\n```\n\n## Cleanup\n\n```bash\nbrew cleanup                # remove old versions and cached downloads\nbrew cleanup -n              # dry run — show what would be removed\n```\n\n## Casks — GUI Apps (macOS)\n\nCasks install full macOS applications, not just CLI tools:\n\n```bash\nbrew install --cask visual-studio-code\nbrew install --cask docker\nbrew list --cask\n```\n\n## Taps — Extra Repositories\n\nA \"tap\" adds a third-party source of formulae/casks beyond Homebrew's default:\n\n```bash\nbrew tap homebrew/cask-fonts\nbrew install --cask font-fira-code\nbrew untap homebrew/cask-fonts    # remove a tap later\n```\n",
+      "difficulty": 1,
+      "tags": [
+        "homebrew",
+        "macos",
+        "packaging",
+        "brew"
+      ]
+    },
+    {
+      "title": "Flatpak, Snap & AppImage",
+      "body": "# 📦 Flatpak, Snap & AppImage — Universal Linux Packages\n\nThree cross-distro formats that bundle an app with its dependencies so it\nruns the same on any distro, independent of the system package manager.\n\n## Flatpak\n\nSandboxed apps distributed mainly through Flathub, with permissions you can\ninspect and restrict.\n\n```bash\nsudo pacman -S flatpak                        # install Flatpak itself\nflatpak remote-add --if-not-exists flathub \\\n  https://flathub.org/repo/flathub.flatpakrepo\n\nflatpak install flathub org.videolan.VLC      # install an app\nflatpak run org.videolan.VLC                  # run it\nflatpak update                                 # update all Flatpak apps\nflatpak uninstall org.videolan.VLC\nflatpak list                                    # what's installed\n```\n\nSandboxing means each app only sees the filesystem/devices it's explicitly\ngranted — check permissions with `flatpak info --show-permissions <app>`.\n\n## Snap\n\nUbuntu's format (Canonical), with automatic background updates and its own\nconfinement model.\n\n```bash\nsudo apt install snapd          # Ubuntu ships this by default\nsudo snap install code           # install an app\nsnap list                         # what's installed, with revision/channel\nsudo snap remove code\nsudo snap refresh                 # manual update (snaps also auto-update)\n```\n\nConfinement levels (`strict`, `classic`, `devmode`) control how much of the\nhost system a snap can touch — `snap info code` shows which one it uses.\n\n## AppImage\n\nA single executable file — no installation, no package manager involved.\n\n```bash\nchmod +x MyApp.AppImage\n./MyApp.AppImage                 # just run it\n```\n\nFor desktop integration (menu entry, icon), use `appimaged` or `AppImageLauncher`:\n\n```bash\n# appimaged watches ~/Applications and integrates AppImages automatically\n```\n\n## When to Reach for Each\n\n- **System package manager** (`apt`/`dnf`/`pacman`): first choice — smallest,\n  best integrated, gets security updates alongside the rest of your system.\n- **Flatpak**: GUI apps you want sandboxed, or that aren't packaged for your\n  distro (works the same everywhere).\n- **Snap**: mainly relevant on Ubuntu; good when upstream only ships Snap.\n- **AppImage**: quick one-off trial of an app, or no-install-required\n  portability (e.g. carrying it on a USB stick).\n",
+      "difficulty": 2,
+      "tags": [
+        "flatpak",
+        "snap",
+        "appimage",
+        "packaging"
+      ]
     }
   ]
 }

@@ -1,18 +1,18 @@
-# ⚡ Arch Academy
+# 🐧 Linux Academy
 
 Learn Linux, Arch, Bash, Zsh, Networking, Git, Docker and more — three ways.
 All three front-ends share the same lessons from `content.py`.
 
-**74 lessons · 10 categories · 20 tips**
+**90 lessons · 13 categories · 20 tips**
 
 ## Run it
 
 ```bash
 # TUI (terminal — needs textual: pip install textual)
-python3 arch_academy.py
+python3 linux_academy.py
 
 # GUI (desktop window — stdlib tkinter, no install needed)
-python3 arch_academy_gui.py
+python3 linux_academy_gui.py
 
 # Web app (no server — just open the file in a browser)
 xdg-open index.html        # or double-click it
@@ -57,7 +57,6 @@ xdg-open index.html        # or double-click it
 - **Bash syntax highlighting** — keywords, builtins, strings, variables, flags, comments (web app)
 - **4 themes** — GitHub Dark, GitHub Light, Nord, Gruvbox (web app — persists to localStorage)
 - **Difficulty filter** — sidebar buttons to show only beginner / intermediate / advanced lessons
-- **Export** — download all favorites + notes as a single markdown file (web app)
 - **Full-text search** across all lesson titles and bodies
 - **Progress tracking** — `✓` marks persist between sessions
 - **Favorites** — `★` marks shared between TUI and GUI
@@ -65,7 +64,7 @@ xdg-open index.html        # or double-click it
 - **Random / next-unlearned** jumps for when you're not sure what to study
 - **Clipboard** copy — copy any lesson's content
 
-Progress, favorites, and notes live in `~/.local/share/arch-academy/` and are
+Progress, favorites, and notes live in `~/.local/share/linux-academy/` and are
 shared between the TUI and GUI (web uses localStorage separately).
 
 ## Categories
@@ -82,6 +81,9 @@ shared between the TUI and GUI (web uses localStorage separately).
 | 🌿 Git | 6 |
 | 🖥️ Tmux & Editors | 6 |
 | 🐳 Docker | 8 |
+| 🧰 CLI Power Tools | 7 |
+| 🛠️ Dev Environments | 5 |
+| 📦 Package Managers | 4 |
 
 ## Editing content
 

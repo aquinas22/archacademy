@@ -1,15 +1,14 @@
-# ⚡ Arch Academy — Feature Checklist
+# 🐧 Linux Academy — Feature Checklist
 
 ## Already shipped ✅
 
 - [x] Three front-ends sharing one content source: **TUI** (Textual), **GUI** (Tkinter), **Web** (single HTML)
-- [x] **74 lessons** across **10 categories** (Linux, File System, Arch, Bash, Zsh, Networking, SysAdmin, Git, Tmux/Editors, Docker)
+- [x] **90 lessons** across **13 categories** (Linux, File System, Arch, Bash, Zsh, Networking, SysAdmin, Git, Tmux/Editors, Docker, CLI Power Tools, Dev Environments, Package Managers)
 - [x] **Difficulty levels** — 🟢 Beginner / 🟡 Intermediate / 🔴 Advanced on every lesson
 - [x] **Bash syntax highlighting** in web app (keywords, builtins, strings, variables, flags, comments, operators)
 - [x] **4 themes** — GitHub Dark, GitHub Light, Nord, Gruvbox (web app, persists)
 - [x] **Per-lesson notes** — auto-saved (localStorage in web; shared notes.json for TUI + GUI)
 - [x] **Difficulty filter** — sidebar pill buttons + keyboard `1/2/3`
-- [x] **Export** — download favorites + notes as markdown (web app)
 - [x] Full-text search across every lesson
 - [x] Progress tracking (`✓` mark) persisted to disk / localStorage
 - [x] Favorites / bookmarks `★`
@@ -39,7 +38,7 @@
 
 - [ ] **7. Live system integration** — "Run on this machine" buttons that execute safe, read-only commands (`df -h`, `ip a`, `uname -r`) and display real output inline.
 
-- [ ] **8. User-contributed lessons** — Load extra lessons from `~/.config/arch-academy/` drop-in folder so teams can add their own runbooks.
+- [ ] **8. User-contributed lessons** — Load extra lessons from `~/.config/linux-academy/` drop-in folder so teams can add their own runbooks.
 
 - [ ] **9. Highlight matches in search** — Bold the matching substring in search results for faster scanning.
 

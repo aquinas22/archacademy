@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Arch Academy — Learn Linux the right way."""
+"""Linux Academy — Learn Linux the right way."""
 
 import json
 import random
@@ -17,7 +17,7 @@ from textual.widgets import (
 
 from content import LESSONS, CATEGORIES, TIPS
 
-DATA_DIR       = Path.home() / ".local/share/arch-academy"
+DATA_DIR       = Path.home() / ".local/share/linux-academy"
 PROGRESS_FILE  = DATA_DIR / "progress.json"
 FAVORITES_FILE = DATA_DIR / "favorites.json"
 NOTES_FILE     = DATA_DIR / "notes.json"
@@ -86,7 +86,7 @@ class TipModal(ModalScreen):
 
     def compose(self) -> ComposeResult:
         with Vertical(id="tip-dialog"):
-            yield Static("⚡  ARCH ACADEMY", id="tip-logo")
+            yield Static("🐧  LINUX ACADEMY", id="tip-logo")
             yield Static("Learn Linux the Right Way", id="tip-tagline")
             yield Rule()
             yield Static("✨  TIP OF THE DAY", id="tip-label")
@@ -136,7 +136,7 @@ class HelpModal(ModalScreen):
 | `q` | Quit |
 
 Progress, favorites, and notes live in
-`~/.local/share/arch-academy/` — shared with the GUI.
+`~/.local/share/linux-academy/` — shared with the GUI.
 """)
             yield Rule()
             yield Static("Press Esc or ? to close", id="help-hint")
@@ -232,7 +232,7 @@ class LessonTree(Tree):
 # ─── Main App ─────────────────────────────────────────────────────────────────
 
 class ArchAcademy(App):
-    TITLE = "⚡ Arch Academy"
+    TITLE = "🐧 Linux Academy"
     CSS = """
     Screen { background: #0d1117; }
 
@@ -465,7 +465,7 @@ class ArchAcademy(App):
         yield Header(show_clock=True)
         with Horizontal():
             with Vertical(id="sidebar"):
-                yield Static(" ARCH ACADEMY", id="sidebar-header")
+                yield Static(" LINUX ACADEMY", id="sidebar-header")
                 yield LessonTree("", id="lesson-tree")
                 with Vertical(id="sidebar-footer"):
                     yield Static("PROGRESS", id="progress-label")

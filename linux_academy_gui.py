@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Arch Academy — Tkinter GUI. Stdlib only. Shares progress + notes with the TUI."""
+"""Linux Academy — Tkinter GUI. Stdlib only. Shares progress + notes with the TUI."""
 
 import json
 import random
@@ -9,7 +9,7 @@ from tkinter import ttk
 
 from content import LESSONS, CATEGORIES, TIPS
 
-DATA_DIR       = Path.home() / ".local/share/arch-academy"
+DATA_DIR       = Path.home() / ".local/share/linux-academy"
 PROGRESS_FILE  = DATA_DIR / "progress.json"
 FAVORITES_FILE = DATA_DIR / "favorites.json"
 NOTES_FILE     = DATA_DIR / "notes.json"
@@ -40,6 +40,16 @@ DIFF_NAME = {1: "Beginner", 2: "Intermediate", 3: "Advanced"}
 
 def pkey(cat, idx):
     return f"{cat}:{idx}"
+
+
+def _set_window_icon(root):
+    icon_path = Path(__file__).parent / "assets" / "tux-64.png"
+    try:
+        icon = tk.PhotoImage(file=str(icon_path))
+        root.iconphoto(True, icon)
+        root._tux_icon = icon  # keep a reference, Tk drops the image otherwise
+    except Exception:
+        pass
 
 
 def load_set(path):
@@ -78,10 +88,11 @@ class ArchAcademyGUI:
         self.lesson_iids = {}
         self.cat_iids    = {}
 
-        root.title("⚡ Arch Academy")
+        root.title("🐧 Linux Academy")
         root.geometry("1280x800")
         root.configure(bg=BG)
         root.minsize(960, 600)
+        _set_window_icon(root)
 
         self._setup_styles()
         self._build_layout()
@@ -130,7 +141,7 @@ class ArchAcademyGUI:
         top = tk.Frame(self.root, bg=BG_DARK, height=46)
         top.pack(side="top", fill="x")
         top.pack_propagate(False)
-        tk.Label(top, text="  ⚡ ARCH ACADEMY", bg=BG_DARK, fg=BLUE,
+        tk.Label(top, text="  🐧 LINUX ACADEMY", bg=BG_DARK, fg=BLUE,
                  font=(SANS, 14, "bold")).pack(side="left", pady=8)
         tk.Label(top, text="Learn Linux the Right Way  ", bg=BG_DARK, fg=DIMMER,
                  font=(SANS, 10)).pack(side="right", pady=8)
@@ -605,7 +616,7 @@ class ArchAcademyGUI:
         y = self.root.winfo_y() + (self.root.winfo_height() - h) // 2
         win.geometry(f"{w}x{h}+{max(x,0)}+{max(y,0)}")
         win.transient(self.root)
-        tk.Label(win, text="⚡ ARCH ACADEMY", bg=BG, fg=BLUE,
+        tk.Label(win, text="🐧 LINUX ACADEMY", bg=BG, fg=BLUE,
                  font=(SANS, 16, "bold")).pack(pady=(22, 0))
         tk.Label(win, text="✨ TIP OF THE DAY", bg=BG, fg=GREEN,
                  font=(SANS, 10, "bold")).pack(pady=(14, 4))
