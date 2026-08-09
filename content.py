@@ -1040,6 +1040,142 @@ LESSONS = {
   ]
 }
 
+LESSONS["🛡️ Security & Reliability"] = [
+  {
+    "title": "A Practical Linux Security Baseline",
+    "difficulty": 1,
+    "tags": ["security", "linux", "hardening"],
+    "body": """# 🛡️ A Practical Linux Security Baseline
+
+Security starts with a few boring, repeatable habits—not a pile of exotic tools.
+
+## Your first-pass checklist
+
+- Install updates regularly and remove software you do not use
+- Use a normal user account; elevate with `sudo` only when needed
+- Prefer SSH keys over passwords and protect private keys with a passphrase
+- Enable a firewall, expose only required ports, and verify what is listening
+- Back up important data and test that you can restore it
+
+```bash
+sudo pacman -Syu                 # update an Arch system
+ss -tulpn                        # audit listening sockets
+systemctl --failed               # find unhealthy services
+find ~/.ssh -type f -maxdepth 1 -ls
+```
+
+## Think in layers
+
+A secure machine combines **prevention** (updates and least privilege), **detection** (logs and monitoring), and **recovery** (tested backups). No single command replaces the other two layers.
+"""
+  },
+  {
+    "title": "SSH Keys & Safer Remote Access",
+    "difficulty": 2,
+    "tags": ["security", "ssh", "networking"],
+    "body": """# 🔑 SSH Keys & Safer Remote Access
+
+SSH keys are stronger and more convenient than reusable account passwords.
+
+```bash
+ssh-keygen -t ed25519 -a 100       # create a modern key
+ssh-copy-id user@server            # install the public key
+ssh -v user@server                 # debug a connection
+ssh-add -l                         # list keys loaded in your agent
+```
+
+## Client shortcuts
+
+```bash
+# ~/.ssh/config
+Host homelab
+  HostName 192.168.1.40
+  User noah
+  IdentityFile ~/.ssh/id_ed25519
+```
+
+Now `ssh homelab` is enough. Keep `~/.ssh` at mode 700 and private keys at 600. Before disabling password login, open a second terminal and prove key login works.
+"""
+  },
+  {
+    "title": "Backups with rsync",
+    "difficulty": 2,
+    "tags": ["backup", "rsync", "reliability"],
+    "body": """# 💾 Backups with rsync
+
+`rsync` copies only differences, preserves metadata, and works locally or over SSH.
+
+```bash
+rsync -aH --info=progress2 ~/Documents/ /mnt/backup/Documents/
+rsync -aHn --delete source/ destination/  # dry run first
+rsync -aH --delete ~/project/ server:/srv/backups/project/
+```
+
+## The trailing-slash rule
+
+`source/` copies the **contents** of source. `source` copies the directory itself. Always preview destructive syncs with `-n` before adding `--delete`.
+
+## A backup is only real after a restore test
+
+Periodically restore a random file into `/tmp`, compare it with the original using `sha256sum`, and document the full recovery process.
+"""
+  },
+  {
+    "title": "Reading Logs Like a Detective",
+    "difficulty": 2,
+    "tags": ["logs", "systemd", "troubleshooting"],
+    "body": """# 🔎 Reading Logs Like a Detective
+
+Start broad, narrow by time and service, then correlate the first error with what changed.
+
+```bash
+journalctl -b -p warning           # warnings since this boot
+journalctl -u sshd --since today   # one service, today
+journalctl -f                      # follow new messages
+journalctl --disk-usage            # journal storage size
+```
+
+## A useful incident loop
+
+1. Record the symptom and exact time.
+2. Check service state with `systemctl status name`.
+3. Inspect logs just before the failure.
+4. Form one hypothesis and test it.
+5. Write down the fix and a prevention step.
+
+Avoid changing several things at once—you lose the evidence that tells you what actually worked.
+"""
+  },
+  {
+    "title": "Incident Response: First 15 Minutes",
+    "difficulty": 3,
+    "tags": ["security", "incident-response", "forensics"],
+    "body": """# 🚨 Incident Response: First 15 Minutes
+
+When a system looks compromised, preserve evidence before trying random fixes.
+
+```bash
+date -Is
+who -a
+last -F | head
+ps auxf
+ss -tulpn
+journalctl --since '-30 minutes'
+```
+
+## Priorities
+
+1. **Scope:** which accounts, hosts, and services are affected?
+2. **Contain:** isolate the host if ongoing damage is likely.
+3. **Preserve:** capture volatile state and logs before rebooting.
+4. **Eradicate:** rebuild from trusted media when integrity is uncertain.
+5. **Recover:** rotate secrets, restore carefully, and monitor closely.
+
+Do not rely on cleaning a deeply compromised host in place. A known-good rebuild gives you a defensible trust boundary.
+"""
+  }
+]
+
 TIPS = [
   {
     "title": "cd to the previous directory",

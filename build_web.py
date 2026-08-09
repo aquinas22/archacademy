@@ -14,7 +14,7 @@ TEMPLATE = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐧 Linux Academy</title>
+<title>Arch Academy — Learn Linux by Doing</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,__TUX_B64__">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -314,13 +314,58 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
 /* ── Content transition ─────────────────────────────────────────────────────── */
 .content{animation:content-in .15s ease-out;}
 @keyframes content-in{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* ── 2026 refresh: a warmer, editorial learning workspace ─────────────────── */
+:root,[data-theme="dark"]{
+  --bg:#0b0f14;--bg-dark:#080b0f;--panel:#121820;--border:#26303b;
+  --fg:#f2f5f7;--dim:#9ba7b4;--dimmer:#647180;--blue:#87a9ff;
+  --blue2:#6f8fff;--cyan:#8de2cf;--green:#67d6a0;--yellow:#f2c86b;
+  --orange:#ff9e7a;--red:#ff7f85;--sel:#1d2c43;
+}
+body{background:
+  radial-gradient(circle at 82% -20%,rgba(111,143,255,.12),transparent 35%),var(--bg);}
+.topbar{height:72px;padding:0 28px;background:rgba(8,11,15,.88);backdrop-filter:blur(18px);
+  box-shadow:none;border-color:rgba(255,255,255,.08)}
+.logo{font-size:15px;letter-spacing:.08em;color:var(--fg);gap:11px}
+.logo-tux{width:34px;height:34px;filter:drop-shadow(0 5px 10px rgba(0,0,0,.4))}
+.brand-copy{display:flex;flex-direction:column;gap:3px}.brand-copy small{font-size:10px;color:var(--dim);
+  font-weight:500;letter-spacing:.06em;text-transform:none}
+.logo .tag{display:none}
+.ring-wrap{background:var(--panel);padding:7px 10px 7px 13px;border:1px solid var(--border);border-radius:999px}
+.theme-select{border-radius:999px;padding:8px 13px;background:var(--panel)}
+.sidebar{width:350px;background:rgba(11,15,20,.76);box-shadow:none;border-color:var(--border)}
+.sidebar-intro{padding:22px 18px 5px}.eyebrow{font-size:10px;letter-spacing:.16em;color:var(--cyan);font-weight:800}
+.sidebar-intro h2{font-size:21px;margin:7px 0 5px;letter-spacing:-.03em}.sidebar-intro p{font-size:12px;color:var(--dim);line-height:1.5}
+.search-wrap{padding:14px 16px 0}.search{padding:11px 13px;border-radius:12px;background:var(--bg-dark)}
+.diff-filter{padding:10px 16px 14px;gap:7px;overflow-x:auto}.df{padding:5px 9px;font-size:11px}
+.tree{padding:0 10px 16px}.cat{padding:10px 11px;margin-top:2px}.lesson{padding:8px 10px 8px 28px;border-radius:9px}
+.lesson.active{box-shadow:none;background:linear-gradient(90deg,rgba(111,143,255,.2),rgba(111,143,255,.06))}
+.pfoot{padding:16px 20px;background:var(--bg-dark)}.pbar{height:5px}.pbar .fill{background:linear-gradient(90deg,var(--blue2),var(--cyan))}
+.crumb{padding:12px 34px;background:rgba(8,11,15,.62)}.crumb .diff-badge{padding:4px 9px}
+.content{max-width:900px;padding:42px 56px 60px;margin:0 auto;width:100%}
+.content h1{font-size:38px;line-height:1.12;letter-spacing:-.045em;color:var(--fg);margin:6px 0 24px}
+.content h2{font-size:21px;color:var(--cyan);margin-top:36px;padding-bottom:9px}
+.content h3{font-size:16px;color:var(--blue);margin-top:26px}.content p{font-size:15.5px;line-height:1.82}
+.content li{line-height:1.75}.codeblock{border-radius:14px;margin:20px 0;box-shadow:0 12px 35px rgba(0,0,0,.2)}
+.codeblock pre{padding:22px 20px 18px;font-size:13px}.codeblock .copy{opacity:1;border:1px solid var(--border)}
+table{width:100%;border-radius:10px;overflow:hidden}.notes-wrap{padding:12px 32px;background:var(--bg-dark)}
+#notesArea{border-radius:10px;height:62px}.actions{padding:12px;background:rgba(8,11,15,.96)}
+.btn{border:1px solid var(--border);border-radius:999px;padding:8px 15px;background:var(--panel)}
+.modal{border:1px solid var(--border);padding:38px;border-radius:22px;text-align:left;background:var(--bg);
+ box-shadow:0 32px 100px rgba(0,0,0,.7)}.modal .ml{justify-content:flex-start;color:var(--fg)}
+.modal .tl{color:var(--cyan);margin-top:25px}.modal .tt{font-size:26px;letter-spacing:-.03em}.modal .tip-code{border:1px solid var(--border);border-radius:12px}
+@media(max-width:800px){body{height:auto;min-height:100vh;overflow:auto}.topbar{height:64px;padding:0 14px}.ring-wrap{display:none}
+ .body{display:block}.sidebar{width:100%;height:auto;border-right:0;border-bottom:1px solid var(--border)}.sidebar-intro{padding-top:18px}
+ .tree{max-height:280px}.pfoot{display:none}.main{min-height:70vh}.crumb{padding:10px 16px}.content{padding:30px 20px 45px}
+ .content h1{font-size:30px}.notes-wrap{padding:12px 16px}.actions{position:sticky;bottom:0;overflow-x:auto;justify-content:flex-start;flex-wrap:nowrap}
+ .btn{white-space:nowrap}.theme-select{max-width:105px}}
 </style>
 </head>
 <body>
 
 <!-- Topbar -->
 <div class="topbar">
-  <div class="logo"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"> LINUX ACADEMY
+  <div class="logo"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"><span class="brand-copy">ARCH ACADEMY<small>Learn the system. Own the terminal.</small></span>
     <span class="tag">
       <span class="kbd">n/p</span> nav ·
       <span class="kbd">l</span> learn ·
@@ -352,6 +397,7 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
 <!-- Body -->
 <div class="body">
   <aside class="sidebar">
+    <div class="sidebar-intro"><div class="eyebrow">YOUR LEARNING PATH</div><h2>Build real Linux fluency.</h2><p>Practical lessons from first command to production systems.</p></div>
     <div class="search-wrap">
       <input class="search" id="search" placeholder="🔍  Search lessons...">
     </div>
@@ -392,7 +438,7 @@ td code,th code{background:var(--bg-dark);color:var(--orange);
 <!-- Tip modal -->
 <div class="overlay" id="tipOverlay">
   <div class="modal">
-    <div class="ml"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"> LINUX ACADEMY</div>
+    <div class="ml"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"> ARCH ACADEMY</div>
     <div class="tl">✨ TIP OF THE DAY</div>
     <div class="tt" id="tipTitle"></div>
     <div class="tip-code" id="tipCode"></div>
