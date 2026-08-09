@@ -14,7 +14,7 @@ TEMPLATE = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arch Academy — Learn Linux by Doing</title>
+<title>Linux Academy — Learn Linux by Doing</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,__TUX_B64__">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -154,6 +154,8 @@ body{
 .lesson .check{width:14px;color:var(--green);font-weight:700;flex-shrink:0;font-size:11px;}
 .lesson .ltitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lesson .diff-dot{flex-shrink:0;font-size:10px;line-height:1;}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--dimmer);box-shadow:0 0 0 3px color-mix(in srgb,currentColor 12%,transparent)}
+.status-dot.d1{background:var(--green)}.status-dot.d2{background:var(--yellow)}.status-dot.d3{background:var(--red)}
 .lesson .star{flex-shrink:0;color:var(--yellow);font-size:11px;}
 .lesson .note-dot{flex-shrink:0;color:var(--dim);font-size:10px;}
 .lesson .ltitle mark{background:var(--yellow);color:#000;border-radius:3px;padding:0 1px;}
@@ -354,10 +356,23 @@ table{width:100%;border-radius:10px;overflow:hidden}.notes-wrap{padding:12px 32p
 .modal{border:1px solid var(--border);padding:38px;border-radius:22px;text-align:left;background:var(--bg);
  box-shadow:0 32px 100px rgba(0,0,0,.7)}.modal .ml{justify-content:flex-start;color:var(--fg)}
 .modal .tl{color:var(--cyan);margin-top:25px}.modal .tt{font-size:26px;letter-spacing:-.03em}.modal .tip-code{border:1px solid var(--border);border-radius:12px}
+.lesson-meta{display:flex;align-items:center;gap:8px;padding:10px 34px;border-bottom:1px solid var(--border);
+  background:color-mix(in srgb,var(--bg-dark) 72%,transparent);min-height:45px;overflow-x:auto;scrollbar-width:none}
+.lesson-meta::-webkit-scrollbar{display:none}.meta-item,.tag-chip{font-size:11px;color:var(--dim);white-space:nowrap}
+.meta-item{display:flex;align-items:center;gap:6px}.meta-item+.meta-item:before{content:"";width:3px;height:3px;border-radius:50%;background:var(--dimmer);margin-right:2px}
+.tag-list{display:flex;gap:6px;margin-left:auto}.tag-chip{padding:4px 8px;border:1px solid var(--border);border-radius:999px;background:var(--panel)}
+.search-wrap{position:relative}.search-wrap:before{content:"⌕";position:absolute;left:29px;top:25px;color:var(--dimmer);font-size:17px;pointer-events:none}
+.search{padding-left:38px}.result-count{padding:0 18px 9px;color:var(--dimmer);font:10px 'JetBrains Mono',monospace;letter-spacing:.04em}
+.empty-state{margin:28px 12px;padding:24px 16px;border:1px dashed var(--border);border-radius:12px;text-align:center;color:var(--dim);font-size:12px;line-height:1.6}
+.empty-state strong{display:block;color:var(--fg);font-size:14px;margin-bottom:4px}.cat .chev{font-family:system-ui;transition:transform .18s ease}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:var(--panel);color:var(--dim);cursor:pointer;font-size:18px}
+.modal-close:hover{color:var(--fg);border-color:var(--dimmer)}.modal{position:relative}.content>p:first-of-type{font-size:17px;color:var(--dim);line-height:1.75}
+.content h2:target{scroll-margin-top:20px}.actions .btn:first-child,.actions .btn:last-child{min-width:82px}
+.search::placeholder{color:var(--dimmer)}
 @media(max-width:800px){body{height:auto;min-height:100vh;overflow:auto}.topbar{height:64px;padding:0 14px}.ring-wrap{display:none}
  .body{display:block}.sidebar{width:100%;height:auto;border-right:0;border-bottom:1px solid var(--border)}.sidebar-intro{padding-top:18px}
  .tree{max-height:280px}.pfoot{display:none}.main{min-height:70vh}.crumb{padding:10px 16px}.content{padding:30px 20px 45px}
- .content h1{font-size:30px}.notes-wrap{padding:12px 16px}.actions{position:sticky;bottom:0;overflow-x:auto;justify-content:flex-start;flex-wrap:nowrap}
+ .lesson-meta{padding:9px 16px}.tag-list{display:none}.content h1{font-size:30px}.notes-wrap{padding:12px 16px}.actions{position:sticky;bottom:0;overflow-x:auto;justify-content:flex-start;flex-wrap:nowrap}
  .btn{white-space:nowrap}.theme-select{max-width:105px}}
 </style>
 </head>
@@ -365,7 +380,7 @@ table{width:100%;border-radius:10px;overflow:hidden}.notes-wrap{padding:12px 32p
 
 <!-- Topbar -->
 <div class="topbar">
-  <div class="logo"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"><span class="brand-copy">ARCH ACADEMY<small>Learn the system. Own the terminal.</small></span>
+  <div class="logo"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"><span class="brand-copy">LINUX ACADEMY<small>Learn the system. Own the terminal.</small></span>
     <span class="tag">
       <span class="kbd">n/p</span> nav ·
       <span class="kbd">l</span> learn ·
@@ -399,15 +414,16 @@ table{width:100%;border-radius:10px;overflow:hidden}.notes-wrap{padding:12px 32p
   <aside class="sidebar">
     <div class="sidebar-intro"><div class="eyebrow">YOUR LEARNING PATH</div><h2>Build real Linux fluency.</h2><p>Practical lessons from first command to production systems.</p></div>
     <div class="search-wrap">
-      <input class="search" id="search" placeholder="🔍  Search lessons...">
+      <input class="search" id="search" placeholder="Search lessons...">
     </div>
     <!-- Difficulty filter -->
     <div class="diff-filter">
       <button class="df active"    onclick="filterDiff(0)">All</button>
-      <button class="df d1"        onclick="filterDiff(1)">🟢 Beginner</button>
-      <button class="df d2"        onclick="filterDiff(2)">🟡 Inter.</button>
-      <button class="df d3"        onclick="filterDiff(3)">🔴 Advanced</button>
+      <button class="df d1"        onclick="filterDiff(1)"><span class="status-dot d1"></span> Beginner</button>
+      <button class="df d2"        onclick="filterDiff(2)"><span class="status-dot d2"></span> Inter.</button>
+      <button class="df d3"        onclick="filterDiff(3)"><span class="status-dot d3"></span> Advanced</button>
     </div>
+    <div class="result-count" id="resultCount"></div>
     <div class="tree" id="tree"></div>
     <div class="pfoot">
       <div class="label">PROGRESS</div>
@@ -418,19 +434,20 @@ table{width:100%;border-radius:10px;overflow:hidden}.notes-wrap{padding:12px 32p
 
   <main class="main">
     <div class="crumb" id="crumb"></div>
+    <div class="lesson-meta" id="lessonMeta"></div>
     <div class="content" id="content"></div>
     <div class="notes-wrap">
-      <div class="notes-header">📝 MY NOTES <span class="hint">auto-saved to browser</span></div>
+      <div class="notes-header">MY NOTES <span class="hint">auto-saved to browser</span></div>
       <textarea id="notesArea" placeholder="Take notes on this lesson... (saved locally in your browser)"></textarea>
     </div>
     <div class="actions">
-      <button class="btn" onclick="nav(-1)">◀ Prev</button>
+      <button class="btn" onclick="nav(-1)">← Prev</button>
       <button class="btn" id="learnBtn" onclick="toggleLearned()">✓ Mark Learned</button>
-      <button class="btn fav" id="favBtn" onclick="toggleFav()">★ Favorite</button>
-      <button class="btn" onclick="copyLesson()">📋 Copy</button>
-      <button class="btn" onclick="randomLesson()">🎲 Random</button>
-      <button class="btn" onclick="nextUnlearned()">⏭ Next New</button>
-      <button class="btn" onclick="nav(1)">Next ▶</button>
+      <button class="btn fav" id="favBtn" onclick="toggleFav()">☆ Favorite</button>
+      <button class="btn" onclick="copyLesson()">Copy</button>
+      <button class="btn" onclick="randomLesson()">Random</button>
+      <button class="btn" onclick="nextUnlearned()">Next new</button>
+      <button class="btn" onclick="nav(1)">Next →</button>
     </div>
   </main>
 </div>
@@ -438,8 +455,9 @@ table{width:100%;border-radius:10px;overflow:hidden}.notes-wrap{padding:12px 32p
 <!-- Tip modal -->
 <div class="overlay" id="tipOverlay">
   <div class="modal">
-    <div class="ml"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"> ARCH ACADEMY</div>
-    <div class="tl">✨ TIP OF THE DAY</div>
+    <button class="modal-close" onclick="closeTip()" aria-label="Close tip">×</button>
+    <div class="ml"><img src="data:image/png;base64,__TUX_B64__" alt="" class="logo-tux"> LINUX ACADEMY</div>
+    <div class="tl">TIP OF THE DAY</div>
     <div class="tt" id="tipTitle"></div>
     <div class="tip-code" id="tipCode"></div>
     <button class="btn start" onclick="closeTip()">Start learning →</button>
@@ -462,7 +480,7 @@ let curDiff   = 0;  // 0=all, 1/2/3
 let curSearch = '';
 
 const DIFF_NAME = ['', 'Beginner', 'Intermediate', 'Advanced'];
-const DIFF_ICON = ['', '🟢', '🟡', '🔴'];
+const DIFF_ICON = ['', '<span class="status-dot d1"></span>', '<span class="status-dot d2"></span>', '<span class="status-dot d3"></span>'];
 
 const k = (c, i) => c + ':' + i;
 
@@ -509,6 +527,11 @@ const SH_BI = new Set([
 
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Keep emoji in persistent lesson keys, but present calmer editorial labels.
+function cleanLabel(s) {
+  return s.replace(/^[\p{Extended_Pictographic}\p{Emoji_Presentation}\uFE0F\u200D\s]+/u, '').trim();
 }
 
 function highlightMatch(text, q) {
@@ -645,7 +668,7 @@ function render(md) {
     }
     if (line.startsWith('### ')){ html += '<h3>'+inline(line.slice(4))+'</h3>'; i++; continue; }
     if (line.startsWith('## ')) { html += '<h2>'+inline(line.slice(3))+'</h2>'; i++; continue; }
-    if (line.startsWith('# '))  { html += '<h1>'+inline(line.slice(2))+'</h1>'; i++; continue; }
+    if (line.startsWith('# '))  { html += '<h1>'+inline(cleanLabel(line.slice(2)))+'</h1>'; i++; continue; }
     if (line.trim() === '---')  { html += '<hr>'; i++; continue; }
     if (line.trim().startsWith('|')) {
       const rows = [];
@@ -680,6 +703,7 @@ function buildTree() {
   const tree = document.getElementById('tree');
   tree.innerHTML = '';
   const q = curSearch;
+  let visibleLessons = 0;
   CATS.forEach(cat => {
     const total = LESSONS[cat].length;
     const done  = LESSONS[cat].filter((_,i) => progress.has(k(cat,i))).length;
@@ -687,7 +711,7 @@ function buildTree() {
 
     const catEl = document.createElement('div');
     catEl.className = 'cat' + (done === total ? ' done' : '');
-    catEl.innerHTML = '<span class="chev">▼</span><span>'+cat+'</span><span class="count">'+done+'/'+total+'</span>';
+    catEl.innerHTML = '<span class="chev">⌄</span><span>'+esc(cleanLabel(cat))+'</span><span class="count">'+done+'/'+total+'</span>';
     catEl.onclick = () => catEl.classList.toggle('collapsed');
     tree.appendChild(catEl);
 
@@ -702,6 +726,7 @@ function buildTree() {
       // Filter by search
       if (q && !lesson.title.toLowerCase().includes(q) && !lesson.body.toLowerCase().includes(q)) return;
       catVisible = true;
+      visibleLessons++;
 
       const el = document.createElement('div');
       el.className = 'lesson' + (cur[0]===cat && cur[1]===i ? ' active' : '');
@@ -725,6 +750,11 @@ function buildTree() {
     else catEl.style.display = '';
     if (q || curDiff) catEl.classList.remove('collapsed');
   });
+  const noun = visibleLessons === 1 ? 'lesson' : 'lessons';
+  document.getElementById('resultCount').textContent = visibleLessons+' '+noun+' shown';
+  if (!visibleLessons) {
+    tree.innerHTML = '<div class="empty-state"><strong>No lessons found</strong>Try a broader search or clear the difficulty filter.</div>';
+  }
 }
 
 /* ── Load lesson ─────────────────────────────────────────────────────────────── */
@@ -737,6 +767,7 @@ function load(cat, i) {
     else if (notes[oldKey]) { delete notes[oldKey]; saveNotes(); }
   }
   cur = [cat, i];
+  localStorage.setItem('aa_last_lesson', JSON.stringify(cur));
   const lesson = LESSONS[cat][i];
   const dl = lesson.difficulty || 2;
 
@@ -750,13 +781,22 @@ function load(cat, i) {
   const learned = progress.has(k(cat,i)), fav = favorites.has(k(cat,i));
   document.getElementById('crumb').innerHTML =
     '<span class="diff-badge">'+DIFF_ICON[dl]+' '+DIFF_NAME[dl]+'</span>'+
-    '<span class="trail">'+esc(cat)+' › '+esc(lesson.title)+
+    '<span class="trail">'+esc(cleanLabel(cat))+' / '+esc(lesson.title)+
     '  <span class="mark'+(learned?' learned':'')+'">['+(learned?'✓ learned':'○ not learned')+']</span>'+
     (fav?' <span class="fav">★</span>':'')+
     '</span>';
   document.getElementById('learnBtn').className = 'btn'+(learned?' on':'');
   document.getElementById('learnBtn').textContent = learned ? '✓ Learned' : '✓ Mark Learned';
   document.getElementById('favBtn').className = 'btn fav'+(fav?' on':'');
+
+  const words = lesson.body.trim().split(/\s+/).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  const position = FLAT.findIndex(([c,n]) => c===cat && n===i) + 1;
+  document.getElementById('lessonMeta').innerHTML =
+    '<span class="meta-item">Lesson '+position+' of '+FLAT.length+'</span>'+
+    '<span class="meta-item">'+minutes+' min read</span>'+
+    '<span class="meta-item">'+(lesson.body.match(/```/g)||[]).length/2+' examples</span>'+
+    '<span class="tag-list">'+(lesson.tags||[]).slice(0,4).map(t=>'<span class="tag-chip">'+esc(t)+'</span>').join('')+'</span>';
 
   // Load notes for this lesson
   document.getElementById('notesArea').value = notes[k(cat,i)] || '';
@@ -843,6 +883,9 @@ document.getElementById('search').addEventListener('input', e => {
 
 /* ── Keyboard ─────────────────────────────────────────────────────────────────── */
 document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault(); document.getElementById('search').focus(); return;
+  }
   const tag = e.target.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA') {
     if (e.key === 'Escape') e.target.blur();
@@ -886,9 +929,20 @@ function showTip() {
 function closeTip() { document.getElementById('tipOverlay').classList.add('hidden'); }
 
 /* ── Init ───────────────────────────────────────────────────────────────────── */
-showTip();
+const today = new Date().toISOString().slice(0,10);
+if (localStorage.getItem('aa_tip_seen') === today) {
+  document.getElementById('tipOverlay').classList.add('hidden');
+} else {
+  localStorage.setItem('aa_tip_seen', today);
+  showTip();
+}
 buildTree();
-load(CATS[0], 0);
+let start = [CATS[0], 0];
+try {
+  const saved = JSON.parse(localStorage.getItem('aa_last_lesson'));
+  if (saved && LESSONS[saved[0]] && LESSONS[saved[0]][saved[1]]) start = saved;
+} catch (_) {}
+load(start[0], start[1]);
 updateProgress();
 </script>
 </body>

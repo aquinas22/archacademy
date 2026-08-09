@@ -231,7 +231,7 @@ class LessonTree(Tree):
 
 # ─── Main App ─────────────────────────────────────────────────────────────────
 
-class ArchAcademy(App):
+class LinuxAcademy(App):
     TITLE = "🐧 Linux Academy"
     CSS = """
     Screen { background: #0d1117; }
@@ -733,4 +733,4 @@ class ArchAcademy(App):
 
 
 if __name__ == "__main__":
-    ArchAcademy().run()
+    LinuxAcademy().run()

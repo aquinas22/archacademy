@@ -1,9 +1,9 @@
-# 🐧 Linux Academy — Feature Checklist
+# Linux Academy — Feature Checklist
 
 ## Already shipped ✅
 
 - [x] Three front-ends sharing one content source: **TUI** (Textual), **GUI** (Tkinter), **Web** (single HTML)
-- [x] **99 lessons** across **14 categories** (Linux, File System, Arch, Bash, Zsh, Networking, SysAdmin, Git, Tmux/Editors, Docker, CLI Power Tools, Dev Environments, Package Managers, Databases & Servers)
+- [x] **116 lessons** across **17 categories**, including distro guidance, desktop/hardware, and security/reliability
 - [x] **Readline / ZLE keybinding cheat sheets** for Bash and Zsh (Ctrl+R, Ctrl+X Ctrl+E, vi mode, custom `bindkey`)
 - [x] **Databases & Servers** category — PostgreSQL, MySQL/MariaDB, SQLite, Redis, Nginx
 - [x] **Make & Makefiles**, **GnuPG & OpenSSL** lessons

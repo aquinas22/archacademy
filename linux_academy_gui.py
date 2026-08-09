@@ -76,7 +76,7 @@ def save_dict(path, data):
     path.write_text(json.dumps(data, ensure_ascii=False))
 
 
-class ArchAcademyGUI:
+class LinuxAcademyGUI:
     def __init__(self, root):
         self.root = root
         self.progress  = load_set(PROGRESS_FILE)
@@ -633,7 +633,7 @@ class ArchAcademyGUI:
 
 def main():
     root = tk.Tk()
-    ArchAcademyGUI(root)
+    LinuxAcademyGUI(root)
     root.mainloop()
 
 

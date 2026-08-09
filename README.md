@@ -1,9 +1,9 @@
-# 🐧 Arch Academy
+# 🐧 Linux Academy
 
 Learn Linux, Arch, Bash, Zsh, Networking, Git, Docker and more — three ways.
 All three front-ends share the same lessons from `content.py`.
 
-**104 lessons · 15 categories · 20 tips**
+**116 lessons · 17 categories · 35 tips**
 
 ## Run it
 
@@ -86,6 +86,8 @@ shared between the TUI and GUI (web uses localStorage separately).
 | 📦 Package Managers | 4 |
 | 🗄️ Databases & Servers | 5 |
 | 🛡️ Security & Reliability | 5 |
+| 🧭 Distro Field Guide | 6 |
+| 🖥️ Linux Desktop & Hardware | 6 |
 
 ## Editing content
 

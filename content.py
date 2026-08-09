@@ -54,7 +54,7 @@ LESSONS = {
     },
     {
       "title": "Permissions",
-      "body": "# 🔐 File Permissions\n\n```\n$ ls -la /usr/bin/passwd\n-rwsr-xr-x 1 root root 59736 Mar  5 passwd\n\nType: - (file) d (dir) l (symlink)\nPerms: rwx rwx rwx  (owner, group, others)\n       421 421 421  (add up for octal)\n```\n\n## chmod — change permissions\n\n```bash\nchmod 755 script.sh         # rwxr-xr-x: owner=all, group/others=rx\nchmod 644 file.txt          # rw-r--r--: standard for files\nchmod 600 ~/.ssh/id_rsa     # rw-------: private key (required!)\nchmod +x script.sh          # add execute for everyone\nchmod u+x,g-w file          # user +exec, group -write\nchmod -R 755 directory/     # recursive\n\n# Common values:\n# 755 = rwxr-xr-x (executables, dirs)\n# 644 = rw-r--r-- (regular files)\n# 600 = rw------- (private files)\n```\n\n## chown — change ownership\n\n```bash\nchown noah file.txt           # change owner\nchown noah:users file.txt     # change owner and group\nchown -R noah:noah dir/       # recursive\nsudo chown root:root /usr/local/bin/tool\n```\n\n## Special bits\n\n```bash\nchmod u+s /path/to/binary    # setuid: runs as file's owner\nchmod g+s /shared/dir/       # setgid: new files inherit group\nchmod +t /tmp                # sticky: only owner can delete\n```\n",
+      "body": "# 🔐 File Permissions\n\n```\n$ ls -la /usr/bin/passwd\n-rwsr-xr-x 1 root root 59736 Mar  5 passwd\n\nType: - (file) d (dir) l (symlink)\nPerms: rwx rwx rwx  (owner, group, others)\n       421 421 421  (add up for octal)\n```\n\n## chmod — change permissions\n\n```bash\nchmod 755 script.sh         # rwxr-xr-x: owner=all, group/others=rx\nchmod 644 file.txt          # rw-r--r--: standard for files\nchmod 600 ~/.ssh/id_rsa     # rw-------: private key (required!)\nchmod +x script.sh          # add execute for everyone\nchmod u+x,g-w file          # user +exec, group -write\nchmod -R 755 directory/     # recursive\n\n# Common values:\n# 755 = rwxr-xr-x (executables, dirs)\n# 644 = rw-r--r-- (regular files)\n# 600 = rw------- (private files)\n```\n\n## chown — change ownership\n\n```bash\nchown alice file.txt           # change owner\nchown alice:users file.txt     # change owner and group\nchown -R alice:alice dir/       # recursive\nsudo chown root:root /usr/local/bin/tool\n```\n\n## Special bits\n\n```bash\nchmod u+s /path/to/binary    # setuid: runs as file's owner\nchmod g+s /shared/dir/       # setgid: new files inherit group\nchmod +t /tmp                # sticky: only owner can delete\n```\n",
       "difficulty": 2,
       "tags": [
         "linux",
@@ -74,7 +74,7 @@ LESSONS = {
     },
     {
       "title": "Environment Variables",
-      "body": "# 🌍 Environment Variables\n\n```bash\necho $HOME          # your home directory\necho $PATH          # directories searched for commands\necho $SHELL         # your current shell\necho $USER          # current username\necho $PWD           # current directory (like pwd)\necho $EDITOR        # default text editor\nenv                 # print all environment variables\nprintenv HOME       # print a specific one\n```\n\n## Setting Variables\n\n```bash\n# Temporary (current session only):\nexport MY_VAR=\"hello\"\nMY_VAR=\"hello\" command    # set only for this command's env\n\n# Permanent (add to ~/.bashrc or ~/.zshrc):\nexport EDITOR=nvim\nexport PATH=\"$HOME/.local/bin:$PATH\"  # prepend to PATH\n```\n\n## PATH\n\n```bash\necho $PATH\n# /usr/local/bin:/usr/bin:/bin:/home/noah/.local/bin\n\n# Add a dir to PATH (in ~/.zshrc):\nexport PATH=\"$HOME/.cargo/bin:$PATH\"\n\n# Check where a command comes from:\nwhich python\nwhich -a python     # all matches in PATH\ntype -a python      # includes aliases and functions too\n```\n\n## Important Defaults to Set\n\n```bash\nexport EDITOR=nvim\nexport VISUAL=nvim\nexport PAGER=less\nexport LESS='-R --mouse'       # color and mouse support in less\nexport MANPAGER='less -R'      # colored man pages\n```\n",
+      "body": "# 🌍 Environment Variables\n\n```bash\necho $HOME          # your home directory\necho $PATH          # directories searched for commands\necho $SHELL         # your current shell\necho $USER          # current username\necho $PWD           # current directory (like pwd)\necho $EDITOR        # default text editor\nenv                 # print all environment variables\nprintenv HOME       # print a specific one\n```\n\n## Setting Variables\n\n```bash\n# Temporary (current session only):\nexport MY_VAR=\"hello\"\nMY_VAR=\"hello\" command    # set only for this command's env\n\n# Permanent (add to ~/.bashrc or ~/.zshrc):\nexport EDITOR=nvim\nexport PATH=\"$HOME/.local/bin:$PATH\"  # prepend to PATH\n```\n\n## PATH\n\n```bash\necho $PATH\n# /usr/local/bin:/usr/bin:/bin:/home/alice/.local/bin\n\n# Add a dir to PATH (in ~/.zshrc):\nexport PATH=\"$HOME/.cargo/bin:$PATH\"\n\n# Check where a command comes from:\nwhich python\nwhich -a python     # all matches in PATH\ntype -a python      # includes aliases and functions too\n```\n\n## Important Defaults to Set\n\n```bash\nexport EDITOR=nvim\nexport VISUAL=nvim\nexport PAGER=less\nexport LESS='-R --mouse'       # color and mouse support in less\nexport MANPAGER='less -R'      # colored man pages\n```\n",
       "difficulty": 2,
       "tags": [
         "linux",
@@ -96,7 +96,7 @@ LESSONS = {
   "📁 File System": [
     {
       "title": "Linux Directory Structure",
-      "body": "# 🌳 Linux Directory Structure (FHS)\n\n```\n/               Root — the top of everything\n├── bin         Essential binaries (ls, cp, bash)\n├── boot        Kernel and bootloader files\n├── dev         Device files (/dev/sda, /dev/null, /dev/tty)\n├── etc         System-wide config files\n├── home        User home directories (/home/noah)\n├── lib         Shared libraries for /bin and /sbin\n├── media       Mount point for removable media\n├── mnt         Temporary mount points\n├── opt         Optional/third-party software\n├── proc        Virtual FS: kernel & process info\n├── root        Home of the root user\n├── run         Runtime data (PIDs, sockets)\n├── sys         Virtual FS: hardware/kernel info\n├── tmp         Temporary files (cleared on reboot)\n├── usr         User programs and data\n│   ├── bin     Most executables live here\n│   ├── lib     Libraries\n│   ├── local   Locally installed software\n│   └── share   Architecture-independent data\n└── var         Variable data (logs, caches, databases)\n    ├── log     System logs\n    ├── cache   Application caches\n    └── spool   Print queues, mail\n```\n\n## Key Locations\n\n```bash\n/etc/fstab          # filesystem mount table\n/etc/hosts          # local DNS overrides\n/etc/pacman.conf    # pacman configuration\n~/.config/          # user config (XDG standard)\n~/.local/share/     # user data (XDG standard)\n/proc/cpuinfo       # CPU information\n/proc/meminfo       # memory information\n```\n",
+      "body": "# 🌳 Linux Directory Structure (FHS)\n\n```\n/               Root — the top of everything\n├── bin         Essential binaries (ls, cp, bash)\n├── boot        Kernel and bootloader files\n├── dev         Device files (/dev/sda, /dev/null, /dev/tty)\n├── etc         System-wide config files\n├── home        User home directories (/home/alice)\n├── lib         Shared libraries for /bin and /sbin\n├── media       Mount point for removable media\n├── mnt         Temporary mount points\n├── opt         Optional/third-party software\n├── proc        Virtual FS: kernel & process info\n├── root        Home of the root user\n├── run         Runtime data (PIDs, sockets)\n├── sys         Virtual FS: hardware/kernel info\n├── tmp         Temporary files (cleared on reboot)\n├── usr         User programs and data\n│   ├── bin     Most executables live here\n│   ├── lib     Libraries\n│   ├── local   Locally installed software\n│   └── share   Architecture-independent data\n└── var         Variable data (logs, caches, databases)\n    ├── log     System logs\n    ├── cache   Application caches\n    └── spool   Print queues, mail\n```\n\n## Key Locations\n\n```bash\n/etc/fstab          # filesystem mount table\n/etc/hosts          # local DNS overrides\n/etc/pacman.conf    # pacman configuration\n~/.config/          # user config (XDG standard)\n~/.local/share/     # user data (XDG standard)\n/proc/cpuinfo       # CPU information\n/proc/meminfo       # memory information\n```\n",
       "difficulty": 1,
       "tags": [
         "linux",
@@ -434,7 +434,7 @@ LESSONS = {
     },
     {
       "title": "SSH",
-      "body": "# 🔐 SSH\n\n## Basic Usage\n\n```bash\nssh user@host                   # connect\nssh -p 2222 user@host           # custom port\nssh user@host command           # run a single command\nssh -v user@host                # verbose (debug connection issues)\n```\n\n## SSH Keys\n\n```bash\nssh-keygen -t ed25519 -C \"your@email.com\"\n# Creates: ~/.ssh/id_ed25519 (private) and ~/.ssh/id_ed25519.pub\n\nssh-copy-id user@host           # copy public key to server\neval $(ssh-agent) && ssh-add    # start agent and add key\n```\n\n## ~/.ssh/config — save connection details\n\n```ini\nHost myserver\n    HostName 192.168.1.100\n    User noah\n    Port 22\n    IdentityFile ~/.ssh/id_ed25519\n    ForwardAgent yes\n\nHost jump\n    HostName jumphost.example.com\n    ProxyJump myserver          # connect through myserver\n```\n\nAfter this: `ssh myserver` just works.\n\n## SSH Tunneling\n\n```bash\n# Local forward — access remote service locally:\nssh -L 8080:localhost:80 user@host\n# Now http://localhost:8080 → port 80 on remote\n\n# SOCKS proxy:\nssh -D 1080 user@host\n# Configure browser to use SOCKS5 localhost:1080\n```\n",
+      "body": "# 🔐 SSH\n\n## Basic Usage\n\n```bash\nssh user@host                   # connect\nssh -p 2222 user@host           # custom port\nssh user@host command           # run a single command\nssh -v user@host                # verbose (debug connection issues)\n```\n\n## SSH Keys\n\n```bash\nssh-keygen -t ed25519 -C \"your@email.com\"\n# Creates: ~/.ssh/id_ed25519 (private) and ~/.ssh/id_ed25519.pub\n\nssh-copy-id user@host           # copy public key to server\neval $(ssh-agent) && ssh-add    # start agent and add key\n```\n\n## ~/.ssh/config — save connection details\n\n```ini\nHost myserver\n    HostName 192.168.1.100\n    User alice\n    Port 22\n    IdentityFile ~/.ssh/id_ed25519\n    ForwardAgent yes\n\nHost jump\n    HostName jumphost.example.com\n    ProxyJump myserver          # connect through myserver\n```\n\nAfter this: `ssh myserver` just works.\n\n## SSH Tunneling\n\n```bash\n# Local forward — access remote service locally:\nssh -L 8080:localhost:80 user@host\n# Now http://localhost:8080 → port 80 on remote\n\n# SOCKS proxy:\nssh -D 1080 user@host\n# Configure browser to use SOCKS5 localhost:1080\n```\n",
       "difficulty": 2,
       "tags": [
         "networking",
@@ -516,7 +516,7 @@ LESSONS = {
     },
     {
       "title": "Users & Groups",
-      "body": "# 👤 Users & Groups\n\n## User Management\n\n```bash\nsudo useradd -m -G wheel,audio,video noah   # create user with groups\nsudo useradd -m -s /bin/zsh -G wheel noah   # with zsh shell\nsudo passwd noah                             # set password\nsudo userdel -r noah                         # delete user + home dir\n\nid noah                                      # show UID, GID, groups\ncat /etc/passwd                              # all users\n```\n\n## Group Management\n\n```bash\nsudo groupadd mygroup                   # create group\nsudo usermod -aG docker noah            # add noah to docker group (-a = append!)\nsudo gpasswd -d noah docker             # remove from group\ngroups noah                             # list groups for user\n```\n\n## Important Groups on Arch\n\n| Group | Access |\n|-------|--------|\n| `wheel` | sudo access |\n| `audio` | sound devices |\n| `video` | video devices / GPU |\n| `storage` | USB drives |\n| `network` | NetworkManager |\n| `docker` | Docker without sudo |\n| `input` | input devices |\n\n## Switch Users\n\n```bash\nsu - noah               # switch to noah (full login shell)\nsudo -u noah command    # run command as noah\nsudo -i                 # root shell\n```\n",
+      "body": "# 👤 Users & Groups\n\n## User Management\n\n```bash\nsudo useradd -m -G wheel,audio,video alice   # create user with groups\nsudo useradd -m -s /bin/zsh -G wheel alice   # with zsh shell\nsudo passwd alice                             # set password\nsudo userdel -r alice                         # delete user + home dir\n\nid alice                                      # show UID, GID, groups\ncat /etc/passwd                              # all users\n```\n\n## Group Management\n\n```bash\nsudo groupadd mygroup                   # create group\nsudo usermod -aG docker alice            # add alice to docker group (-a = append!)\nsudo gpasswd -d alice docker             # remove from group\ngroups alice                             # list groups for user\n```\n\n## Important Groups on Arch\n\n| Group | Access |\n|-------|--------|\n| `wheel` | sudo access |\n| `audio` | sound devices |\n| `video` | video devices / GPU |\n| `storage` | USB drives |\n| `network` | NetworkManager |\n| `docker` | Docker without sudo |\n| `input` | input devices |\n\n## Switch Users\n\n```bash\nsu - alice               # switch to alice (full login shell)\nsudo -u alice command    # run command as alice\nsudo -i                 # root shell\n```\n",
       "difficulty": 2,
       "tags": [
         "sysadmin",
@@ -526,7 +526,7 @@ LESSONS = {
     },
     {
       "title": "sudo Configuration",
-      "body": "# 🔑 sudo Configuration\n\n## ALWAYS edit with visudo\n\n```bash\nsudo visudo             # validates syntax before saving\n# NEVER edit /etc/sudoers directly — syntax error = locked out!\n```\n\n## Common Configurations\n\n```\n# Allow wheel group (standard on Arch):\n%wheel ALL=(ALL:ALL) ALL\n\n# Allow without password (use carefully):\nnoah ALL=(ALL:ALL) NOPASSWD: ALL\n\n# Allow specific commands only:\nnoah ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl restart nginx\n```\n\n## /etc/sudoers.d/ — drop-in files\n\n```bash\n# Create a separate file (cleaner):\nsudo visudo -f /etc/sudoers.d/noah\n# Must have mode 440:\nsudo chmod 440 /etc/sudoers.d/noah\n```\n\n## sudo Tips\n\n```bash\nsudo -l                     # list your sudo permissions\nsudo -v                     # extend sudo timeout\nsudo -k                     # invalidate cached credentials now\nsudo !!                     # run last command as root\n```\n",
+      "body": "# 🔑 sudo Configuration\n\n## ALWAYS edit with visudo\n\n```bash\nsudo visudo             # validates syntax before saving\n# NEVER edit /etc/sudoers directly — syntax error = locked out!\n```\n\n## Common Configurations\n\n```\n# Allow wheel group (standard on Arch):\n%wheel ALL=(ALL:ALL) ALL\n\n# Allow without password (use carefully):\nnoah ALL=(ALL:ALL) NOPASSWD: ALL\n\n# Allow specific commands only:\nnoah ALL=(ALL:ALL) NOPASSWD: /usr/bin/systemctl restart nginx\n```\n\n## /etc/sudoers.d/ — drop-in files\n\n```bash\n# Create a separate file (cleaner):\nsudo visudo -f /etc/sudoers.d/alice\n# Must have mode 440:\nsudo chmod 440 /etc/sudoers.d/alice\n```\n\n## sudo Tips\n\n```bash\nsudo -l                     # list your sudo permissions\nsudo -v                     # extend sudo timeout\nsudo -k                     # invalidate cached credentials now\nsudo !!                     # run last command as root\n```\n",
       "difficulty": 3,
       "tags": [
         "sysadmin",
@@ -536,7 +536,7 @@ LESSONS = {
     },
     {
       "title": "systemd Timers",
-      "body": "# ⏱️ systemd Timers (replace cron)\n\nsystemd timers are more powerful than cron: logging, dependencies, catch-up.\n\n## Create a Timer\n\n```ini\n# /etc/systemd/system/backup.service\n[Unit]\nDescription=Daily backup\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/backup.sh\nUser=noah\n```\n\n```ini\n# /etc/systemd/system/backup.timer\n[Unit]\nDescription=Run backup daily\n\n[Timer]\nOnCalendar=daily\nPersistent=true            # run missed timer on next boot\n\n[Install]\nWantedBy=timers.target\n```\n\n```bash\nsudo systemctl enable --now backup.timer\nsystemctl list-timers --all         # see next run times\n```\n\n## OnCalendar Syntax\n\n```\ndaily              = *-*-* 00:00:00\nweekly             = Mon 00:00:00\nhourly             = *-*-* *:00:00\n*:0/15             = every 15 minutes\nMon..Fri 09:00     = weekdays at 9am\n```\n",
+      "body": "# ⏱️ systemd Timers (replace cron)\n\nsystemd timers are more powerful than cron: logging, dependencies, catch-up.\n\n## Create a Timer\n\n```ini\n# /etc/systemd/system/backup.service\n[Unit]\nDescription=Daily backup\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/backup.sh\nUser=alice\n```\n\n```ini\n# /etc/systemd/system/backup.timer\n[Unit]\nDescription=Run backup daily\n\n[Timer]\nOnCalendar=daily\nPersistent=true            # run missed timer on next boot\n\n[Install]\nWantedBy=timers.target\n```\n\n```bash\nsudo systemctl enable --now backup.timer\nsystemctl list-timers --all         # see next run times\n```\n\n## OnCalendar Syntax\n\n```\ndaily              = *-*-* 00:00:00\nweekly             = Mon 00:00:00\nhourly             = *-*-* *:00:00\n*:0/15             = every 15 minutes\nMon..Fri 09:00     = weekdays at 9am\n```\n",
       "difficulty": 3,
       "tags": [
         "sysadmin",
@@ -829,7 +829,7 @@ LESSONS = {
     },
     {
       "title": "ssh, scp & rsync — Remote Access & Transfer",
-      "body": "# 🔐 ssh, scp & rsync — Remote Access & Transfer\n\nThe core toolkit for working with remote machines: log in, copy files, sync\ndirectories.\n\n## SSH Basics\n\n```bash\nssh user@host                # connect\nssh -p 2222 user@host        # non-default port\nssh user@host 'uptime'       # run one command and exit\n```\n\n## Key-Based Auth\n\n```bash\nssh-keygen -t ed25519 -C \"you@example.com\"   # generate a keypair\nssh-copy-id user@host                         # install your public key remotely\neval \"$(ssh-agent)\" && ssh-add ~/.ssh/id_ed25519  # cache the passphrase\n```\n\n## ~/.ssh/config — Host Aliases\n\n```ini\nHost box\n    HostName 203.0.113.42\n    User noah\n    Port 2222\n    IdentityFile ~/.ssh/id_ed25519\n```\n\n```bash\nssh box              # now just works — no flags to remember\n```\n\n## Port Forwarding\n\n```bash\nssh -L 8080:localhost:80 user@host    # local: remote:80 → your localhost:8080\nssh -R 9000:localhost:3000 user@host  # remote: your local:3000 exposed on remote:9000\n```\n\n## scp — Simple Copy\n\n```bash\nscp file.txt user@host:/remote/path/     # upload\nscp user@host:/remote/file.txt .         # download\nscp -r localdir/ user@host:/remote/      # recursive directory copy\n```\n\n## rsync — the Better Alternative\n\nrsync only transfers the bytes that changed, and can resume.\n\n```bash\nrsync -avz src/ user@host:/remote/dest/   # archive, verbose, compressed\nrsync -avz --delete src/ dest/            # mirror: also delete extras in dest\nrsync -avz -e ssh src/ user@host:/dest/   # explicit: use ssh as the transport\n```\n\n## Real Backup One-Liner\n\n```bash\nrsync -avz --delete -e \"ssh -p 2222\" \\\n  ~/projects/ user@host:/backups/projects/\n```\n\n`-a` preserves permissions/timestamps/symlinks; `--delete` keeps the backup an\nexact mirror; the trailing slash on the source copies its *contents*, not the\ndirectory itself.\n",
+      "body": "# 🔐 ssh, scp & rsync — Remote Access & Transfer\n\nThe core toolkit for working with remote machines: log in, copy files, sync\ndirectories.\n\n## SSH Basics\n\n```bash\nssh user@host                # connect\nssh -p 2222 user@host        # non-default port\nssh user@host 'uptime'       # run one command and exit\n```\n\n## Key-Based Auth\n\n```bash\nssh-keygen -t ed25519 -C \"you@example.com\"   # generate a keypair\nssh-copy-id user@host                         # install your public key remotely\neval \"$(ssh-agent)\" && ssh-add ~/.ssh/id_ed25519  # cache the passphrase\n```\n\n## ~/.ssh/config — Host Aliases\n\n```ini\nHost box\n    HostName 203.0.113.42\n    User alice\n    Port 2222\n    IdentityFile ~/.ssh/id_ed25519\n```\n\n```bash\nssh box              # now just works — no flags to remember\n```\n\n## Port Forwarding\n\n```bash\nssh -L 8080:localhost:80 user@host    # local: remote:80 → your localhost:8080\nssh -R 9000:localhost:3000 user@host  # remote: your local:3000 exposed on remote:9000\n```\n\n## scp — Simple Copy\n\n```bash\nscp file.txt user@host:/remote/path/     # upload\nscp user@host:/remote/file.txt .         # download\nscp -r localdir/ user@host:/remote/      # recursive directory copy\n```\n\n## rsync — the Better Alternative\n\nrsync only transfers the bytes that changed, and can resume.\n\n```bash\nrsync -avz src/ user@host:/remote/dest/   # archive, verbose, compressed\nrsync -avz --delete src/ dest/            # mirror: also delete extras in dest\nrsync -avz -e ssh src/ user@host:/dest/   # explicit: use ssh as the transport\n```\n\n## Real Backup One-Liner\n\n```bash\nrsync -avz --delete -e \"ssh -p 2222\" \\\n  ~/projects/ user@host:/backups/projects/\n```\n\n`-a` preserves permissions/timestamps/symlinks; `--delete` keeps the backup an\nexact mirror; the trailing slash on the source copies its *contents*, not the\ndirectory itself.\n",
       "difficulty": 2,
       "tags": [
         "ssh",
@@ -851,7 +851,7 @@ LESSONS = {
     },
     {
       "title": "cron & systemd Timers — Scheduling Jobs",
-      "body": "# ⏰ cron & systemd Timers — Scheduling Jobs\n\nTwo ways to run a command on a schedule: the classic `cron`, and the modern\nsystemd timer.\n\n## cron\n\n```bash\ncrontab -e           # edit your user's crontab\ncrontab -l            # list your current jobs\n```\n\n```\n┌── minute (0-59)\n│ ┌── hour (0-23)\n│ │ ┌── day of month (1-31)\n│ │ │ ┌── month (1-12)\n│ │ │ │ ┌── day of week (0-6, Sun=0)\n* * * * *  command\n```\n\n```bash\n0 2 * * *      /home/noah/backup.sh      # every day at 2:00 AM\n*/15 * * * *   /home/noah/check.sh       # every 15 minutes\n0 9 * * 1-5    /home/noah/report.sh      # weekdays at 9 AM\n```\n\n## Special Strings\n\n```bash\n@reboot   /home/noah/startup.sh   # once, at boot\n@daily    /home/noah/cleanup.sh   # shorthand for 0 0 * * *\n@hourly   /home/noah/poll.sh\n```\n\n## Logging cron Output\n\ncron discards output by default — always redirect it:\n\n```bash\n0 2 * * * /home/noah/backup.sh >> /var/log/backup.log 2>&1\n```\n\n## systemd Timers — the Modern Alternative\n\nA timer pairs with a `.service` unit that does the actual work.\n\n```ini\n# /etc/systemd/system/backup.service\n[Unit]\nDescription=Nightly backup\n\n[Service]\nType=oneshot\nExecStart=/home/noah/backup.sh\n```\n\n```ini\n# /etc/systemd/system/backup.timer\n[Unit]\nDescription=Run backup.service nightly\n\n[Timer]\nOnCalendar=*-*-* 02:00:00\nPersistent=true     # if the machine was off, run it on next boot\n\n[Install]\nWantedBy=timers.target\n```\n\n```bash\nsudo systemctl enable --now backup.timer\nsystemctl list-timers --all         # see every timer and its next run\n```\n\n## Why Timers Are Often Preferred\n\n- Logs go to `journalctl -u backup.service` automatically — no manual redirect.\n- `Persistent=true` catches up missed runs after downtime; cron just skips them.\n- Full systemd dependency control (`After=`, `Requires=network-online.target`).\n- One command (`systemctl list-timers`) shows every schedule and its next run.\n",
+      "body": "# ⏰ cron & systemd Timers — Scheduling Jobs\n\nTwo ways to run a command on a schedule: the classic `cron`, and the modern\nsystemd timer.\n\n## cron\n\n```bash\ncrontab -e           # edit your user's crontab\ncrontab -l            # list your current jobs\n```\n\n```\n┌── minute (0-59)\n│ ┌── hour (0-23)\n│ │ ┌── day of month (1-31)\n│ │ │ ┌── month (1-12)\n│ │ │ │ ┌── day of week (0-6, Sun=0)\n* * * * *  command\n```\n\n```bash\n0 2 * * *      /home/alice/backup.sh      # every day at 2:00 AM\n*/15 * * * *   /home/alice/check.sh       # every 15 minutes\n0 9 * * 1-5    /home/alice/report.sh      # weekdays at 9 AM\n```\n\n## Special Strings\n\n```bash\n@reboot   /home/alice/startup.sh   # once, at boot\n@daily    /home/alice/cleanup.sh   # shorthand for 0 0 * * *\n@hourly   /home/alice/poll.sh\n```\n\n## Logging cron Output\n\ncron discards output by default — always redirect it:\n\n```bash\n0 2 * * * /home/alice/backup.sh >> /var/log/backup.log 2>&1\n```\n\n## systemd Timers — the Modern Alternative\n\nA timer pairs with a `.service` unit that does the actual work.\n\n```ini\n# /etc/systemd/system/backup.service\n[Unit]\nDescription=Nightly backup\n\n[Service]\nType=oneshot\nExecStart=/home/alice/backup.sh\n```\n\n```ini\n# /etc/systemd/system/backup.timer\n[Unit]\nDescription=Run backup.service nightly\n\n[Timer]\nOnCalendar=*-*-* 02:00:00\nPersistent=true     # if the machine was off, run it on next boot\n\n[Install]\nWantedBy=timers.target\n```\n\n```bash\nsudo systemctl enable --now backup.timer\nsystemctl list-timers --all         # see every timer and its next run\n```\n\n## Why Timers Are Often Preferred\n\n- Logs go to `journalctl -u backup.service` automatically — no manual redirect.\n- `Persistent=true` catches up missed runs after downtime; cron just skips them.\n- Full systemd dependency control (`After=`, `Requires=network-online.target`).\n- One command (`systemctl list-timers`) shows every schedule and its next run.\n",
       "difficulty": 2,
       "tags": [
         "cron",
@@ -988,7 +988,7 @@ LESSONS = {
   "🗄\ufe0f Databases & Servers": [
     {
       "title": "PostgreSQL \u2014 psql Basics",
-      "body": "# 🐘 PostgreSQL \u2014 psql Basics\n\nThe open-source relational database. `psql` is its interactive CLI client.\n\n## Install & Start\n\n```bash\nsudo pacman -S postgresql\nsudo -iu postgres initdb -D /var/lib/postgres/data   # first-time setup\nsudo systemctl enable --now postgresql\n```\n\n## Connecting\n\n```bash\nsudo -iu postgres psql                # connect as the postgres superuser\npsql -U myuser -d mydb -h localhost   # connect to a specific db\n```\n\n## Creating Users & Databases\n\n```sql\nCREATE USER noah WITH PASSWORD 'secret';\nCREATE DATABASE myapp OWNER noah;\nGRANT ALL PRIVILEGES ON DATABASE myapp TO noah;\n```\n\n## psql Meta-Commands\n\n```\n\\l          list databases\n\\c mydb     connect to a database\n\\dt         list tables\n\\d table    describe a table's columns\n\\du         list roles/users\n\\x          toggle expanded (vertical) output \u2014 great for wide rows\n\\timing     show query execution time\n\\q          quit\n```\n\n## Basic SQL\n\n```sql\nSELECT * FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;\nINSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com');\nUPDATE users SET active = false WHERE id = 42;\nDELETE FROM users WHERE id = 42;\n```\n\n## Backup & Restore\n\n```bash\npg_dump mydb > backup.sql              # plain SQL dump\npg_dump -Fc mydb > backup.dump         # custom format, use with pg_restore\npsql mydb < backup.sql                 # restore a plain SQL dump\npg_restore -d mydb backup.dump         # restore a custom-format dump\n```\n\n## Tips\n\n- Run `psql` as the `postgres` OS user only for admin tasks \u2014 create a real role for your app.\n- `EXPLAIN ANALYZE SELECT ...` shows the query plan and actual timing \u2014 the first stop when a query is slow.\n",
+      "body": "# 🐘 PostgreSQL \u2014 psql Basics\n\nThe open-source relational database. `psql` is its interactive CLI client.\n\n## Install & Start\n\n```bash\nsudo pacman -S postgresql\nsudo -iu postgres initdb -D /var/lib/postgres/data   # first-time setup\nsudo systemctl enable --now postgresql\n```\n\n## Connecting\n\n```bash\nsudo -iu postgres psql                # connect as the postgres superuser\npsql -U myuser -d mydb -h localhost   # connect to a specific db\n```\n\n## Creating Users & Databases\n\n```sql\nCREATE USER alice WITH PASSWORD 'secret';\nCREATE DATABASE myapp OWNER alice;\nGRANT ALL PRIVILEGES ON DATABASE myapp TO alice;\n```\n\n## psql Meta-Commands\n\n```\n\\l          list databases\n\\c mydb     connect to a database\n\\dt         list tables\n\\d table    describe a table's columns\n\\du         list roles/users\n\\x          toggle expanded (vertical) output \u2014 great for wide rows\n\\timing     show query execution time\n\\q          quit\n```\n\n## Basic SQL\n\n```sql\nSELECT * FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;\nINSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com');\nUPDATE users SET active = false WHERE id = 42;\nDELETE FROM users WHERE id = 42;\n```\n\n## Backup & Restore\n\n```bash\npg_dump mydb > backup.sql              # plain SQL dump\npg_dump -Fc mydb > backup.dump         # custom format, use with pg_restore\npsql mydb < backup.sql                 # restore a plain SQL dump\npg_restore -d mydb backup.dump         # restore a custom-format dump\n```\n\n## Tips\n\n- Run `psql` as the `postgres` OS user only for admin tasks \u2014 create a real role for your app.\n- `EXPLAIN ANALYZE SELECT ...` shows the query plan and actual timing \u2014 the first stop when a query is slow.\n",
       "difficulty": 2,
       "tags": [
               "postgresql",
@@ -998,7 +998,7 @@ LESSONS = {
     },
     {
       "title": "MySQL & MariaDB \u2014 mysql Basics",
-      "body": "# 🐬 MySQL & MariaDB \u2014 mysql Basics\n\nMariaDB is the open-source fork of MySQL, drop-in compatible and the default\non most Linux distros' repos.\n\n## Install & Start\n\n```bash\nsudo pacman -S mariadb\nsudo mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql\nsudo systemctl enable --now mariadb\nsudo mysql_secure_installation      # set root password, remove test db/anon users\n```\n\n## Connecting\n\n```bash\nmysql -u root -p                        # interactive shell, prompts for password\nmysql -u myuser -p mydb                 # connect straight into a database\nmysql -u root -p -e \"SHOW DATABASES;\"   # run one statement and exit\n```\n\n## Creating Users & Databases\n\n```sql\nCREATE DATABASE myapp;\nCREATE USER 'noah'@'localhost' IDENTIFIED BY 'secret';\nGRANT ALL PRIVILEGES ON myapp.* TO 'noah'@'localhost';\nFLUSH PRIVILEGES;\n```\n\n## Exploring\n\n```sql\nSHOW DATABASES;\nUSE myapp;\nSHOW TABLES;\nDESCRIBE users;              -- column names, types, keys\nSHOW CREATE TABLE users;     -- exact DDL that created it\n```\n\n## Basic SQL\n\n```sql\nSELECT * FROM users WHERE active = 1 ORDER BY created_at DESC LIMIT 10;\nINSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com');\nUPDATE users SET active = 0 WHERE id = 42;\nDELETE FROM users WHERE id = 42;\n```\n\n## Backup & Restore\n\n```bash\nmysqldump -u root -p myapp > backup.sql     # dump one database\nmysqldump -u root -p --all-databases > all.sql\nmysql -u root -p myapp < backup.sql         # restore\n```\n\n## MySQL vs MariaDB\n\nSame SQL dialect and wire protocol \u2014 the `mysql` client, `mysqldump`, and most\ndrivers work unchanged against either. MariaDB is the default in most distro\nrepos; MySQL itself needs Oracle's repo on some distros.\n",
+      "body": "# 🐬 MySQL & MariaDB \u2014 mysql Basics\n\nMariaDB is the open-source fork of MySQL, drop-in compatible and the default\non most Linux distros' repos.\n\n## Install & Start\n\n```bash\nsudo pacman -S mariadb\nsudo mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql\nsudo systemctl enable --now mariadb\nsudo mysql_secure_installation      # set root password, remove test db/anon users\n```\n\n## Connecting\n\n```bash\nmysql -u root -p                        # interactive shell, prompts for password\nmysql -u myuser -p mydb                 # connect straight into a database\nmysql -u root -p -e \"SHOW DATABASES;\"   # run one statement and exit\n```\n\n## Creating Users & Databases\n\n```sql\nCREATE DATABASE myapp;\nCREATE USER 'alice'@'localhost' IDENTIFIED BY 'secret';\nGRANT ALL PRIVILEGES ON myapp.* TO 'alice'@'localhost';\nFLUSH PRIVILEGES;\n```\n\n## Exploring\n\n```sql\nSHOW DATABASES;\nUSE myapp;\nSHOW TABLES;\nDESCRIBE users;              -- column names, types, keys\nSHOW CREATE TABLE users;     -- exact DDL that created it\n```\n\n## Basic SQL\n\n```sql\nSELECT * FROM users WHERE active = 1 ORDER BY created_at DESC LIMIT 10;\nINSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com');\nUPDATE users SET active = 0 WHERE id = 42;\nDELETE FROM users WHERE id = 42;\n```\n\n## Backup & Restore\n\n```bash\nmysqldump -u root -p myapp > backup.sql     # dump one database\nmysqldump -u root -p --all-databases > all.sql\nmysql -u root -p myapp < backup.sql         # restore\n```\n\n## MySQL vs MariaDB\n\nSame SQL dialect and wire protocol \u2014 the `mysql` client, `mysqldump`, and most\ndrivers work unchanged against either. MariaDB is the default in most distro\nrepos; MySQL itself needs Oracle's repo on some distros.\n",
       "difficulty": 2,
       "tags": [
               "mysql",
@@ -1090,7 +1090,7 @@ ssh-add -l                         # list keys loaded in your agent
 # ~/.ssh/config
 Host homelab
   HostName 192.168.1.40
-  User noah
+  User alice
   IdentityFile ~/.ssh/id_ed25519
 ```
 
@@ -1176,6 +1176,301 @@ Do not rely on cleaning a deeply compromised host in place. A known-good rebuild
   }
 ]
 
+LESSONS["🧭 Distro Field Guide"] = [
+  {
+    "title": "Choosing a Linux Distribution",
+    "difficulty": 1,
+    "tags": ["distros", "linux", "beginner"],
+    "body": """# 🧭 Choosing a Linux Distribution
+
+A distribution combines the Linux kernel with an installer, package repositories, defaults, documentation, and a release policy. Most everyday Linux skills transfer between them.
+
+## Choose by job, not by logo
+
+| Goal | Strong starting points |
+|---|---|
+| First desktop | Linux Mint, Ubuntu, Fedora Workstation |
+| Learn Linux deeply | Arch, Debian, Fedora |
+| Stable server | Debian, Ubuntu LTS, AlmaLinux, Rocky Linux |
+| Older hardware | Xubuntu, Debian with Xfce, MX Linux |
+| Gaming | Fedora, Bazzite, Pop!_OS |
+| Maximum customization | Arch, Gentoo, NixOS |
+
+## Questions that actually matter
+
+- **Release model:** fixed releases favor predictability; rolling releases favor current software.
+- **Packages:** check whether the software and drivers you need are readily available.
+- **Documentation:** ArchWiki is useful on almost any distro; distro-specific docs still matter.
+- **Community:** a large, helpful user base is worth more than a fashionable default theme.
+
+Try candidates in a virtual machine or live USB. The best distro is the one whose maintenance model you understand and enjoy.
+"""
+  },
+  {
+    "title": "Debian, Ubuntu & Mint",
+    "difficulty": 1,
+    "tags": ["debian", "ubuntu", "mint", "apt"],
+    "body": """# 🌀 Debian, Ubuntu & Mint
+
+These distributions share the `.deb` package format and APT ecosystem, but target different experiences.
+
+- **Debian:** conservative, community-run, and an excellent stable server or desktop base.
+- **Ubuntu:** regular and LTS releases, broad hardware support, commercial backing, and extensive third-party documentation.
+- **Linux Mint:** an approachable desktop built on Ubuntu LTS, with familiar Cinnamon defaults.
+
+```bash
+sudo apt update                 # refresh repository metadata
+apt list --upgradable
+sudo apt full-upgrade           # resolve upgrades, including dependency changes
+apt search ripgrep
+apt show ripgrep
+sudo apt install ripgrep
+```
+
+## Release upgrades
+
+Back up first, disable questionable third-party repositories, fully update the current release, and read its release notes. Debian favors deliberate upgrades; Ubuntu provides `do-release-upgrade`; Mint provides a graphical upgrade tool for supported paths.
+"""
+  },
+  {
+    "title": "Fedora, RHEL & Enterprise Linux",
+    "difficulty": 2,
+    "tags": ["fedora", "rhel", "dnf", "selinux"],
+    "body": """# 🎩 Fedora, RHEL & Enterprise Linux
+
+Fedora ships modern Linux technology early. Red Hat Enterprise Linux turns that ecosystem into a long-lived commercial platform; AlmaLinux and Rocky Linux provide compatible community alternatives.
+
+```bash
+sudo dnf upgrade --refresh
+dnf search podman
+dnf info podman
+sudo dnf install podman
+sudo dnf autoremove
+```
+
+## Concepts worth learning
+
+- **SELinux** labels and policy add mandatory access control. Diagnose denials; do not reflexively disable it.
+- **firewalld** manages zones and services: `firewall-cmd --get-active-zones`.
+- **Cockpit** offers browser-based administration without hiding the underlying system.
+- **Podman** provides daemonless, rootless containers and Docker-compatible workflows.
+
+Fedora is a strong workstation for developers who want current kernels, GNOME, Wayland, and container tooling without adopting a rolling release.
+"""
+  },
+  {
+    "title": "Arch, EndeavourOS & Manjaro",
+    "difficulty": 2,
+    "tags": ["arch", "endeavouros", "manjaro", "pacman"],
+    "body": """# 🏹 Arch, EndeavourOS & Manjaro
+
+Arch is a rolling, minimal distribution that expects the administrator to assemble and maintain the system. EndeavourOS offers an Arch-like system with a friendly installer. Manjaro uses its own delayed repositories and should not be treated as identical to Arch.
+
+```bash
+sudo pacman -Syu               # always sync and upgrade together
+pacman -Ss package             # search repositories
+pacman -Qi package             # inspect an installed package
+pacman -Qo /usr/bin/tool       # which package owns a file?
+pacdiff                        # review new configuration files
+```
+
+## Rolling-release habits
+
+- Read Arch news before upgrades that require manual intervention.
+- Avoid partial upgrades such as `pacman -Sy package`.
+- Keep a live USB, backups, and an older cached kernel package available.
+- Treat AUR `PKGBUILD` files as code: read them before building.
+
+Arch rewards curiosity, but reliability comes from routine maintenance rather than clever recovery.
+"""
+  },
+  {
+    "title": "openSUSE Leap & Tumbleweed",
+    "difficulty": 2,
+    "tags": ["opensuse", "zypper", "btrfs", "yast"],
+    "body": """# 🦎 openSUSE Leap & Tumbleweed
+
+**Leap** emphasizes stability; **Tumbleweed** is a thoroughly tested rolling release. Both feature YaST administration and excellent Btrfs snapshot integration.
+
+```bash
+sudo zypper refresh
+zypper search package
+sudo zypper install package
+sudo zypper dup                 # correct full upgrade for Tumbleweed
+zypper repos
+```
+
+## Snapper recovery
+
+Default Btrfs installations can create snapshots around package transactions.
+
+```bash
+sudo snapper list
+sudo snapper diff 42..43
+sudo snapper rollback 42
+```
+
+Snapshots are excellent for undoing a broken system change, but they are not backups: disk failure can destroy the filesystem and every snapshot on it.
+"""
+  },
+  {
+    "title": "NixOS, Gentoo, Alpine & Immutable Systems",
+    "difficulty": 3,
+    "tags": ["nixos", "gentoo", "alpine", "immutable"],
+    "body": """# 🧪 Specialized Linux Families
+
+Some distributions change the operating model, not just the package manager.
+
+## NixOS
+
+The system is declared in configuration, builds are reproducible, and generations make rollback natural. The learning curve is its Nix language and unconventional filesystem layout.
+
+## Gentoo
+
+Packages are built through Portage with configurable USE flags. It teaches toolchains and dependency choices, trading time and complexity for control.
+
+## Alpine
+
+A tiny, security-focused distribution using musl libc, BusyBox, OpenRC, and `apk`. It is popular for containers, but glibc-targeted binaries may not run unchanged.
+
+## Immutable desktops
+
+Fedora Silverblue/Kinoite and openSUSE Aeon separate the base system from applications and development containers. Atomic upgrades and rollback improve resilience; Flatpak and tools such as Distrobox handle user applications.
+
+Choose these systems when their operating model solves a real problem—not merely because they are unusual.
+"""
+  },
+]
+
+LESSONS["🖥️ Linux Desktop & Hardware"] = [
+  {
+    "title": "Desktop Environments vs Window Managers",
+    "difficulty": 1,
+    "tags": ["desktop", "gnome", "kde", "window-manager"],
+    "body": """# 🖥️ Desktop Environments vs Window Managers
+
+A desktop environment bundles a window manager, panel, settings, file manager, notifications, and consistent applications. GNOME favors a focused workflow; KDE Plasma favors flexibility; Xfce and LXQt are lighter and traditional.
+
+A standalone window manager manages placement and focus but expects you to assemble the rest. i3 and Sway tile windows; Openbox and Fluxbox float them.
+
+```bash
+echo $XDG_CURRENT_DESKTOP
+echo $XDG_SESSION_TYPE          # x11 or wayland
+loginctl show-session "$XDG_SESSION_ID" -p Type -p Desktop
+```
+
+You can install several desktops, but overlapping portals, keyrings, themes, and autostart entries can become confusing. Test alternatives with a separate user account first.
+"""
+  },
+  {
+    "title": "Wayland, X11 & Screen Sharing",
+    "difficulty": 2,
+    "tags": ["wayland", "x11", "display-server"],
+    "body": """# 🪟 Wayland, X11 & Screen Sharing
+
+X11 is the older network-transparent display protocol. Wayland is the newer architecture: applications render their own surfaces while a compositor such as Mutter, KWin, or Sway controls presentation and input.
+
+Wayland offers stronger isolation, smoother mixed-DPI behavior, and simpler frame timing. X11 still helps with some legacy software and remote workflows. XWayland runs most X11 applications inside a Wayland session.
+
+```bash
+echo $XDG_SESSION_TYPE
+xeyes                              # an X11 test app, if installed
+journalctl --user -b | grep -Ei 'wayland|xwayland|portal'
+```
+
+Modern screen sharing on Wayland uses PipeWire and `xdg-desktop-portal`. If sharing fails, verify that the portal backend matches your desktop and that PipeWire user services are running.
+"""
+  },
+  {
+    "title": "Audio with PipeWire",
+    "difficulty": 2,
+    "tags": ["pipewire", "audio", "wireplumber"],
+    "body": """# 🎧 Audio with PipeWire
+
+PipeWire handles modern Linux audio and video streams. WirePlumber applies routing policy; compatibility layers let PulseAudio and JACK applications use it.
+
+```bash
+wpctl status
+wpctl get-volume @DEFAULT_AUDIO_SINK@
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+systemctl --user status pipewire wireplumber
+```
+
+## Troubleshooting order
+
+1. Confirm the device appears in `wpctl status`.
+2. Check the selected profile and default sink in `pavucontrol`.
+3. Look for muted hardware controls with `alsamixer`.
+4. Restart user services, then inspect `journalctl --user`.
+
+Avoid deleting configuration blindly. Move custom files aside one at a time so you can identify the actual cause.
+"""
+  },
+  {
+    "title": "Graphics Drivers & GPU Diagnostics",
+    "difficulty": 2,
+    "tags": ["gpu", "mesa", "nvidia", "drivers"],
+    "body": """# 🎮 Graphics Drivers & GPU Diagnostics
+
+Intel and AMD GPUs generally use kernel DRM drivers plus Mesa in userspace. NVIDIA systems may use the proprietary driver or the open Nouveau driver; package choice must match the kernel and distro.
+
+```bash
+lspci -k | grep -A3 -E 'VGA|3D|Display'
+glxinfo -B                         # OpenGL renderer
+vulkaninfo --summary              # Vulkan devices
+journalctl -b -k | grep -Ei 'drm|gpu|nvidia|amdgpu|i915'
+```
+
+If rendering falls back to `llvmpipe`, software rendering is active. Check installed Mesa/Vulkan packages, kernel modules, firmware, and environment overrides. On hybrid laptops, first understand which GPU drives the display and which one should render demanding applications.
+"""
+  },
+  {
+    "title": "Laptop Power, Thermals & Battery Health",
+    "difficulty": 2,
+    "tags": ["laptop", "battery", "power", "thermals"],
+    "body": """# 🔋 Laptop Power, Thermals & Battery Health
+
+Measure before installing multiple power managers—they can fight over the same settings.
+
+```bash
+upower -i "$(upower -e | grep BAT | head -1)"
+cat /sys/class/power_supply/BAT0/capacity
+cat /sys/class/power_supply/BAT0/energy_full{,_design} 2>/dev/null
+powerprofilesctl get
+sensors
+```
+
+Use your desktop's power-profiles-daemon or a tool such as TLP, not both without understanding the overlap. Battery charge thresholds are hardware- and driver-specific. High temperatures often come from a runaway process, blocked airflow, old thermal paste, or an unnecessarily active discrete GPU.
+
+`powertop` is valuable for diagnosis, but applying every suggested tunable automatically can break USB devices or networking.
+"""
+  },
+  {
+    "title": "Boot Rescue from a Live USB",
+    "difficulty": 3,
+    "tags": ["rescue", "chroot", "bootloader", "recovery"],
+    "body": """# 🛟 Boot Rescue from a Live USB
+
+When the installed system will not boot, mount it from compatible live media, enter it with `chroot`, and repair from inside.
+
+```bash
+lsblk -f
+sudo mount /dev/nvme0n1p2 /mnt
+sudo mount /dev/nvme0n1p1 /mnt/boot       # adjust for your layout
+sudo mount --rbind /dev /mnt/dev
+sudo mount --rbind /proc /mnt/proc
+sudo mount --rbind /sys /mnt/sys
+sudo chroot /mnt
+```
+
+Arch media provides `arch-chroot /mnt`; Debian-family media may use `mount --bind` plus regular `chroot`.
+
+Inside, check `/etc/fstab`, reinstall or regenerate the kernel/initramfs, inspect bootloader entries, and run package-manager repair commands. On UEFI systems the EFI System Partition must be mounted at the path expected by your bootloader configuration.
+"""
+  },
+]
+
 TIPS = [
   {
     "title": "cd to the previous directory",
@@ -1256,6 +1551,66 @@ TIPS = [
   {
     "title": "Run last command as root",
     "tip": "sudo !!  # the !! expands to your entire previous command"
+  },
+  {
+    "title": "Explain an unfamiliar command",
+    "tip": "Use tldr rsync for practical examples, then man rsync for the complete reference."
+  },
+  {
+    "title": "See a directory as a tree",
+    "tip": "tree -L 2 -a    # show hidden files and stop after two levels; eza --tree is a modern alternative."
+  },
+  {
+    "title": "Keep sudo alive while you work",
+    "tip": "sudo -v    # refresh your cached credentials without running another command."
+  },
+  {
+    "title": "Inspect a file before opening it",
+    "tip": "file download.bin && stat download.bin    # identify its type, size, ownership, and timestamps."
+  },
+  {
+    "title": "Check a download safely",
+    "tip": "sha256sum linux.iso    # compare the result with the checksum published by the distro."
+  },
+  {
+    "title": "See why a service failed",
+    "tip": "systemctl status service --no-pager && journalctl -u service -b    # state plus logs from this boot."
+  },
+  {
+    "title": "Preview destructive rsync changes",
+    "tip": "rsync -aHn --delete source/ destination/    # -n shows exactly what would change without changing it."
+  },
+  {
+    "title": "Follow changing command output",
+    "tip": "watch -d -n 2 'df -h'    # rerun every two seconds and highlight differences."
+  },
+  {
+    "title": "Find a command's package on Arch",
+    "tip": "pacman -Fyx && pacman -F bin/command    # search repository file databases for a missing command."
+  },
+  {
+    "title": "Check your public IP",
+    "tip": "curl -4 https://icanhazip.com    # force IPv4; use -6 to test IPv6 connectivity."
+  },
+  {
+    "title": "Test DNS directly",
+    "tip": "dig +short example.com @1.1.1.1    # bypass the configured resolver for a quick comparison."
+  },
+  {
+    "title": "Measure startup time",
+    "tip": "systemd-analyze blame    # rank boot units by activation time; verify before disabling anything."
+  },
+  {
+    "title": "Use a temporary working directory",
+    "tip": "workdir=$(mktemp -d)    # create a unique scratch directory safely; remove it when finished."
+  },
+  {
+    "title": "Read compressed logs without extracting",
+    "tip": "zless archive.log.gz or zgrep ERROR archive.log.gz    # inspect gzip files in place."
+  },
+  {
+    "title": "See every form of a command",
+    "tip": "type -a python    # reveals aliases, functions, builtins, and every matching executable in PATH."
   }
 ]
 
